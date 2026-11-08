@@ -4,7 +4,7 @@
 <html lang="en" class="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>California First Responder Tax & Paycheck Calculator (2026)</title>
 
   <!-- Progressive Web App & Apple Mobile Web App Settings -->
@@ -52,18 +52,9 @@
   <style>
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
 
-    /* Strict Mobile Viewport Horizontal Lock (Prevents all left/right scrolling) */
-    html, body {
-      max-width: 100vw !important;
-      overflow-x: hidden !important;
-      width: 100% !important;
+    html {
       -webkit-tap-highlight-color: transparent;
       scroll-behavior: smooth;
-    }
-    main {
-      max-width: 100vw !important;
-      overflow-x: hidden !important;
-      width: 100% !important;
     }
 
     /* Mobile Safari Touch & 16px Font Optimization (Prevents iOS Auto-Zoom) */
@@ -250,7 +241,7 @@
         <div class="flex items-center space-x-1 sm:space-x-2 shrink-0">
           
           <!-- View Switcher: Inline on desktop, preserves exact IDs -->
-          <div class="hidden sm:inline-flex p-0.5 sm:p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium">
+          <div class="inline-flex p-0.5 sm:p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium">
             <button id="viewTabBoth" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold">
               Split View
             </button>
@@ -296,20 +287,7 @@
     </div>
   </header>
 
-  <!-- Dedicated Mobile View Switcher (Full-width, zero horizontal overflow) -->
-  <div class="sm:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 py-2 transition-colors">
-    <div class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-center font-medium">
-      <button id="mobileViewBoth" type="button" class="py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs">
-        Split View
-      </button>
-      <button id="mobileViewBiweekly" type="button" class="py-1.5 rounded-lg text-slate-600 dark:text-slate-400">
-        Biweekly
-      </button>
-      <button id="mobileViewAnnual" type="button" class="py-1.5 rounded-lg text-slate-600 dark:text-slate-400">
-        Annual
-      </button>
-    </div>
-  </div>
+
 
   <!-- Quick Profiles Sub-Header -->
   <div class="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 py-2 px-3 sm:px-6 lg:px-8 text-xs no-print transition-colors duration-200">
@@ -2857,13 +2835,7 @@
         ? 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold'
         : 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
 
-      // Sync mobile view switcher buttons
-      const btnMobBoth = document.getElementById('mobileViewBoth');
-      const btnMobBiweekly = document.getElementById('mobileViewBiweekly');
-      const btnMobAnnual = document.getElementById('mobileViewAnnual');
-      if (btnMobBoth) btnMobBoth.className = (mode === 'both') ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-400';
-      if (btnMobBiweekly) btnMobBiweekly.className = (mode === 'biweekly') ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-400';
-      if (btnMobAnnual) btnMobAnnual.className = (mode === 'annual') ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-400';
+
 
       if (mode === 'biweekly') {
         elements.biweeklySection.classList.remove('hidden');
@@ -3180,12 +3152,7 @@
       elements.viewTabBiweekly.addEventListener('click', () => setViewMode('biweekly'));
       elements.viewTabAnnual.addEventListener('click', () => setViewMode('annual'));
 
-      const btnMobBoth = document.getElementById('mobileViewBoth');
-      const btnMobBiweekly = document.getElementById('mobileViewBiweekly');
-      const btnMobAnnual = document.getElementById('mobileViewAnnual');
-      if (btnMobBoth) btnMobBoth.addEventListener('click', () => setViewMode('both'));
-      if (btnMobBiweekly) btnMobBiweekly.addEventListener('click', () => setViewMode('biweekly'));
-      if (btnMobAnnual) btnMobAnnual.addEventListener('click', () => setViewMode('annual'));
+
 
       // Quick Role Presets
       elements.presetPolice.addEventListener('click', () => {
