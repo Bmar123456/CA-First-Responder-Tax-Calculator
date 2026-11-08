@@ -17,12 +17,10 @@
   <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="icon" type="image/png" href="icon.png">
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Configure Tailwind to use .dark class BEFORE loading the Play CDN script -->
   <script>
-    tailwind.config = {
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
@@ -41,8 +39,12 @@
           }
         }
       }
-    }
+    };
   </script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
     /* Mobile Safari Touch & Input Optimization */
@@ -66,6 +68,52 @@
     }
     .safe-bottom {
       padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    /* Total Dark Mode Consistency Enforcements */
+    html.dark {
+      color-scheme: dark;
+    }
+    html.dark body {
+      background-color: #020617 !important;
+      color: #f8fafc !important;
+    }
+    html.dark header,
+    html.dark footer {
+      background-color: #0f172a !important;
+      border-color: #1e293b !important;
+    }
+    html.dark .bg-white {
+      background-color: #0f172a !important;
+      color: #f8fafc;
+    }
+    html.dark .bg-slate-50,
+    html.dark .bg-slate-50\/50,
+    html.dark .bg-slate-50\/60,
+    html.dark .bg-slate-50\/70,
+    html.dark .bg-slate-100 {
+      background-color: #1e293b !important;
+    }
+    html.dark .border-slate-100,
+    html.dark .border-slate-200,
+    html.dark .border-slate-300 {
+      border-color: #334155 !important;
+    }
+    html.dark input[type=number],
+    html.dark input[type=text],
+    html.dark select {
+      background-color: #1e293b !important;
+      color: #ffffff !important;
+      border-color: #334155 !important;
+    }
+    html.dark .text-slate-900,
+    html.dark .text-slate-800,
+    html.dark .text-slate-700 {
+      color: #f1f5f9 !important;
+    }
+    html.dark .text-slate-600,
+    html.dark .text-slate-500 {
+      color: #94a3b8 !important;
     }
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
@@ -2042,11 +2090,13 @@
     function setTheme(isDark) {
       state.isDark = isDark;
       if (isDark) {
+        document.documentElement.classList.remove('light');
         document.documentElement.classList.add('dark');
         elements.themeIconSun.classList.remove('hidden');
         elements.themeIconMoon.classList.add('hidden');
       } else {
         document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
         elements.themeIconSun.classList.add('hidden');
         elements.themeIconMoon.classList.remove('hidden');
       }
@@ -2768,7 +2818,7 @@
       if (savedTheme) {
         setTheme(savedTheme === 'dark');
       } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setTheme(false);
+        setTheme(true);
       } else {
         setTheme(false);
       }
