@@ -201,7 +201,8 @@
           <!-- Primary Pension Dropdown with "Other / Custom" (USER SPEC) -->
           <div class="relative max-w-2xl">
             <select id="pensionSystemSelect" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-800 transition-all appearance-none cursor-pointer shadow-2xs">
-              <option value="calpers" selected>CalPERS Safety (13.75% Base Only - No Social Security)</option>
+              <option value="calpers" selected>CalPERS Safety - 2.7%@57 (13.75% Base Only - No Social Security)</option>
+              <option value="calpers_misc_2at62">CalPERS Misc / Civilian - 2%@62 (8.00% Base Only + Social Security)</option>
               <option value="lafpp_tier6">LAFPP Tier 6 - LAPD / LAFD (11.00% Base Only - No Social Security)</option>
               <option value="ocers_plan_v">OCERS Plan V - Safety 2.7%@57 (14.61% Base Only - No Social Security)</option>
               <option value="ocers_plan_u">OCERS Plan U - General 2.5%@67 (10.50% Base Only + Social Security)</option>
@@ -483,7 +484,8 @@
                 </label>
                 <div class="relative">
                   <select id="spousePensionSystemSelect" class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all cursor-pointer">
-                    <option value="calpers" selected>CalPERS Safety (13.75% Base Only - No Social Security)</option>
+                    <option value="calpers" selected>CalPERS Safety - 2.7%@57 (13.75% Base Only - No Social Security)</option>
+                    <option value="calpers_misc_2at62">CalPERS Misc / Civilian - 2%@62 (8.00% Base Only + Social Security)</option>
                     <option value="lafpp_tier6">LAFPP Tier 6 - LAPD / LAFD (11.00% Base Only - No Social Security)</option>
                     <option value="ocers_plan_v">OCERS Plan V - Safety 2.7%@57 (14.61% Base Only - No Social Security)</option>
                     <option value="ocers_plan_u">OCERS Plan U - General 2.5%@67 (10.50% Base Only + Social Security)</option>
@@ -716,13 +718,13 @@
               </p>
             </div>
 
-            <!-- 2026 Filing Status Dropdown -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <!-- 2026 Federal & CA State Filing Status -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
               <div>
                 <label for="selectFilingStatus" class="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
-                  2026 Filing Status
+                  Federal Filing Status
                 </label>
-                <select id="selectFilingStatus" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all cursor-pointer">
+                <select id="selectFilingStatus" class="w-full px-2.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all cursor-pointer">
                   <option value="single" selected>Single</option>
                   <option value="mfj">Married Filing Jointly</option>
                   <option value="mfs">Married Filing Separately</option>
@@ -730,14 +732,27 @@
                 </select>
               </div>
 
+              <div>
+                <label for="selectCaFilingStatus" class="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
+                  CA State Filing Status
+                </label>
+                <select id="selectCaFilingStatus" class="w-full px-2.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all cursor-pointer">
+                  <option value="same_as_fed" selected>Same as Federal</option>
+                  <option value="single">Single</option>
+                  <option value="mfj">Married / RDP Jointly</option>
+                  <option value="mfs">Married / RDP Separately</option>
+                  <option value="hoh">Head of Household</option>
+                </select>
+              </div>
+
               <!-- Children / Dependents for Credits -->
               <div>
                 <label for="inputChildren" class="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
-                  Child Tax Credits (Under 17)
+                  Child Tax Credits
                 </label>
-                <div class="flex items-center space-x-2">
-                  <input type="number" id="inputChildren" value="1" min="0" max="10" step="1" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500">
-                  <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">$2,200/child</span>
+                <div class="flex items-center space-x-1.5">
+                  <input type="number" id="inputChildren" value="1" min="0" max="10" step="1" class="w-full px-2.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500">
+                  <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">$2.2k/ea</span>
                 </div>
               </div>
             </div>
@@ -758,14 +773,106 @@
               </div>
             </div>
 
-            <!-- Itemized Input Container -->
-            <div id="itemizedContainer" class="hidden p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
-              <label for="inputItemizedAmount" class="block font-semibold text-slate-700 dark:text-slate-200">Annual Itemized Deductions ($)</label>
-              <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span>
-                <input type="number" id="inputItemizedAmount" value="22000" step="500" min="0" class="w-full pl-7 pr-3 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-900 dark:text-white">
+            <!-- Itemized Input Container with OBBB $40.4k SALT & CA $1M Mortgage Debt Rules -->
+            <div id="itemizedContainer" class="hidden p-3.5 bg-slate-50 dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-slate-200 dark:border-slate-700">
+                <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center">
+                  <svg class="w-4 h-4 mr-1 text-sky-600 dark:text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  2026 Itemized Schedule (One Big Beautiful Bill & CA Conformity)
+                </span>
+                <span class="text-[10px] bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2 py-0.5 rounded-full font-semibold border border-sky-200 dark:border-sky-800">
+                  SALT Cap: $40,400 Fed | Property Tax 100% CA
+                </span>
               </div>
-              <span class="text-[10px] text-slate-500 dark:text-slate-400">Qualified mortgage interest, property tax (SALT $10,000 cap), charitable gifts.</span>
+
+              <!-- Itemized Line Inputs Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <!-- Real Estate & Property Taxes (SALT) -->
+                <div class="space-y-1">
+                  <label for="inputItemizedPropertyTax" class="font-semibold text-slate-700 dark:text-slate-200 text-[11px] block">
+                    Real Estate / Property Taxes ($/yr)
+                  </label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400">$</span>
+                    <input type="number" id="inputItemizedPropertyTax" value="12000" step="500" min="0" class="w-full pl-6 pr-2 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                  </div>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">
+                    Fed SALT capped at $40.4k (OBBB). CA allows 100% with no cap.
+                  </p>
+                </div>
+
+                <!-- Charitable Gifts & Other Deductions -->
+                <div class="space-y-1">
+                  <label for="inputItemizedCharity" class="font-semibold text-slate-700 dark:text-slate-200 text-[11px] block">
+                    Charitable Donations & Other ($/yr)
+                  </label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400">$</span>
+                    <input type="number" id="inputItemizedCharity" value="3000" step="250" min="0" class="w-full pl-6 pr-2 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                  </div>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">
+                    Qualified charitable donations and deductions.
+                  </p>
+                </div>
+
+                <!-- Mortgage Interest Paid -->
+                <div class="space-y-1">
+                  <label for="inputItemizedMortgageInterest" class="font-semibold text-slate-700 dark:text-slate-200 text-[11px] block">
+                    Mortgage Interest Paid ($/yr)
+                  </label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400">$</span>
+                    <input type="number" id="inputItemizedMortgageInterest" value="26000" step="500" min="0" class="w-full pl-6 pr-2 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                  </div>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">
+                    Form 1098 Box 1 total mortgage interest.
+                  </p>
+                </div>
+
+                <!-- Mortgage Loan Balance (for Fed $750k vs CA $1M limit) -->
+                <div class="space-y-1">
+                  <label for="inputItemizedMortgageBalance" class="font-semibold text-slate-700 dark:text-slate-200 text-[11px] block">
+                    Total Mortgage Principal / Debt ($)
+                  </label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400">$</span>
+                    <input type="number" id="inputItemizedMortgageBalance" value="850000" step="25000" min="0" class="w-full pl-6 pr-2 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                  </div>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">
+                    Fed limit: first $750k debt | CA limit: first $1,000,000 debt.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Computed Breakdown Comparison Card -->
+              <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-1.5 text-[11px]">
+                <div class="grid grid-cols-2 gap-2 text-center pb-1.5 border-b border-slate-100 dark:border-slate-800">
+                  <div class="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-200/60 dark:border-sky-800/60">
+                    <span class="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Federal Itemized</span>
+                    <span id="displayFedItemized" class="font-bold text-sky-700 dark:text-sky-300 text-sm font-mono">$48,841</span>
+                    <span id="displayFedAdvantage" class="block text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Higher than Standard</span>
+                  </div>
+                  <div class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60">
+                    <span class="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">California Itemized</span>
+                    <span id="displayCaItemized" class="font-bold text-indigo-700 dark:text-indigo-300 text-sm font-mono">$41,000</span>
+                    <span id="displayCaAdvantage" class="block text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Higher than Standard</span>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center text-[10px] text-slate-600 dark:text-slate-300 pt-0.5">
+                  <span>Deductible Mortgage Interest:</span>
+                  <span class="font-mono">Fed: <strong id="displayFedMortgageEligible" class="text-slate-800 dark:text-slate-200">$22,941</strong> vs CA: <strong id="displayCaMortgageEligible" class="text-slate-800 dark:text-slate-200">$26,000</strong></span>
+                </div>
+                <div class="flex justify-between items-center text-[10px] text-slate-600 dark:text-slate-300">
+                  <span>Deductible SALT:</span>
+                  <span class="font-mono">Fed: <strong id="displayFedSaltEligible" class="text-slate-800 dark:text-slate-200">$22,900</strong> (Capped $40.4k) vs CA: <strong id="displayCaSaltEligible" class="text-slate-800 dark:text-slate-200">$12,000</strong> (Uncapped)</span>
+                </div>
+              </div>
+
+              <!-- Manual Override / Synchronized Total Field (Preserves inputItemizedAmount ID) -->
+              <div class="pt-1 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                <label for="inputItemizedAmount" class="font-medium text-slate-600 dark:text-slate-300">Form 1040 Schedule A Itemized Total ($):</label>
+                <input type="number" id="inputItemizedAmount" value="48841" step="100" min="0" class="w-28 px-2 py-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded text-right font-mono font-bold text-xs text-slate-900 dark:text-white">
+              </div>
             </div>
 
           </div>
@@ -994,6 +1101,165 @@
             <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">Form 1040 & CA 540</span>
           </div>
 
+          <!-- Annual Input Mode Banner: Visible ONLY when viewing Annual Return (USER SPEC) -->
+          <div id="annualW2OptionBanner" class="hidden px-4 sm:px-5 py-3.5 bg-indigo-50/70 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900/60 transition-colors">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span class="text-xs font-bold text-indigo-950 dark:text-indigo-200 block flex items-center">
+                  <svg class="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                  Annual Calculation Source:
+                </span>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400">
+                  Select between standard 26-paycheck projection or direct W-2 entry to capture mid-year step raises and promotions.
+                </p>
+              </div>
+
+              <!-- Mode Selection Buttons -->
+              <div class="inline-flex p-0.5 bg-white dark:bg-slate-800 rounded-xl border border-indigo-200 dark:border-indigo-800 text-xs font-semibold shrink-0 shadow-2xs">
+                <button id="btnAnnualModeProjected" type="button" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold">
+                  Standard Projected (26 Checks)
+                </button>
+                <button id="btnAnnualModeW2" type="button" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                  Direct W-2 / Actual Numbers
+                </button>
+              </div>
+            </div>
+
+            <!-- Direct W-2 / Actual Numbers Form (Visible when Direct W-2 mode is toggled) -->
+            <div id="annualW2InputsContainer" class="hidden mt-3 pt-3 border-t border-indigo-200/70 dark:border-indigo-800/70 space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="text-[11px] text-indigo-900 dark:text-indigo-200 font-medium">
+                  <strong>W-2 Year-End Actuals:</strong> Enter your year-end box totals below to account for pay raises, step bumps, retro pay, and specialty differentials.
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <button id="btnW2AutoFill" type="button" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors">
+                    Pre-Fill from Paycheck Pace
+                  </button>
+                  <button id="btnW2Clear" type="button" class="px-2 py-1 text-[11px] font-semibold rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Reset W-2
+                  </button>
+                </div>
+              </div>
+
+              <!-- Primary Earner W-2 Input Fields -->
+              <div class="p-3 bg-white dark:bg-slate-900 rounded-xl border border-indigo-200/80 dark:border-indigo-800/80 space-y-2">
+                <span class="text-xs font-bold text-slate-900 dark:text-white block">Primary Earner Year-End Totals</span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label for="inputW2PrimaryGross" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Total Annual Gross Pay ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2PrimaryGross" value="159250" step="500" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">W-2 Box 5 / Gross earnings</span>
+                  </div>
+
+                  <div>
+                    <label for="inputW2PrimaryPension" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Annual Pension Withheld ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2PrimaryPension" value="17875" step="100" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">CalPERS, LAFPP, OCERS, etc.</span>
+                  </div>
+
+                  <div>
+                    <label for="inputW2Primary457" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Annual 457(b) Deferrals ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2Primary457" value="12740" step="100" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">W-2 Box 12 (Code G)</span>
+                  </div>
+
+                  <div>
+                    <label for="inputW2PrimaryPretax" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Cafeteria / Pre-Tax Health ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2PrimaryPretax" value="3900" step="100" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">Section 125, medical/dental, FSA</span>
+                  </div>
+
+                  <div>
+                    <label for="inputW2PrimaryPostTax" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Annual Post-Tax Deductions ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2PrimaryPostTax" value="2210" step="50" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">Union Dues (PORAC, IAFF, local)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Spouse Earner W-2 Input Fields (Conditional on checkIncludeSpouse) -->
+              <div id="w2SpouseContainer" class="hidden p-3 bg-white dark:bg-slate-900 rounded-xl border border-indigo-200/80 dark:border-indigo-800/80 space-y-2">
+                <span class="text-xs font-bold text-slate-900 dark:text-white block">Qualified Spouse Year-End Totals</span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label for="inputW2SpouseGross" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Spouse Total Annual Gross ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2SpouseGross" value="115000" step="500" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="inputW2SpousePension" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Spouse Pension Withheld ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2SpousePension" value="12000" step="100" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="inputW2Spouse457" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Spouse 457(b) / 401(k) ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2Spouse457" value="6900" step="100" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="inputW2SpousePretax" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Spouse Section 125 / Pre-Tax ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2SpousePretax" value="2600" step="100" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="inputW2SpousePostTax" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">
+                      Spouse Post-Tax Deductions ($)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2SpousePostTax" value="1040" step="50" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="p-4 sm:p-5 space-y-4 text-xs sm:text-sm">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -1021,7 +1287,7 @@
                     <span id="annFedAgi" class="font-mono">$124,735</span>
                   </div>
                   <div class="flex justify-between text-slate-500 dark:text-slate-400">
-                    <span>2026 Federal Standard Deduction:</span>
+                    <span id="annLabelFedDed">2026 Federal Standard Deduction:</span>
                     <span id="annFedStdDed" class="font-mono">-$16,100</span>
                   </div>
                   <div class="flex justify-between font-bold text-slate-900 dark:text-white pt-1 border-t border-slate-200 dark:border-slate-700">
@@ -1055,7 +1321,7 @@
                     <span id="annCaAgi" class="font-semibold text-slate-900 dark:text-white font-mono">$124,735</span>
                   </div>
                   <div class="flex justify-between text-slate-500 dark:text-slate-400">
-                    <span>2026 CA Standard Deduction:</span>
+                    <span id="annLabelCaDed">2026 CA Standard Deduction:</span>
                     <span id="annCaStdDed" class="font-mono">-$5,900</span>
                   </div>
                   <div class="flex justify-between font-bold text-slate-900 dark:text-white pt-1 border-t border-slate-200 dark:border-slate-700">
@@ -1180,6 +1446,14 @@
       ADDITIONAL_MEDICARE_THRESHOLD_MFJ: 250000,
       PAY_PERIODS_PER_YEAR: 26,
 
+      // Itemized Deduction Limits (One Big Beautiful Bill & CA Conformity)
+      LIMIT_SALT_ONE_BIG_BEAUTIFUL_BILL: 40400,
+      LIMIT_SALT_MFS: 20200,
+      MORTGAGE_LIMIT_FED: 750000,
+      MORTGAGE_LIMIT_FED_MFS: 375000,
+      MORTGAGE_LIMIT_CA: 1000000,
+      MORTGAGE_LIMIT_CA_MFS: 500000,
+
       // Pension Systems and Member Contribution Rates on Base Pay Only
       PENSION_SYSTEMS: {
         calpers: {
@@ -1191,6 +1465,16 @@
           label: '13.75% on base pay only',
           badge: 'Section 218 SS Exempt',
           notice: 'CalPERS Safety member contribution is fixed at 13.75% on base pay only. Overtime earnings are strictly non-pensionable (PEPRA rule), and members are exempt from 6.2% Social Security under Section 218.'
+        },
+        calpers_misc_2at62: {
+          name: 'CalPERS Misc / Civilian (2% @ 62)',
+          shortName: 'CalPERS Misc 2%@62 (8%)',
+          rate: 0.0800,
+          hasSs: true,
+          baseOnly: true,
+          label: '8.00% on base pay only + Social Security (6.2%)',
+          badge: 'Social Security + Pension',
+          notice: 'CalPERS Miscellaneous (Civilian PEPRA 2% @ 62) employees contribute 8.00% on base salary only (overtime exempt under PEPRA). Civilian personnel participate in Social Security (6.2% FICA up to $184,500).'
         },
         lafpp_tier6: {
           name: 'LAFPP Tier 6 - LAPD / LAFD',
@@ -1373,6 +1657,7 @@
       isPercent457: true,
       spouseIsPercent457: true,
       useItemized: false,
+      useW2Annual: false,
       viewMode: 'both',
       isDark: false
     };
@@ -1479,12 +1764,27 @@
       inputAlimonyPaid: document.getElementById('inputAlimonyPaid'),
 
       selectFilingStatus: document.getElementById('selectFilingStatus'),
+      selectCaFilingStatus: document.getElementById('selectCaFilingStatus'),
       inputChildren: document.getElementById('inputChildren'),
       btnDeductionStandard: document.getElementById('btnDeductionStandard'),
       btnDeductionItemized: document.getElementById('btnDeductionItemized'),
       deductionDisplayLabel: document.getElementById('deductionDisplayLabel'),
       itemizedContainer: document.getElementById('itemizedContainer'),
       inputItemizedAmount: document.getElementById('inputItemizedAmount'),
+      inputItemizedPropertyTax: document.getElementById('inputItemizedPropertyTax'),
+      inputItemizedCharity: document.getElementById('inputItemizedCharity'),
+      inputItemizedMortgageInterest: document.getElementById('inputItemizedMortgageInterest'),
+      inputItemizedMortgageBalance: document.getElementById('inputItemizedMortgageBalance'),
+      displayFedItemized: document.getElementById('displayFedItemized'),
+      displayCaItemized: document.getElementById('displayCaItemized'),
+      displayFedAdvantage: document.getElementById('displayFedAdvantage'),
+      displayCaAdvantage: document.getElementById('displayCaAdvantage'),
+      displayFedMortgageEligible: document.getElementById('displayFedMortgageEligible'),
+      displayCaMortgageEligible: document.getElementById('displayCaMortgageEligible'),
+      displayFedSaltEligible: document.getElementById('displayFedSaltEligible'),
+      displayCaSaltEligible: document.getElementById('displayCaSaltEligible'),
+      annLabelFedDed: document.getElementById('annLabelFedDed'),
+      annLabelCaDed: document.getElementById('annLabelCaDed'),
 
       // Hero Elements
       heroCardContainer: document.getElementById('heroCardContainer'),
@@ -1577,12 +1877,29 @@
       annSummaryPensionTitle: document.getElementById('annSummaryPensionTitle'),
       annSummaryPension: document.getElementById('annSummaryPension'),
 
-      // Views
+      // Views & Annual W-2 Elements
       viewTabBoth: document.getElementById('viewTabBoth'),
       viewTabBiweekly: document.getElementById('viewTabBiweekly'),
       viewTabAnnual: document.getElementById('viewTabAnnual'),
       biweeklySection: document.getElementById('biweeklySection'),
       annualSection: document.getElementById('annualSection'),
+      annualW2OptionBanner: document.getElementById('annualW2OptionBanner'),
+      btnAnnualModeProjected: document.getElementById('btnAnnualModeProjected'),
+      btnAnnualModeW2: document.getElementById('btnAnnualModeW2'),
+      annualW2InputsContainer: document.getElementById('annualW2InputsContainer'),
+      btnW2AutoFill: document.getElementById('btnW2AutoFill'),
+      btnW2Clear: document.getElementById('btnW2Clear'),
+      inputW2PrimaryGross: document.getElementById('inputW2PrimaryGross'),
+      inputW2PrimaryPension: document.getElementById('inputW2PrimaryPension'),
+      inputW2Primary457: document.getElementById('inputW2Primary457'),
+      inputW2PrimaryPretax: document.getElementById('inputW2PrimaryPretax'),
+      inputW2PrimaryPostTax: document.getElementById('inputW2PrimaryPostTax'),
+      w2SpouseContainer: document.getElementById('w2SpouseContainer'),
+      inputW2SpouseGross: document.getElementById('inputW2SpouseGross'),
+      inputW2SpousePension: document.getElementById('inputW2SpousePension'),
+      inputW2Spouse457: document.getElementById('inputW2Spouse457'),
+      inputW2SpousePretax: document.getElementById('inputW2SpousePretax'),
+      inputW2SpousePostTax: document.getElementById('inputW2SpousePostTax'),
 
       // Theme Toggle Buttons
       btnThemeToggle: document.getElementById('btnThemeToggle'),
@@ -1956,28 +2273,133 @@
       const householdAdditionalPretaxBiweekly = primaryAdditionalPretax + spouseAdditionalPretax;
       const householdPostTaxBiweekly = primaryPostTax + spousePostTax;
 
-      // 6. Filing Status & Deductions
+      // Check if Direct W-2 / Actual Numbers Mode is active (ONLY when viewing Annual Return)
+      const isW2Active = (state.viewMode === 'annual' && state.useW2Annual);
+
+      let effectiveGrossAnnual = householdGrossAnnual;
+      let effectivePensionAnnual = householdCalpersAnnual;
+      let effective457Annual = household457Annual;
+      let effectivePretaxAnnual = householdPretaxAnnual;
+      let effectivePostTaxAnnual = householdPostTaxBiweekly * 26;
+      let effectiveSsAnnual = householdSsAnnual;
+
+      if (isW2Active) {
+        const w2PrimaryGross = Math.max(0, parseFloat(elements.inputW2PrimaryGross.value) || 0);
+        const w2PrimaryPension = Math.max(0, parseFloat(elements.inputW2PrimaryPension.value) || 0);
+        const w2Primary457 = Math.max(0, parseFloat(elements.inputW2Primary457.value) || 0);
+        const w2PrimaryPretax = Math.max(0, parseFloat(elements.inputW2PrimaryPretax.value) || 0);
+        const w2PrimaryPostTax = Math.max(0, parseFloat(elements.inputW2PrimaryPostTax.value) || 0);
+
+        let w2SpouseGross = 0;
+        let w2SpousePension = 0;
+        let w2Spouse457 = 0;
+        let w2SpousePretax = 0;
+        let w2SpousePostTax = 0;
+
+        if (hasSpouse) {
+          w2SpouseGross = Math.max(0, parseFloat(elements.inputW2SpouseGross.value) || 0);
+          w2SpousePension = Math.max(0, parseFloat(elements.inputW2SpousePension.value) || 0);
+          w2Spouse457 = Math.max(0, parseFloat(elements.inputW2Spouse457.value) || 0);
+          w2SpousePretax = Math.max(0, parseFloat(elements.inputW2SpousePretax.value) || 0);
+          w2SpousePostTax = Math.max(0, parseFloat(elements.inputW2SpousePostTax.value) || 0);
+        }
+
+        effectiveGrossAnnual = w2PrimaryGross + w2SpouseGross;
+        effectivePensionAnnual = w2PrimaryPension + w2SpousePension;
+        effective457Annual = w2Primary457 + w2Spouse457;
+        effectivePretaxAnnual = effectivePensionAnnual + effective457Annual + w2PrimaryPretax + w2SpousePretax;
+        effectivePostTaxAnnual = w2PrimaryPostTax + w2SpousePostTax;
+
+        let w2PrimarySs = 0;
+        if (primaryPlan.hasSs) {
+          w2PrimarySs = Math.min(w2PrimaryGross, TAX_2026.SS_WAGE_BASE) * TAX_2026.SS_RATE;
+        }
+        let w2SpouseSs = 0;
+        if (hasSpouse && spousePlan.hasSs) {
+          w2SpouseSs = Math.min(w2SpouseGross, TAX_2026.SS_WAGE_BASE) * TAX_2026.SS_RATE;
+        }
+        effectiveSsAnnual = w2PrimarySs + w2SpouseSs;
+      }
+
+      // 6. Filing Status & Deductions (Includes CA State Status & OBBB / Mortgage Rules)
       const filingStatus = elements.selectFilingStatus.value;
+      const caFilingStatusRaw = elements.selectCaFilingStatus ? elements.selectCaFilingStatus.value : 'same_as_fed';
+      const caFilingStatus = (caFilingStatusRaw === 'same_as_fed') ? filingStatus : caFilingStatusRaw;
+
       const numChildren = Math.max(0, parseInt(elements.inputChildren.value, 10) || 0);
 
       const fedStdDed = TAX_2026.FED_STD_DEDUCTION[filingStatus];
-      const caStdDed = TAX_2026.CA_STD_DEDUCTION[filingStatus];
+      const caStdDed = TAX_2026.CA_STD_DEDUCTION[caFilingStatus];
 
       let fedDeduction = fedStdDed;
       let caDeduction = caStdDed;
 
+      // Itemized calculations
+      const propertyTax = Math.max(0, parseFloat(elements.inputItemizedPropertyTax.value) || 0);
+      const charity = Math.max(0, parseFloat(elements.inputItemizedCharity.value) || 0);
+      const mortgageInterest = Math.max(0, parseFloat(elements.inputItemizedMortgageInterest.value) || 0);
+      const mortgageBalance = Math.max(0, parseFloat(elements.inputItemizedMortgageBalance.value) || 0);
+
+      // Mortgage Interest Caps: Fed $750k ($375k MFS) vs CA $1,000,000 ($500k MFS)
+      const fedDebtCap = (filingStatus === 'mfs') ? TAX_2026.MORTGAGE_LIMIT_FED_MFS : TAX_2026.MORTGAGE_LIMIT_FED;
+      const caDebtCap = (caFilingStatus === 'mfs') ? TAX_2026.MORTGAGE_LIMIT_CA_MFS : TAX_2026.MORTGAGE_LIMIT_CA;
+
+      const fedMortgageRatio = (mortgageBalance > 0) ? Math.min(1.0, fedDebtCap / mortgageBalance) : 1.0;
+      const caMortgageRatio = (mortgageBalance > 0) ? Math.min(1.0, caDebtCap / mortgageBalance) : 1.0;
+
+      const fedDeductibleMortgage = mortgageInterest * fedMortgageRatio;
+      const caDeductibleMortgage = mortgageInterest * caMortgageRatio;
+
+      // SALT Cap: One Big Beautiful Bill provision ($40,400 for 2026, or $20,200 for MFS)
+      const fedSaltCap = (filingStatus === 'mfs') ? TAX_2026.LIMIT_SALT_MFS : TAX_2026.LIMIT_SALT_ONE_BIG_BEAUTIFUL_BILL;
+
+      // Estimate preliminary California State Tax for Federal SALT deduction
+      const tempCaTaxable = Math.max(0, (householdGrossAnnual - householdPretaxAnnual - annualAlimonyPaid) - caStdDed);
+      const tempCaBrackets = TAX_2026.CA_BRACKETS[caFilingStatus];
+      const tempCaTaxPreCredit = calculateGraduatedTax(tempCaTaxable, tempCaBrackets);
+      let tempCaPersonalCredit = TAX_2026.CA_EXEMPTION_CREDITS['personal_' + caFilingStatus] || TAX_2026.CA_EXEMPTION_CREDITS.personal_single;
+      const tempEstimatedCaTax = Math.max(0, tempCaTaxPreCredit - (tempCaPersonalCredit + (numChildren * TAX_2026.CA_EXEMPTION_CREDITS.dependent)));
+
+      const totalFedSaltBeforeCap = propertyTax + tempEstimatedCaTax;
+      const fedSaltDeduction = Math.min(fedSaltCap, totalFedSaltBeforeCap);
+      const caSaltDeduction = propertyTax; // CA does not deduct state income taxes, but property taxes are 100% uncapped
+
+      const computedFedItemized = Math.round(fedSaltDeduction + fedDeductibleMortgage + charity);
+      const computedCaItemized = Math.round(caSaltDeduction + caDeductibleMortgage + charity);
+
+      // Keep manual field updated or user value
+      if (document.activeElement !== elements.inputItemizedAmount) {
+        elements.inputItemizedAmount.value = computedFedItemized;
+      }
+      const activeFedItemized = Math.max(0, parseFloat(elements.inputItemizedAmount.value) || computedFedItemized);
+
+      // Update Itemized Display Badges
+      if (elements.displayFedItemized) {
+        elements.displayFedItemized.textContent = `$${activeFedItemized.toLocaleString()}`;
+        elements.displayCaItemized.textContent = `$${computedCaItemized.toLocaleString()}`;
+        elements.displayFedAdvantage.textContent = (activeFedItemized > fedStdDed) ? `+$${(activeFedItemized - fedStdDed).toLocaleString()} vs Standard` : 'Standard Deduction is Higher';
+        elements.displayFedAdvantage.className = (activeFedItemized > fedStdDed) ? 'block text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5' : 'block text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5';
+        
+        elements.displayCaAdvantage.textContent = (computedCaItemized > caStdDed) ? `+$${(computedCaItemized - caStdDed).toLocaleString()} vs Standard` : 'Standard Deduction is Higher';
+        elements.displayCaAdvantage.className = (computedCaItemized > caStdDed) ? 'block text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5' : 'block text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5';
+
+        elements.displayFedMortgageEligible.textContent = `$${Math.round(fedDeductibleMortgage).toLocaleString()}`;
+        elements.displayCaMortgageEligible.textContent = `$${Math.round(caDeductibleMortgage).toLocaleString()}`;
+        elements.displayFedSaltEligible.textContent = `$${Math.round(fedSaltDeduction).toLocaleString()}`;
+        elements.displayCaSaltEligible.textContent = `$${Math.round(caSaltDeduction).toLocaleString()}`;
+      }
+
       if (state.useItemized) {
-        const itemizedVal = Math.max(0, parseFloat(elements.inputItemizedAmount.value) || 0);
-        fedDeduction = Math.max(itemizedVal, fedStdDed);
-        caDeduction = Math.max(itemizedVal, caStdDed);
+        fedDeduction = Math.max(activeFedItemized, fedStdDed);
+        caDeduction = Math.max(computedCaItemized, caStdDed);
         elements.deductionDisplayLabel.textContent = `Itemized: $${fedDeduction.toLocaleString()} Fed / $${caDeduction.toLocaleString()} CA`;
       } else {
         elements.deductionDisplayLabel.textContent = `2026 Standard ($${fedStdDed.toLocaleString()} Fed / $${caStdDed.toLocaleString()} CA)`;
       }
 
       // 7. Annual Tax Calculations (Form 1040 & CA 540)
-      const annualFedAgi = Math.max(0, householdGrossAnnual - householdPretaxAnnual - annualAlimonyPaid);
-      const annualCaAgi = Math.max(0, householdGrossAnnual - householdPretaxAnnual - annualAlimonyPaid);
+      const annualFedAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual - annualAlimonyPaid);
+      const annualCaAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual - annualAlimonyPaid);
 
       const annualFedTaxable = Math.max(0, annualFedAgi - fedDeduction);
       const annualCaTaxable = Math.max(0, annualCaAgi - caDeduction);
@@ -1996,12 +2418,11 @@
       }
       const annualFedTaxFinal = Math.max(0, annualFedTaxPreCredit - childCredits);
 
-      // California State Income Tax
-      const caBrackets = TAX_2026.CA_BRACKETS[filingStatus];
+      // California State Income Tax (uses caFilingStatus!)
+      const caBrackets = TAX_2026.CA_BRACKETS[caFilingStatus];
       const annualCaTaxPreCredit = calculateGraduatedTax(annualCaTaxable, caBrackets);
 
-      let caPersonalCredit = TAX_2026.CA_EXEMPTION_CREDITS.personal_single;
-      if (filingStatus === 'mfj') caPersonalCredit = TAX_2026.CA_EXEMPTION_CREDITS.personal_mfj;
+      let caPersonalCredit = TAX_2026.CA_EXEMPTION_CREDITS['personal_' + caFilingStatus] || TAX_2026.CA_EXEMPTION_CREDITS.personal_single;
       const caDependentCredit = numChildren * TAX_2026.CA_EXEMPTION_CREDITS.dependent;
       const totalCaCredits = caPersonalCredit + caDependentCredit;
       const annualCaTaxFinal = Math.max(0, annualCaTaxPreCredit - totalCaCredits);
@@ -2009,7 +2430,7 @@
       // Medicare Tax (Annual)
       const primaryMedicareWages = Math.max(0, primaryGrossAnnual - (primaryAdditionalPretax * TAX_2026.PAY_PERIODS_PER_YEAR));
       const spouseMedicareWages = Math.max(0, spouseGrossAnnual - (spouseAdditionalPretax * TAX_2026.PAY_PERIODS_PER_YEAR));
-      const totalMedicareWagesAnnual = primaryMedicareWages + (hasSpouse ? spouseMedicareWages : 0);
+      const totalMedicareWagesAnnual = isW2Active ? effectiveGrossAnnual : (primaryMedicareWages + (hasSpouse ? spouseMedicareWages : 0));
 
       let annualMedicare = totalMedicareWagesAnnual * TAX_2026.MEDICARE_RATE;
       const addlMedThreshold = (filingStatus === 'mfj') ? TAX_2026.ADDITIONAL_MEDICARE_THRESHOLD_MFJ : TAX_2026.ADDITIONAL_MEDICARE_THRESHOLD_SINGLE;
@@ -2018,12 +2439,12 @@
       }
 
       // Social Security Tax (Annual)
-      const annualTotalSs = primaryAnnualSs + (hasSpouse ? spouseAnnualSs : 0);
+      const annualTotalSs = isW2Active ? effectiveSsAnnual : (primaryAnnualSs + (hasSpouse ? spouseAnnualSs : 0));
 
       // Composite Taxes
       const annualCompositeTaxes = annualFedTaxFinal + annualCaTaxFinal + annualMedicare + annualTotalSs;
-      const annualEffectiveRate = householdGrossAnnual > 0 ? (annualCompositeTaxes / householdGrossAnnual) * 100 : 0;
-      const annualNetTakeHome = householdGrossAnnual - householdPretaxAnnual - annualCompositeTaxes - (householdPostTaxBiweekly * 26) - annualAlimonyPaid;
+      const annualEffectiveRate = effectiveGrossAnnual > 0 ? (annualCompositeTaxes / effectiveGrossAnnual) * 100 : 0;
+      const annualNetTakeHome = effectiveGrossAnnual - effectivePretaxAnnual - annualCompositeTaxes - effectivePostTaxAnnual - annualAlimonyPaid;
 
       // 8. Biweekly Tax Withholdings
       const biweeklyFedTax = annualFedTaxFinal / TAX_2026.PAY_PERIODS_PER_YEAR;
@@ -2136,10 +2557,17 @@
         hoh: 'Head of Household'
       };
       elements.annFedStatusLabel.textContent = statusNames[filingStatus];
-      elements.annCaStatusLabel.textContent = statusNames[filingStatus];
+      elements.annCaStatusLabel.textContent = (caFilingStatusRaw === 'same_as_fed') ? statusNames[filingStatus] : (statusNames[caFilingStatus] + ' (CA)');
 
-      elements.annGrossWages.textContent = fmtNoCents(householdGrossAnnual);
-      elements.annTotalPretax.textContent = `-${fmtNoCents(householdPretaxAnnual)}`;
+      if (elements.annLabelFedDed) {
+        elements.annLabelFedDed.textContent = (state.useItemized && fedDeduction > fedStdDed) ? '2026 Federal Itemized Deduction:' : '2026 Federal Standard Deduction:';
+      }
+      if (elements.annLabelCaDed) {
+        elements.annLabelCaDed.textContent = (state.useItemized && caDeduction > caStdDed) ? '2026 CA Itemized Deduction:' : '2026 CA Standard Deduction:';
+      }
+
+      elements.annGrossWages.textContent = fmtNoCents(effectiveGrossAnnual);
+      elements.annTotalPretax.textContent = `-${fmtNoCents(effectivePretaxAnnual)}`;
       elements.annFedAgi.textContent = fmtNoCents(annualFedAgi);
       elements.annFedStdDed.textContent = `-${fmtNoCents(fedDeduction)}`;
       elements.annFedTaxable.textContent = fmtNoCents(annualFedTaxable);
@@ -2164,8 +2592,15 @@
       if (hasSpouse && spousePlan.rate > 0) {
         summaryPensionTitle = `${primaryPlan.shortName} + ${spousePlan.shortName}`;
       }
-      elements.annSummaryPensionTitle.textContent = (householdCalpersAnnual > 0) ? summaryPensionTitle : 'Social Security';
-      elements.annSummaryPension.textContent = (householdCalpersAnnual > 0) ? fmtNoCents(householdCalpersAnnual) : fmtNoCents(annualTotalSs);
+      elements.annSummaryPensionTitle.textContent = (effectivePensionAnnual > 0) ? summaryPensionTitle : 'Social Security';
+      elements.annSummaryPension.textContent = (effectivePensionAnnual > 0) ? fmtNoCents(effectivePensionAnnual) : fmtNoCents(annualTotalSs);
+
+      if (isW2Active) {
+        elements.heroNetAnnual.textContent = fmt(annualNetTakeHome);
+        elements.heroNetBiweekly.textContent = fmt(annualNetTakeHome / 26) + ' (avg)';
+        elements.heroCompositeTaxesBiweekly.textContent = fmt(annualCompositeTaxes / 26) + ' (avg)';
+        elements.heroEffectiveRate.textContent = `${annualEffectiveRate.toFixed(1)}% of Gross`;
+      }
     }
 
     // View Switching Logic
@@ -2184,13 +2619,20 @@
       if (mode === 'biweekly') {
         elements.biweeklySection.classList.remove('hidden');
         elements.annualSection.classList.add('hidden');
+        if (elements.annualW2OptionBanner) elements.annualW2OptionBanner.classList.add('hidden');
       } else if (mode === 'annual') {
         elements.biweeklySection.classList.add('hidden');
         elements.annualSection.classList.remove('hidden');
+        // Only have the W-2 option banner available for Annual Return, not split view or biweekly check
+        if (elements.annualW2OptionBanner) elements.annualW2OptionBanner.classList.remove('hidden');
       } else {
+        // mode === 'both' (Split View)
         elements.biweeklySection.classList.remove('hidden');
         elements.annualSection.classList.remove('hidden');
+        // Hidden in Split View per user specification
+        if (elements.annualW2OptionBanner) elements.annualW2OptionBanner.classList.add('hidden');
       }
+      calculate();
     }
 
     // Initialization & Event Wiring
@@ -2228,8 +2670,13 @@
         elements.inputPostTaxDeductions,
         elements.inputAlimonyPaid,
         elements.selectFilingStatus,
+        elements.selectCaFilingStatus,
         elements.inputChildren,
-        elements.inputItemizedAmount
+        elements.inputItemizedAmount,
+        elements.inputItemizedPropertyTax,
+        elements.inputItemizedCharity,
+        elements.inputItemizedMortgageInterest,
+        elements.inputItemizedMortgageBalance
       ];
 
       primaryInputs.forEach(input => {
@@ -2353,6 +2800,133 @@
         calculate();
       });
 
+      // Annual Mode Toggles (Projected vs Direct W-2)
+      elements.btnAnnualModeProjected.addEventListener('click', () => {
+        state.useW2Annual = false;
+        elements.btnAnnualModeProjected.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold';
+        elements.btnAnnualModeW2.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+        elements.annualW2InputsContainer.classList.add('hidden');
+        calculate();
+      });
+
+      elements.btnAnnualModeW2.addEventListener('click', () => {
+        state.useW2Annual = true;
+        elements.btnAnnualModeW2.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold';
+        elements.btnAnnualModeProjected.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+        elements.annualW2InputsContainer.classList.remove('hidden');
+        calculate();
+      });
+
+      // W-2 Auto-Fill from Paycheck Pace
+      elements.btnW2AutoFill.addEventListener('click', () => {
+        const primaryHourly = Math.max(0, parseFloat(elements.hourlyRateInput.value) || 0);
+        const primaryBaseH = Math.max(0, parseFloat(elements.baseHoursInput.value) || 0);
+        const primaryOtH = Math.max(0, parseFloat(elements.otHoursInput.value) || 0);
+        const primaryBasePay = primaryBaseH * primaryHourly;
+        const primaryOtPay = primaryOtH * (primaryHourly * 1.5);
+        const primaryGrossBiweekly = primaryBasePay + primaryOtPay;
+        const primaryGrossAnnual = primaryGrossBiweekly * 26;
+
+        const primaryKey = elements.pensionSystemSelect.value;
+        const primaryPlan = (primaryKey === 'other') ? {
+          rate: (parseFloat(elements.primaryCustomPensionRate.value) || 0) / 100,
+          baseOnly: elements.primaryCustomPensionBaseOnly.checked
+        } : (TAX_2026.PENSION_SYSTEMS[primaryKey] || TAX_2026.PENSION_SYSTEMS.calpers);
+
+        const primaryPensionable = primaryPlan.baseOnly ? primaryBasePay : primaryGrossBiweekly;
+        const primaryAnnualPension = primaryPensionable * primaryPlan.rate * 26;
+
+        const raw457 = Math.max(0, parseFloat(elements.input457Value.value) || 0);
+        const biweekly457 = state.isPercent457 ? (primaryGrossBiweekly * (raw457 / 100)) : raw457;
+        const primaryAnnual457 = biweekly457 * 26;
+
+        const primaryPretaxAnnual = (parseFloat(elements.inputAdditionalPretax.value) || 0) * 26;
+        const primaryPostTaxAnnual = (parseFloat(elements.inputPostTaxDeductions.value) || 0) * 26;
+
+        elements.inputW2PrimaryGross.value = Math.round(primaryGrossAnnual);
+        elements.inputW2PrimaryPension.value = Math.round(primaryAnnualPension);
+        elements.inputW2Primary457.value = Math.round(primaryAnnual457);
+        elements.inputW2PrimaryPretax.value = Math.round(primaryPretaxAnnual);
+        elements.inputW2PrimaryPostTax.value = Math.round(primaryPostTaxAnnual);
+
+        if (elements.checkIncludeSpouse.checked) {
+          const spouseHourly = Math.max(0, parseFloat(elements.spouseHourlyRateInput.value) || 0);
+          const spouseBaseH = Math.max(0, parseFloat(elements.spouseBaseHoursInput.value) || 0);
+          const spouseOtH = Math.max(0, parseFloat(elements.spouseOtHoursInput.value) || 0);
+          const spouseBasePay = spouseBaseH * spouseHourly;
+          const spouseOtPay = spouseOtH * (spouseHourly * 1.5);
+          const spouseGrossBiweekly = spouseBasePay + spouseOtPay;
+          const spouseGrossAnnual = spouseGrossBiweekly * 26;
+
+          const spouseKey = elements.spousePensionSystemSelect.value;
+          const spousePlan = (spouseKey === 'other') ? {
+            rate: (parseFloat(elements.spouseCustomPensionRate.value) || 0) / 100,
+            baseOnly: elements.spouseCustomPensionBaseOnly.checked
+          } : (TAX_2026.PENSION_SYSTEMS[spouseKey] || TAX_2026.PENSION_SYSTEMS.calpers);
+
+          const spousePensionable = spousePlan.baseOnly ? spouseBasePay : spouseGrossBiweekly;
+          const spouseAnnualPension = spousePensionable * spousePlan.rate * 26;
+
+          const spouseRaw457 = Math.max(0, parseFloat(elements.spouseInput457Value.value) || 0);
+          const spouseBiweekly457 = state.spouseIsPercent457 ? (spouseGrossBiweekly * (spouseRaw457 / 100)) : spouseRaw457;
+          const spouseAnnual457 = spouseBiweekly457 * 26;
+
+          const spousePretaxAnnual = (parseFloat(elements.spouseInputAdditionalPretax.value) || 0) * 26;
+          const spousePostTaxAnnual = (parseFloat(elements.spouseInputPostTaxDeductions.value) || 0) * 26;
+
+          elements.inputW2SpouseGross.value = Math.round(spouseGrossAnnual);
+          elements.inputW2SpousePension.value = Math.round(spouseAnnualPension);
+          elements.inputW2Spouse457.value = Math.round(spouseAnnual457);
+          elements.inputW2SpousePretax.value = Math.round(spousePretaxAnnual);
+          elements.inputW2SpousePostTax.value = Math.round(spousePostTaxAnnual);
+        }
+
+        calculate();
+      });
+
+      elements.btnW2Clear.addEventListener('click', () => {
+        elements.inputW2PrimaryGross.value = '159250';
+        elements.inputW2PrimaryPension.value = '17875';
+        elements.inputW2Primary457.value = '12740';
+        elements.inputW2PrimaryPretax.value = '3900';
+        elements.inputW2PrimaryPostTax.value = '2210';
+        elements.inputW2SpouseGross.value = '115000';
+        elements.inputW2SpousePension.value = '12000';
+        elements.inputW2Spouse457.value = '6900';
+        elements.inputW2SpousePretax.value = '2600';
+        elements.inputW2SpousePostTax.value = '1040';
+        calculate();
+      });
+
+      // W2 Inputs Listeners
+      const w2InputElements = [
+        elements.inputW2PrimaryGross,
+        elements.inputW2PrimaryPension,
+        elements.inputW2Primary457,
+        elements.inputW2PrimaryPretax,
+        elements.inputW2PrimaryPostTax,
+        elements.inputW2SpouseGross,
+        elements.inputW2SpousePension,
+        elements.inputW2Spouse457,
+        elements.inputW2SpousePretax,
+        elements.inputW2SpousePostTax
+      ];
+      w2InputElements.forEach(input => {
+        if (input) {
+          input.addEventListener('input', calculate);
+          input.addEventListener('change', calculate);
+        }
+      });
+
+      // Synchronize spouse container in W-2 panel
+      elements.checkIncludeSpouse.addEventListener('change', () => {
+        if (elements.checkIncludeSpouse.checked) {
+          if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.remove('hidden');
+        } else {
+          if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
+        }
+      });
+
       // View Switcher Buttons
       elements.viewTabBoth.addEventListener('click', () => setViewMode('both'));
       elements.viewTabBiweekly.addEventListener('click', () => setViewMode('biweekly'));
@@ -2425,7 +2999,12 @@
         elements.checkIncludeSpouse.checked = false;
         elements.spousePensionSystemSelect.value = 'calpers';
         elements.selectFilingStatus.value = 'single';
+        if (elements.selectCaFilingStatus) elements.selectCaFilingStatus.value = 'same_as_fed';
         elements.inputChildren.value = '1';
+        if (elements.inputItemizedPropertyTax) elements.inputItemizedPropertyTax.value = '12000';
+        if (elements.inputItemizedCharity) elements.inputItemizedCharity.value = '3000';
+        if (elements.inputItemizedMortgageInterest) elements.inputItemizedMortgageInterest.value = '26000';
+        if (elements.inputItemizedMortgageBalance) elements.inputItemizedMortgageBalance.value = '850000';
         elements.checkAge50CatchUp.checked = false;
         elements.spouseCheckAge50CatchUp.checked = false;
         state.isPercent457 = true;
