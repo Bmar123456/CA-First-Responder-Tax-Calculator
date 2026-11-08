@@ -15,12 +15,17 @@
   <meta name="application-name" content="Responder Tax">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" href="icon.png">
-  <link rel="icon" type="image/png" href="icon.png">
-  <!-- Configure Tailwind to use .dark class BEFORE loading the Play CDN script -->
+  <!-- Comprehensive Apple Touch & PWA Icon Links -->
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/icon.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon.png">
+  <link rel="shortcut icon" href="/icon.png">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = {
+    tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
@@ -41,68 +46,116 @@
       }
     };
   </script>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
-    /* Mobile Safari Touch & Input Optimization */
-    html {
+
+    /* Strict Mobile Viewport Horizontal Lock (Prevents all left/right scrolling) */
+    html, body {
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
+      width: 100% !important;
       -webkit-tap-highlight-color: transparent;
       scroll-behavior: smooth;
     }
+    main {
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
+      width: 100% !important;
+    }
+
+    /* Mobile Safari Touch & 16px Font Optimization (Prevents iOS Auto-Zoom) */
     @media (max-width: 640px) {
-      /* Fix iOS Safari Auto-Zoom Bug (Inputs must be at least 16px to prevent viewport zoom) */
       input, select, textarea {
         font-size: 16px !important;
       }
-      /* Comfortable thumb touch targets */
       select, input[type=number], input[type=text] {
         min-height: 42px;
       }
     }
+
     /* Safe-area insets for notched iPhones */
-    .safe-top {
-      padding-top: env(safe-area-inset-top, 0);
+    .safe-top { padding-top: env(safe-area-inset-top, 0); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
+
+    /* 100% Rock-Solid Day Mode (Light Mode) Enforcement */
+    html:not(.dark),
+    html:not(.dark) body {
+      background-color: #f8fafc !important; /* slate-50 */
+      color: #0f172a !important; /* slate-900 */
+      color-scheme: light !important;
     }
-    .safe-bottom {
-      padding-bottom: env(safe-area-inset-bottom, 0);
+    html:not(.dark) header,
+    html:not(.dark) footer,
+    html:not(.dark) .bg-white {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+    }
+    html:not(.dark) .bg-slate-50,
+    html:not(.dark) .bg-slate-50\/30,
+    html:not(.dark) .bg-slate-50\/40,
+    html:not(.dark) .bg-slate-50\/50,
+    html:not(.dark) .bg-slate-50\/60,
+    html:not(.dark) .bg-slate-50\/70,
+    html:not(.dark) .bg-slate-100 {
+      background-color: #f1f5f9 !important; /* slate-100 */
+    }
+    html:not(.dark) .border-slate-100,
+    html:not(.dark) .border-slate-200,
+    html:not(.dark) .border-slate-300 {
+      border-color: #e2e8f0 !important;
+    }
+    html:not(.dark) input[type=number],
+    html:not(.dark) input[type=text],
+    html:not(.dark) select {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    html:not(.dark) .text-slate-900,
+    html:not(.dark) .text-slate-800,
+    html:not(.dark) .text-slate-700 {
+      color: #0f172a !important;
+    }
+    html:not(.dark) .text-slate-600,
+    html:not(.dark) .text-slate-500 {
+      color: #64748b !important;
     }
 
-    /* Total Dark Mode Consistency Enforcements */
+    /* 100% Rock-Solid Night Mode (Dark Mode) Enforcement */
     html.dark {
-      color-scheme: dark;
+      color-scheme: dark !important;
     }
     html.dark body {
-      background-color: #020617 !important;
-      color: #f8fafc !important;
+      background-color: #020617 !important; /* slate-950 */
+      color: #f8fafc !important; /* slate-50 */
     }
     html.dark header,
-    html.dark footer {
-      background-color: #0f172a !important;
-      border-color: #1e293b !important;
-    }
+    html.dark footer,
     html.dark .bg-white {
-      background-color: #0f172a !important;
-      color: #f8fafc;
+      background-color: #0f172a !important; /* slate-900 */
+      color: #f8fafc !important;
     }
     html.dark .bg-slate-50,
+    html.dark .bg-slate-50\/30,
+    html.dark .bg-slate-50\/40,
     html.dark .bg-slate-50\/50,
     html.dark .bg-slate-50\/60,
     html.dark .bg-slate-50\/70,
     html.dark .bg-slate-100 {
-      background-color: #1e293b !important;
+      background-color: #1e293b !important; /* slate-800 */
     }
     html.dark .border-slate-100,
     html.dark .border-slate-200,
     html.dark .border-slate-300 {
-      border-color: #334155 !important;
+      border-color: #334155 !important; /* slate-700 */
     }
     html.dark input[type=number],
     html.dark input[type=text],
     html.dark select {
-      background-color: #1e293b !important;
+      background-color: #1e293b !important; /* slate-800 */
       color: #ffffff !important;
       border-color: #334155 !important;
     }
@@ -196,8 +249,8 @@
         <!-- Controls Toolbar: View Switcher, Day/Night Toggle, Print, Reset -->
         <div class="flex items-center space-x-1 sm:space-x-2 shrink-0">
           
-          <!-- View Switcher (Split View / Biweekly Check / Annual Return) -->
-          <div class="inline-flex p-0.5 sm:p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium">
+          <!-- View Switcher: Inline on desktop, preserves exact IDs -->
+          <div class="hidden sm:inline-flex p-0.5 sm:p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium">
             <button id="viewTabBoth" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold">
               Split View
             </button>
@@ -242,6 +295,21 @@
       </div>
     </div>
   </header>
+
+  <!-- Dedicated Mobile View Switcher (Full-width, zero horizontal overflow) -->
+  <div class="sm:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 py-2 transition-colors">
+    <div class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-center font-medium">
+      <button id="mobileViewBoth" type="button" class="py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs">
+        Split View
+      </button>
+      <button id="mobileViewBiweekly" type="button" class="py-1.5 rounded-lg text-slate-600 dark:text-slate-400">
+        Biweekly
+      </button>
+      <button id="mobileViewAnnual" type="button" class="py-1.5 rounded-lg text-slate-600 dark:text-slate-400">
+        Annual
+      </button>
+    </div>
+  </div>
 
   <!-- Quick Profiles Sub-Header -->
   <div class="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 py-2 px-3 sm:px-6 lg:px-8 text-xs no-print transition-colors duration-200">
@@ -2789,6 +2857,14 @@
         ? 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold'
         : 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
 
+      // Sync mobile view switcher buttons
+      const btnMobBoth = document.getElementById('mobileViewBoth');
+      const btnMobBiweekly = document.getElementById('mobileViewBiweekly');
+      const btnMobAnnual = document.getElementById('mobileViewAnnual');
+      if (btnMobBoth) btnMobBoth.className = (mode === 'both') ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-400';
+      if (btnMobBiweekly) btnMobBiweekly.className = (mode === 'biweekly') ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-400';
+      if (btnMobAnnual) btnMobAnnual.className = (mode === 'annual') ? 'py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'py-1.5 rounded-lg text-slate-600 dark:text-slate-400';
+
       if (mode === 'biweekly') {
         elements.biweeklySection.classList.remove('hidden');
         elements.annualSection.classList.add('hidden');
@@ -2817,9 +2893,8 @@
 
       if (savedTheme) {
         setTheme(savedTheme === 'dark');
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setTheme(true);
       } else {
+        // Default strictly to Day Mode so users get a clean, bright view on initial visit
         setTheme(false);
       }
 
@@ -3104,6 +3179,13 @@
       elements.viewTabBoth.addEventListener('click', () => setViewMode('both'));
       elements.viewTabBiweekly.addEventListener('click', () => setViewMode('biweekly'));
       elements.viewTabAnnual.addEventListener('click', () => setViewMode('annual'));
+
+      const btnMobBoth = document.getElementById('mobileViewBoth');
+      const btnMobBiweekly = document.getElementById('mobileViewBiweekly');
+      const btnMobAnnual = document.getElementById('mobileViewAnnual');
+      if (btnMobBoth) btnMobBoth.addEventListener('click', () => setViewMode('both'));
+      if (btnMobBiweekly) btnMobBiweekly.addEventListener('click', () => setViewMode('biweekly'));
+      if (btnMobAnnual) btnMobAnnual.addEventListener('click', () => setViewMode('annual'));
 
       // Quick Role Presets
       elements.presetPolice.addEventListener('click', () => {
