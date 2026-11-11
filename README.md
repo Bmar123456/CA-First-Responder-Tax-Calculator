@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en" class="light">
 <head>
   <meta charset="UTF-8">
@@ -1131,7 +1130,6 @@
 
           <!-- Collapsible Hero Content (Can be minimized in Annual Return view) -->
           <div id="heroCardBody" class="p-4 sm:p-5 space-y-4 sm:space-y-5 relative z-10">
-            <div class="relative z-10 space-y-4 sm:space-y-5">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 sm:pb-4">
               <div>
                 <span id="heroSubTitleLabel" class="text-[11px] sm:text-xs uppercase tracking-wider text-sky-700 dark:text-sky-400 font-bold">
@@ -1879,11 +1877,11 @@
   </div>
 
   <!-- Clean Minimalist Footer & Legal Disclaimer -->
-  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-xs text-slate-500 dark:text-slate-400 no-print transition-colors duration-200">
+  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pt-6 pb-24 sm:pb-8 text-xs text-slate-500 dark:text-slate-400 no-print transition-colors duration-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
       <!-- Prominent Disclaimer Box -->
       <div class="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/10 border border-amber-500/30 dark:border-amber-500/30 flex items-start gap-3">
-        <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" width="20" height="20" style="min-width: 20px; min-height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
         </svg>
         <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs">
