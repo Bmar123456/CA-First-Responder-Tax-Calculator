@@ -1,5 +1,3 @@
-# CA-First-Responder-Tax-Calculator
-2026 California first responder tax &amp; take-home calculator. Models biweekly &amp; annual pay, pension systems (CalPERS, LAFPP, OCERS, LACERA, custom), 1.5x overtime exemption rules, 457(b) deferrals, and dual-income households.
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
@@ -211,6 +209,7 @@
       header, .no-print { display: none !important; }
       body { background: white !important; color: black !important; }
       .print-shadow-none { box-shadow: none !important; border-color: #cbd5e1 !important; }
+      #biweeklySection, #annualSection, #biweeklyContent, #annualContent, #box1Content, #box2Content, #box3Content, #heroCardBody { display: block !important; }
     }
   </style>
 </head>
@@ -242,14 +241,14 @@
           
           <!-- View Switcher: Inline on desktop, preserves exact IDs -->
           <div class="inline-flex p-0.5 sm:p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium">
-            <button id="viewTabBoth" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold">
-              Split View
-            </button>
-            <button id="viewTabBiweekly" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+            <button id="viewTabBiweekly" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold">
               Biweekly Check
             </button>
             <button id="viewTabAnnual" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
               Annual Return
+            </button>
+            <button id="viewTabBoth" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+              Split View
             </button>
           </div>
 
@@ -339,8 +338,10 @@
           <!-- Primary Pension Dropdown with "Other / Custom" (USER SPEC) -->
           <div class="relative max-w-2xl">
             <select id="pensionSystemSelect" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-800 transition-all appearance-none cursor-pointer shadow-2xs">
-              <option value="calpers" selected>CalPERS Safety - 2.7%@57 (13.75% Base Only - No Social Security)</option>
-              <option value="calpers_misc_2at62">CalPERS Misc / Civilian - 2%@62 (8.00% Base Only + Social Security)</option>
+              <option value="calpers_pepra_safety" selected>CalPERS Safety - 2.7% @ 57 (PEPRA)</option>
+              <option value="calpers_classic_safety">CalPERS Safety - 3% @ 50 (Classic - 9.00%)</option>
+              <option value="calpers_pepra_misc">CalPERS Misc - 2% @ 62 (PEPRA)</option>
+              <option value="calpers_classic_misc">CalPERS Misc - 2.7% @ 55 (Classic - 8.00%)</option>
               <option value="lafpp_tier6">LAFPP Tier 6 - LAPD / LAFD (11.00% Base Only - No Social Security)</option>
               <option value="ocers_plan_v">OCERS Plan V - Safety 2.7%@57 (14.61% Base Only - No Social Security)</option>
               <option value="ocers_plan_u">OCERS Plan U - General 2.5%@67 (10.50% Base Only + Social Security)</option>
@@ -349,6 +350,31 @@
               <option value="social_security">Social Security Only (FICA 6.2% up to $184,500 - No Pension)</option>
               <option value="other">Other / Custom Pension System (Set Your Own Numbers)</option>
             </select>
+
+            <!-- Primary PEPRA Agency Search Container (Visible when PEPRA Safety or Misc is selected) -->
+            <div id="primaryPepraSearchContainer" class="mt-3 p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/10 border border-amber-500/30 space-y-2 text-xs">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <span class="font-bold text-amber-950 dark:text-amber-200">
+                  CalPERS PEPRA Member Agency Contribution Search (FY 2026-27):
+                </span>
+                <span class="text-[10px] text-amber-800 dark:text-amber-300 font-mono font-semibold">Official CalPERS Actuarial Data</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-start">
+                <div class="sm:col-span-2 relative">
+                  <label for="inputPepraAgencySearch" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">Search Your City, County, or District</label>
+                  <input type="text" id="inputPepraAgencySearch" autocomplete="off" placeholder="Type city or agency (e.g. Irvine, Newport Beach, Anaheim)..." class="w-full px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500">
+                  <!-- Live search suggestions dropdown -->
+                  <div id="pepraSearchResults" class="hidden absolute top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl shadow-2xl z-50 divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
+                </div>
+                <div>
+                  <label for="inputPepraCustomRate" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">Applied Rate (%)</label>
+                  <input type="number" id="inputPepraCustomRate" value="0.00" step="0.25" min="0" max="30" class="w-full px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-amber-700 dark:text-amber-400 font-mono">
+                </div>
+              </div>
+              <div id="pepraAgencySelectionBadge" class="text-[11px] text-amber-900 dark:text-amber-200 font-medium">
+                * Type your city or agency above to automatically apply your FY 2026-27 rate (deducted from base pay only).
+              </div>
+            </div>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 dark:text-slate-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
@@ -398,25 +424,33 @@
 
         <!-- Card 1: Hourly Rate, Overtime & Biweekly Hours -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors duration-200">
-          <div class="px-4 sm:px-5 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center">
-              <span class="w-2 h-2 rounded-full bg-sky-500 mr-2"></span>
-              1. Primary Pay Rates & Hours
-            </h2>
-            <span class="text-[11px] text-slate-400 dark:text-slate-400 font-mono">Biweekly (26/yr)</span>
-          </div>
+          <button type="button" id="btnToggleBox1" class="w-full px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-sky-500 shrink-0"></span>
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                1. Primary Pay Rates &amp; Hours
+              </h2>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] text-slate-400 dark:text-slate-400 font-mono">Biweekly (26/yr)</span>
+              <svg id="chevronBox1" class="w-4 h-4 text-slate-400 transition-transform duration-200 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </button>
 
-          <div class="p-4 sm:p-5 space-y-4">
+          <div id="box1Content" class="p-4 sm:p-5 space-y-4">
             <!-- Hourly Rate & OT Display -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label for="hourlyRateInput" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Hourly Rate ($)
+                  Hourly Rate ($) <span class="text-[11px] font-normal text-slate-500 dark:text-slate-400">(Include POST &amp; Specialty)</span>
                 </label>
                 <div class="relative">
                   <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-400 text-sm">$</span>
                   <input type="number" id="hourlyRateInput" value="62.50" step="0.25" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all">
                 </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                  * Include regular base rate plus all pensionable specialty pay (POST certificate, bilingual, FTO, and collateral/incentive differentials).
+                </p>
                 <div class="pt-2">
                   <input type="range" id="hourlyRateSlider" min="20" max="150" step="0.5" value="62.5" aria-label="Hourly rate slider">
                 </div>
@@ -477,20 +511,26 @@
                 <span id="calcTotalGross" class="text-sky-700 dark:text-sky-400 text-base font-mono">$6,125.00</span>
               </div>
             </div>
-          </div>
-        </div>
+          </div><!-- end box1Content -->
+        </div><!-- end Box 1 card -->
 
-        <!-- Card 2: Pre-Tax Deductions (Pension, 457b, Pre-Tax Deductions) -->
+        <!-- Card 2: Pre-Tax Deductions & Qualified Spouse (ACCORDION BUTTON - CLOSED BY DEFAULT) -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors duration-200">
-          <div class="px-4 sm:px-5 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
-              2. Primary Pre-Tax & Pension
-            </h2>
-            <span class="text-[11px] text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded font-medium border border-emerald-200 dark:border-emerald-800/70">Reduces Tax Base</span>
-          </div>
+          <button type="button" id="btnToggleBox2" class="w-full px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                2. Pre-Tax Deductions &amp; Pension
+              </h2>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Tap to Open</span>
+              <svg id="chevronBox2" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </button>
 
-          <div class="p-4 sm:p-5 space-y-4">
+          <!-- Default CLOSED per user request -->
+          <div id="box2Content" class="hidden p-4 sm:p-5 space-y-4">
 
             <!-- Primary Pension Contribution Box -->
             <div id="calpersContainer" class="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 space-y-1.5">
@@ -541,9 +581,9 @@
               <!-- Input row -->
               <div class="flex items-center space-x-3">
                 <div class="relative flex-1">
-                  <span id="unit457Prefix" class="hidden absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">$</span>
+                  <span id="unit457Prefix" class="hidden absolute inset-y-0 left-0 pl-3 flex items-center text-slate-600 dark:text-slate-300 font-bold text-sm pointer-events-none z-10">$</span>
                   <input type="number" id="input457Value" value="8" step="0.5" min="0" class="w-full pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all">
-                  <span id="unit457Suffix" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 text-sm">%</span>
+                  <span id="unit457Suffix" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 text-sm pointer-events-none">%</span>
                 </div>
                 <div class="text-right whitespace-nowrap">
                   <span class="text-xs text-slate-500 dark:text-slate-400 block">Biweekly 457:</span>
@@ -587,43 +627,44 @@
                 Pre-tax Health / Dental / Vision (Section 125 cafeteria plan) & Healthcare FSA. Reduces Fed, State, and Medicare.
               </p>
             </div>
-          </div>
-        </div>
 
-        <!-- Qualified Spousal Income Section (NOW INCLUDES "OTHER / CUSTOM") -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors duration-200">
-          <div class="p-4 sm:p-5">
-            <div class="flex items-start justify-between">
-              <div class="flex items-start space-x-3">
-                <div class="flex items-center h-5 mt-0.5">
-                  <input type="checkbox" id="checkIncludeSpouse" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 dark:border-slate-700 dark:bg-slate-800 cursor-pointer">
-                </div>
-                <div>
-                  <label for="checkIncludeSpouse" class="text-sm font-bold text-slate-900 dark:text-white cursor-pointer flex items-center">
+          </div><!-- end box2Content -->
+        </div><!-- end Box 2 card -->
+
+        <!-- Standalone Card: Qualified Spouse Income Toggle & Details (Between Box 2 and Box 3) -->
+        <div id="cardSpouseModule" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors duration-200">
+          <div class="p-4 sm:p-4.5 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors">
+            <div class="flex items-start space-x-3">
+              <input type="checkbox" id="checkIncludeSpouse" class="w-4 h-4 mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700 dark:bg-slate-800 cursor-pointer">
+              <div class="flex-1">
+                <label for="checkIncludeSpouse" class="text-xs font-bold text-slate-900 dark:text-white cursor-pointer flex items-center justify-between">
+                  <span class="flex items-center">
                     Include Qualified Spouse Income
-                    <span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                      Family Total
+                    <span class="ml-2 inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                      MFJ
                     </span>
-                  </label>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Composite total household income with spouse wages, CalPERS, LAFPP, OCERS, LACERA, or custom pension.
-                  </p>
-                </div>
+                  </span>
+                </label>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">
+                  Add spouse earnings, retirement, and deductions to model joint take-home and combined tax brackets.
+                </p>
               </div>
             </div>
+          </div>
 
-            <!-- Collapsible Spousal Income Details Panel -->
-            <div id="spousePanelContainer" class="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
-              
-              <!-- Spousal Pension Dropdown (Includes "Other / Custom") -->
+          <!-- Collapsible Spousal Income Details Panel (CLEAN WHITE CARD WITH CRISP BORDERS) -->
+          <div id="spousePanelContainer" class="hidden p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 space-y-4 bg-white dark:bg-slate-900">
+            <!-- Spousal Pension Dropdown (Includes "Other / Custom") -->
               <div>
                 <label for="spousePensionSystemSelect" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Spouse Pension / Retirement System (Drop Down)
                 </label>
                 <div class="relative">
                   <select id="spousePensionSystemSelect" class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all cursor-pointer">
-                    <option value="calpers" selected>CalPERS Safety - 2.7%@57 (13.75% Base Only - No Social Security)</option>
-                    <option value="calpers_misc_2at62">CalPERS Misc / Civilian - 2%@62 (8.00% Base Only + Social Security)</option>
+                    <option value="calpers_pepra_safety" selected>CalPERS Safety - 2.7% @ 57 (PEPRA)</option>
+                    <option value="calpers_classic_safety">CalPERS Safety - 3% @ 50 (Classic - 9.00%)</option>
+                    <option value="calpers_pepra_misc">CalPERS Misc - 2% @ 62 (PEPRA)</option>
+                    <option value="calpers_classic_misc">CalPERS Misc - 2.7% @ 55 (Classic - 8.00%)</option>
                     <option value="lafpp_tier6">LAFPP Tier 6 - LAPD / LAFD (11.00% Base Only - No Social Security)</option>
                     <option value="ocers_plan_v">OCERS Plan V - Safety 2.7%@57 (14.61% Base Only - No Social Security)</option>
                     <option value="ocers_plan_u">OCERS Plan U - General 2.5%@67 (10.50% Base Only + Social Security)</option>
@@ -632,6 +673,24 @@
                     <option value="social_security">Social Security Only (FICA 6.2% up to $184,500 - No Pension)</option>
                     <option value="other">Other / Custom Pension System (Set Your Own Numbers)</option>
                   </select>
+
+                  <!-- Spouse PEPRA Agency Search Container -->
+                  <div id="spousePepraSearchContainer" class="mt-2.5 p-3 rounded-xl bg-amber-500/10 dark:bg-amber-500/10 border border-amber-500/30 space-y-2 text-xs">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <span class="font-bold text-amber-950 dark:text-amber-200">
+                        Spouse Agency Search (CalPERS PEPRA):
+                      </span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-start">
+                      <div class="sm:col-span-2 relative">
+                        <input type="text" id="spouseInputPepraAgencySearch" autocomplete="off" placeholder="Search spouse employer (e.g. Irvine, Anaheim)..." class="w-full px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500">
+                        <div id="spousePepraSearchResults" class="hidden absolute top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl shadow-2xl z-50 divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
+                      </div>
+                      <div>
+                        <input type="number" id="spouseInputPepraCustomRate" value="0.00" step="0.25" min="0" max="30" class="w-full px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-amber-700 dark:text-amber-400 font-mono">
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Spouse Custom Pension Configuration (Shown when "Other" is selected) -->
@@ -664,12 +723,15 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label for="spouseHourlyRateInput" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Spouse Hourly Rate ($)
+                    Spouse Hourly Rate ($) <span class="text-[11px] font-normal text-slate-500 dark:text-slate-400">(Include Specialty)</span>
                   </label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">$</span>
                     <input type="number" id="spouseHourlyRateInput" value="50.00" step="0.25" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500">
                   </div>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                    * Include regular base plus any specialty, bilingual, or incentive pay.
+                  </p>
                   <div class="pt-2">
                     <input type="range" id="spouseHourlyRateSlider" min="15" max="150" step="0.5" value="50" aria-label="Spouse hourly rate slider">
                   </div>
@@ -806,22 +868,28 @@
                   </div>
                 </div>
               </div>
-
-            </div>
           </div>
-        </div>
+        </div><!-- end Standalone Card -->
 
-        <!-- Card 3: Post-Tax Deductions, Alimony & Filing Status -->
+
+
+        <!-- Card 3: Taxable Deductions & Filing Status (NOW AN ACCORDION BUTTON) -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors duration-200">
-          <div class="px-4 sm:px-5 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center">
-              <span class="w-2 h-2 rounded-full bg-violet-500 mr-2"></span>
-              3. Taxable Deductions & Filing Status
-            </h2>
-            <span class="text-[11px] text-slate-400 dark:text-slate-400 font-mono">2026 Tax Rules</span>
-          </div>
+          <button type="button" id="btnToggleBox3" class="w-full px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-violet-500 shrink-0"></span>
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                3. Taxable Deductions &amp; Filing Status
+              </h2>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">2026 Rules</span>
+              <svg id="chevronBox3" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </button>
 
-          <div class="p-4 sm:p-5 space-y-4">
+          <!-- Default CLOSED per user request -->
+          <div id="box3Content" class="hidden p-4 sm:p-5 space-y-4">
             
             <!-- Taxable Above-the-Line Deductions (ALIMONY PAID) -->
             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1.5">
@@ -853,6 +921,25 @@
               </div>
               <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                 Union / Association Dues (PORAC, IAFF, local union), legal defense fund, Roth 457(b), supplemental life.
+              </p>
+            </div>
+
+            <!-- Additional Federal Withholding (IRS Form W-4 Step 4c) -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="inputAdditionalFedWithholding" class="block text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  Additional Federal Tax Withholding ($ per paycheck)
+                </label>
+                <span class="text-[10px] text-sky-700 dark:text-sky-300 font-medium bg-sky-50 dark:bg-sky-950 px-1.5 py-0.2 rounded border border-sky-200 dark:border-sky-800">
+                  IRS W-4 Step 4(c)
+                </span>
+              </div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm font-bold">$</span>
+                <input type="number" id="inputAdditionalFedWithholding" value="0.00" step="10" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all">
+              </div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                Optional extra tax withheld from Form W-4 Step 4(c). Directly increases biweekly and annual federal income tax withholdings.
               </p>
             </div>
 
@@ -925,17 +1012,17 @@
 
               <!-- Itemized Line Inputs Grid -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <!-- Real Estate & Property Taxes (SALT) -->
+                <!-- Real Estate / Property Taxes & State Income Tax (SALT) -->
                 <div class="space-y-1">
-                  <label for="inputItemizedPropertyTax" class="font-semibold text-slate-700 dark:text-slate-200 text-[11px] block">
-                    Real Estate / Property Taxes ($/yr)
+                  <label for="inputItemizedPropertyTax" class="font-semibold text-slate-800 dark:text-slate-200 text-[11px] block">
+                    Real Estate / Property Tax &amp; State Income Tax (SALT) ($/yr)
                   </label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400">$</span>
                     <input type="number" id="inputItemizedPropertyTax" value="12000" step="500" min="0" class="w-full pl-6 pr-2 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
                   </div>
                   <p class="text-[10px] text-slate-500 dark:text-slate-400">
-                    Fed SALT capped at $40.4k (OBBB). CA allows 100% with no cap.
+                    Under 2026 One Big Beautiful Bill provisions, real estate/property taxes and CA state income taxes combine under the federal SALT deduction (capped at $40,400, or $20,200 for MFS). On California Form 540 Schedule CA, state income taxes are excluded, but real estate/property taxes remain 100% deductible with NO dollar cap.
                   </p>
                 </div>
 
@@ -1022,14 +1109,32 @@
       <div class="lg:col-span-7 space-y-5 sm:space-y-6">
 
         <!-- Main KPI Summary Card: Net Take-Home & Composite Tax -->
-        <div id="heroCardContainer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm dark:shadow-none text-slate-900 dark:text-white relative overflow-hidden print-shadow-none transition-colors duration-200">
-          
+        <div id="heroCardContainer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs overflow-hidden print-shadow-none transition-colors duration-200">
           <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-sky-500/5 dark:bg-sky-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-          <div class="relative z-10 space-y-4 sm:space-y-5">
+          <!-- Clickable Header Toggle to Minimize Net Take Home Paycheck -->
+          <button type="button" id="btnToggleHero" class="w-full px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+              <h3 id="heroTitleLabel" class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                Net Take-Home Paycheck
+              </h3>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="text-right">
+                <span id="heroNetBiweeklyHeader" class="text-sm sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">$3,447.21</span>
+                <span class="text-[10px] text-slate-400 font-medium">/ biweekly</span>
+              </div>
+              <svg id="chevronHero" class="w-4 h-4 text-slate-400 transition-transform duration-200 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </button>
+
+          <!-- Collapsible Hero Content (Can be minimized in Annual Return view) -->
+          <div id="heroCardBody" class="p-4 sm:p-5 space-y-4 sm:space-y-5 relative z-10">
+            <div class="relative z-10 space-y-4 sm:space-y-5">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 sm:pb-4">
               <div>
-                <span id="heroTitleLabel" class="text-[11px] sm:text-xs uppercase tracking-wider text-sky-700 dark:text-sky-400 font-bold">
+                <span id="heroSubTitleLabel" class="text-[11px] sm:text-xs uppercase tracking-wider text-sky-700 dark:text-sky-400 font-bold">
                   Net Take-Home Paycheck
                 </span>
                 <div class="flex items-baseline space-x-2 mt-0.5 sm:mt-1">
@@ -1095,20 +1200,26 @@
                 <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-xs bg-rose-400 mr-1.5 shrink-0"></span>Deductions (<span id="pctOther">5.3%</span>)</span>
               </div>
             </div>
-          </div>
-        </div>
+          </div><!-- end heroCardBody -->
+        </div><!-- end heroCardContainer -->
 
-        <!-- Section A: Biweekly Paycheck Breakdown -->
+        <!-- Section A: Biweekly Paycheck Breakdown (ACCORDION - MINIMIZED BY DEFAULT) -->
         <div id="biweeklySection" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden print-shadow-none transition-colors duration-200">
-          <div class="px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
-            <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center">
-              <svg class="w-4 h-4 mr-2 text-sky-600 dark:text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              Biweekly Paycheck Breakdown (Line-by-Line)
-            </h3>
-            <span id="biweeklyBadgeLabel" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Biweekly Check</span>
-          </div>
+          <button type="button" id="btnToggleBiweekly" class="w-full px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 mr-1 text-sky-600 dark:text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                Biweekly Paycheck Breakdown (Line-by-Line)
+              </h3>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span id="biweeklyBadgeLabel" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Biweekly Check</span>
+              <svg id="chevronBiweekly" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </button>
 
-          <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
+          <!-- Minimized / Closed by default -->
+          <div id="biweeklyContent" class="hidden divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
             
             <!-- 1. Gross Earnings -->
             <div class="p-3.5 sm:p-4 bg-slate-50/30 dark:bg-slate-800/20">
@@ -1180,6 +1291,10 @@
                   <span class="text-slate-600 dark:text-slate-300">Federal Income Tax Withholding (2026 Brackets)</span>
                   <span id="rowFedTax" class="font-semibold text-slate-900 dark:text-white font-mono">-$689.42</span>
                 </div>
+                <div id="rowAddlFedWithholdingItem" class="hidden flex justify-between items-center text-sky-700 dark:text-sky-300">
+                  <span>Additional Federal Withholding (W-4 Step 4c)</span>
+                  <span id="rowAddlFedWithholding" class="font-semibold font-mono">-$0.00</span>
+                </div>
                 <div class="flex justify-between items-center">
                   <span class="text-slate-600 dark:text-slate-300">California State Income Tax (2026 Brackets)</span>
                   <span id="rowCaTax" class="font-semibold text-slate-900 dark:text-white font-mono">-$399.23</span>
@@ -1226,18 +1341,26 @@
               </span>
               <span id="rowNetPay" class="text-emerald-700 dark:text-emerald-400 text-lg sm:text-xl font-mono font-black">$3,447.21</span>
             </div>
-          </div>
-        </div>
+          </div><!-- end biweeklyContent -->
+        </div><!-- end biweeklySection -->
 
-        <!-- Section B: Annual Tax Estimate & Line Items -->
-        <div id="annualSection" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden print-shadow-none transition-colors duration-200">
-          <div class="px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
-            <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center">
-              <svg class="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              Annual 2026 Tax Return & Household Obligation Estimate
-            </h3>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">Form 1040 & CA 540</span>
-          </div>
+        <!-- Section B: Annual Tax Estimate & Line Items (ACCORDION - MINIMIZED BY DEFAULT) -->
+        <div id="annualSection" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden print-shadow-none transition-colors duration-200">
+          <button type="button" id="btnToggleAnnual" class="w-full px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 mr-1 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                Annual 2026 Tax Return &amp; Household Obligation Estimate
+              </h3>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">Form 1040 &amp; CA 540</span>
+              <svg id="chevronAnnual" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </button>
+
+          <!-- Minimized / Closed by default -->
+          <div id="annualContent" class="hidden">
 
           <!-- Annual Input Mode Banner: Visible ONLY when viewing Annual Return (USER SPEC) -->
           <div id="annualW2OptionBanner" class="hidden px-4 sm:px-5 py-3.5 bg-indigo-50/70 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900/60 transition-colors">
@@ -1254,17 +1377,17 @@
 
               <!-- Mode Selection Buttons -->
               <div class="inline-flex p-0.5 bg-white dark:bg-slate-800 rounded-xl border border-indigo-200 dark:border-indigo-800 text-xs font-semibold shrink-0 shadow-2xs">
-                <button id="btnAnnualModeProjected" type="button" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold">
-                  Standard Projected (26 Checks)
-                </button>
-                <button id="btnAnnualModeW2" type="button" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <button id="btnAnnualModeW2" type="button" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold">
                   Direct W-2 / Actual Numbers
+                </button>
+                <button id="btnAnnualModeProjected" type="button" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                  Standard Projected (26 Checks)
                 </button>
               </div>
             </div>
 
             <!-- Direct W-2 / Actual Numbers Form (Visible when Direct W-2 mode is toggled) -->
-            <div id="annualW2InputsContainer" class="hidden mt-3 pt-3 border-t border-indigo-200/70 dark:border-indigo-800/70 space-y-3">
+            <div id="annualW2InputsContainer" class="mt-3 pt-3 border-t border-indigo-200/70 dark:border-indigo-800/70 space-y-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div class="text-[11px] text-indigo-900 dark:text-indigo-200 font-medium">
                   <strong>W-2 Year-End Actuals:</strong> Enter your year-end box totals below to account for pay raises, step bumps, retro pay, and specialty differentials.
@@ -1341,6 +1464,24 @@
               </div>
 
               <!-- Spouse Earner W-2 Input Fields (Conditional on checkIncludeSpouse) -->
+                            <!-- Checkbox to Include Qualified Spouse W-2 Information -->
+              <div class="p-3 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 flex items-start space-x-3">
+                <input type="checkbox" id="checkW2IncludeSpouse" class="w-4 h-4 mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700 dark:bg-slate-800 cursor-pointer">
+                <div class="flex-1">
+                  <label for="checkW2IncludeSpouse" class="text-xs font-bold text-slate-900 dark:text-white cursor-pointer flex items-center justify-between">
+                    <span class="flex items-center">
+                      Include Qualified Spouse W-2 Information
+                      <span class="ml-2 inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800">
+                        MFJ
+                      </span>
+                    </span>
+                  </label>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">
+                    Check this box to input your spouse's W-2 earnings, pension, and retirement deferrals for joint filing.
+                  </p>
+                </div>
+              </div>
+
               <div id="w2SpouseContainer" class="hidden p-3 bg-white dark:bg-slate-900 rounded-xl border border-indigo-200/80 dark:border-indigo-800/80 space-y-2">
                 <span class="text-xs font-bold text-slate-900 dark:text-white block">Qualified Spouse Year-End Totals</span>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -1551,7 +1692,132 @@
             </div>
 
           </div>
+          </div><!-- end annualContent -->
+        </div><!-- end annualSection -->
+
+        <!-- Section C: Annual Tax Settlement & Refund Estimator (ONLY IN ANNUAL RETURN VIEW, MINIMIZED BY DEFAULT) -->
+        <div id="taxSettlementSection" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden print-shadow-none transition-colors duration-200">
+          <button type="button" id="btnToggleTaxSettlement" class="w-full px-4 sm:px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 mr-1 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                Tax Refund &amp; Outstanding Balance Estimator
+              </h3>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span id="settlementBadgeLabel" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">Refund / Balance Due</span>
+              <svg id="chevronTaxSettlement" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </button>
+
+          <!-- Minimized / Closed by default -->
+          <div id="taxSettlementContent" class="hidden p-4 sm:p-5 space-y-4 text-xs sm:text-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <p class="text-slate-600 dark:text-slate-400 text-xs">
+                Compare your actual or projected annual tax withholdings from paychecks/W-2 against calculated liabilities.
+              </p>
+              <button id="btnSettlementAutoFill" type="button" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-colors shrink-0">
+                Pre-Fill Withholdings from Pace
+              </button>
+            </div>
+
+            <!-- Withholding Inputs Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div class="space-y-1">
+                <label for="inputWithheldFed" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Total Federal Income Tax Withheld ($)
+                </label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">$</span>
+                  <input type="number" id="inputWithheldFed" value="18000" step="250" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 font-mono">
+                </div>
+                <span class="text-[10px] text-slate-400 block">From annual paystubs or Form W-2 Box 2</span>
+              </div>
+
+              <div class="space-y-1">
+                <label for="inputWithheldCa" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Total California State Tax Withheld ($)
+                </label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">$</span>
+                  <input type="number" id="inputWithheldCa" value="7500" step="250" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 font-mono">
+                </div>
+                <span class="text-[10px] text-slate-400 block">From annual paystubs or Form W-2 Box 17</span>
+              </div>
+            </div>
+
+            <!-- Settlement Cards: Federal, CA, and Net Household -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+              
+              <!-- Federal Settlement Box -->
+              <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-2">
+                <div class="flex justify-between items-center pb-1.5 border-b border-slate-200 dark:border-slate-700">
+                  <span class="font-bold text-slate-900 dark:text-white">Federal Tax Settlement</span>
+                  <span id="settlementFedBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded border">Estimated</span>
+                </div>
+                <div class="space-y-1 text-slate-600 dark:text-slate-300">
+                  <div class="flex justify-between">
+                    <span>Federal Tax Burden (IRS 1040):</span>
+                    <span id="settlementFedLiability" class="font-mono font-semibold text-slate-900 dark:text-white">$16,470</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Federal Tax Withheld:</span>
+                    <span id="settlementFedWithheld" class="font-mono font-semibold text-slate-900 dark:text-white">$18,000</span>
+                  </div>
+                  <div class="flex justify-between pt-1 border-t border-slate-200 dark:border-slate-700 font-bold text-sm">
+                    <span id="settlementFedLabel">Federal Refund Estimate:</span>
+                    <span id="settlementFedDiff" class="font-mono text-emerald-600 dark:text-emerald-400">+$1,530</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- California Settlement Box -->
+              <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-2">
+                <div class="flex justify-between items-center pb-1.5 border-b border-slate-200 dark:border-slate-700">
+                  <span class="font-bold text-slate-900 dark:text-white">California Tax Settlement</span>
+                  <span id="settlementCaBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded border">Estimated</span>
+                </div>
+                <div class="space-y-1 text-slate-600 dark:text-slate-300">
+                  <div class="flex justify-between">
+                    <span>California Tax Burden (FTB 540):</span>
+                    <span id="settlementCaLiability" class="font-mono font-semibold text-slate-900 dark:text-white">$7,099</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>California Tax Withheld:</span>
+                    <span id="settlementCaWithheld" class="font-mono font-semibold text-slate-900 dark:text-white">$7,500</span>
+                  </div>
+                  <div class="flex justify-between pt-1 border-t border-slate-200 dark:border-slate-700 font-bold text-sm">
+                    <span id="settlementCaLabel">California Refund Estimate:</span>
+                    <span id="settlementCaDiff" class="font-mono text-emerald-600 dark:text-emerald-400">+$401</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Net Total Combined Settlement Banner -->
+            <div id="settlementNetBanner" class="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-900 dark:text-emerald-200 block" id="settlementNetTitle">
+                  Net Combined Tax Refund
+                </span>
+                <span class="text-[11px] text-emerald-800 dark:text-emerald-300">Combined federal and California year-end tax position</span>
+              </div>
+              <div class="text-right">
+                <span id="settlementNetDiff" class="text-xl sm:text-2xl font-black font-mono text-emerald-700 dark:text-emerald-400">+$1,931</span>
+              </div>
+            </div>
+
+            <!-- Informational Only Disclaimer -->
+            <div class="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5 text-[11px] text-amber-950 dark:text-amber-200">
+              <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <p class="leading-relaxed">
+                <strong>Informational Estimate Only:</strong> This refund/tax liability estimation compares your direct employer withholdings against modeled 2026 federal (IRS 1040) and California (FTB 540) liabilities. Unearned income (1099 interest, dividends, capital gains), underpayment penalties, or supplemental credits will affect final tax filings. Please consult a licensed CPA or Enrolled Agent.
+              </p>
+            </div>
+          </div>
         </div>
+
 
       </div>
 
@@ -1631,6 +1897,11 @@
     </div>
   </footer>
 
+  <!-- Official CalPERS PEPRA Member Contribution Actuarial Datasets (FY 2026-27) -->
+  <script>
+    const CALPERS_PEPRA_SAFETY_DATA = [["Alameda County Fire Department (Safety Fire)", 11.25], ["Alpine Fire Protection District (Safety Fire)", 13.75], ["American Canyon Fire Protection District (Safety Fire)", 13.75], ["Anderson Fire Protection District (Safety Fire)", 13.75], ["Apple Valley Fire Protection District (Safety Fire)", 11.75], ["Arbuckle-College City Fire Protection District (Safety Fire)", 13.75], ["Arcata Fire Protection District (Safety Fire)", 14.5], ["Bear Valley Community Services District (Safety Police)", 13.75], ["Blue Lake Fire Protection District (Safety Fire)", 13.75], ["Bolinas Fire Protection District (Safety Fire)", 11.0], ["Bonita-Sunnyside Fire Protection District (Safety Fire)", 13.75], ["Boulder Creek Fire Protection District (Safety Fire)", 14.5], ["Broadmoor Police Protection District (Safety Police)", 13.75], ["Brooktrails Township Community Services District (Safety Fire)", 11.0], ["Butte-Glenn Community College District (Safety School Police)", 11.75], ["California Pines Community Services District (Safety Fire)", 11.0], ["Cambria Community Healthcare District (Safety Fire)", 13.75], ["Cambria Community Services District (Safety Fire)", 13.75], ["Central Calaveras Fire and Rescue Protection District (Safety Fire)", 11.0], ["Central County Fire Department (Safety Fire)", 14.5], ["Central Fire Protection District of Santa Cruz County (Safety Fire)", 13.75], ["Central Marin Fire Authority (Safety Fire)", 14.5], ["Central Marin Police Authority (Safety Police)", 13.75], ["Chino Valley Independent Fire District (Safety Fire)", 14.5], ["City and County of San Francisco (Safety County Peace Officer)", 15.0], ["City and County of San Francisco (Safety Police)", 11.5], ["City and County of San Francisco (Safety Sheriff)", 15.0], ["City of Alameda (Safety Fire)", 12.25], ["City of Alameda (Safety Police)", 12.25], ["City of Albany (Safety Fire)", 13.75], ["City of Albany (Safety Police)", 13.75], ["City of Alhambra (Safety Fire)", 13.75], ["City of Alhambra (Safety Police)", 13.75], ["City of Alturas (Safety Fire)", 13.75], ["City of Alturas (Safety Police)", 13.75], ["City of Anaheim (Safety Fire)", 12.5], ["City of Anaheim (Safety Police)", 14.0], ["City of Anderson (Safety Police)", 13.75], ["City of Angels (Safety Fire)", 11.0], ["City of Angels (Safety Police)", 13.75], ["City of Antioch (Safety Police)", 14.5], ["City of Arcadia (Safety Fire)", 13.25], ["City of Arcadia (Safety Police)", 13.25], ["City of Arcata (Safety Police)", 13.75], ["City of Arroyo Grande (Safety Fire)", 13.75], ["City of Arroyo Grande (Safety Police)", 13.75], ["City of Arvin (Safety Police)", 11.0], ["City of Atascadero (Safety Fire)", 13.75], ["City of Atascadero (Safety Police)", 13.75], ["City of Atwater (Safety Police)", 14.25], ["City of Auburn (Safety Fire)", 15.75], ["City of Auburn (Safety Police)", 13.75], ["City of Avalon (Safety Fire)", 13.75], ["City of Avalon (Safety Police)", 13.75], ["City of Avenal (Safety Police)", 13.75], ["City of Azusa (Safety Police)", 14.5], ["City of Bakersfield (Safety Fire)", 12.75], ["City of Bakersfield (Safety Police)", 14.75], ["City of Baldwin Park (Safety Police)", 13.75], ["City of Banning (Safety Police)", 14.5], ["City of Barstow (Safety Police)", 13.75], ["City of Beaumont (Safety Police)", 13.75], ["City of Bell (Safety Police)", 14.5], ["City of Bell Gardens (Safety Police)", 14.5], ["City of Belmont (Safety Police)", 13.75], ["City of Belvedere (Safety Police)", 13.75], ["City of Benicia (Safety Fire)", 14.5], ["City of Benicia (Safety Police)", 14.5], ["City of Berkeley (Safety Fire)", 12.25], ["City of Berkeley (Safety Police)", 13.5], ["City of Beverly Hills (Safety Fire)", 12.5], ["City of Beverly Hills (Safety Police)", 12.5], ["City of Bishop (Safety Fire)", 14.25], ["City of Bishop (Safety Police)", 14.25], ["City of Blythe (Safety Police)", 13.75], ["City of Brawley (Safety Fire)", 13.75], ["City of Brawley (Safety Police)", 13.75], ["City of Brea (Safety Fire)", 13.75], ["City of Brea (Safety Police)", 13.75], ["City of Brentwood (Safety Police)", 13.75], ["City of Brisbane (Safety Fire)", 13.75], ["City of Brisbane (Safety Police)", 13.75], ["City of Buena Park (Safety Police)", 14.5], ["City of Burbank (Safety Fire)", 12.0], ["City of Burbank (Safety Police)", 13.75], ["City of Burlingame (Safety Police)", 14.5], ["City of Calexico (Safety Fire)", 13.75], ["City of Calexico (Safety Police)", 13.75], ["City of California City (Safety Fire)", 13.75], ["City of California City (Safety Police)", 13.75], ["City of Calipatria (Safety Fire)", 11.0], ["City of Calipatria (Safety Police)", 11.0], ["City of Calistoga (Safety Fire)", 11.0], ["City of Calistoga (Safety Police)", 11.0], ["City of Campbell (Safety Police)", 13.75], ["City of Capitola (Safety Police)", 13.75], ["City of Carlsbad (Safety Fire)", 14.0], ["City of Carlsbad (Safety Police)", 14.0], ["City of Carmel-By-The-Sea (Safety Fire)", 13.75], ["City of Carmel-By-The-Sea (Safety Police)", 13.75], ["City of Cathedral City (Safety Fire)", 11.0], ["City of Cathedral City (Safety Police)", 13.75], ["City of Chico (Safety Fire)", 15.0], ["City of Chico (Safety Police)", 15.0], ["City of Chino (Safety Police)", 13.75], ["City of Chowchilla (Safety Fire)", 11.0], ["City of Chowchilla (Safety Police)", 11.0], ["City of Chula Vista (Safety Fire)", 14.25], ["City of Chula Vista (Safety Police)", 14.25], ["City of Citrus Heights (Safety Police)", 13.75], ["City of Claremont (Safety Police)", 13.75], ["City of Clayton (Safety Police)", 13.75], ["City of Clearlake (Safety Police)", 13.75], ["City of Cloverdale (Safety Police)", 13.75], ["City of Clovis (Safety Fire)", 13.25], ["City of Clovis (Safety Police)", 13.25], ["City of Coalinga (Safety Fire)", 11.0], ["City of Coalinga (Safety Police)", 11.0], ["City of Colton (Safety Fire)", 14.5], ["City of Colton (Safety Police)", 14.5], ["City of Colusa (Safety Fire)", 13.75], ["City of Colusa (Safety Police)", 13.75], ["City of Compton (Safety Fire)", 14.5], ["City of Concord (Safety Police)", 12.25], ["City of Corcoran (Safety Police)", 13.75], ["City of Corning (Safety Police)", 13.75], ["City of Corona (Safety Fire)", 14.5], ["City of Corona (Safety Police)", 14.25], ["City of Coronado (Safety Fire)", 13.75], ["City of Coronado (Safety Police)", 13.75], ["City of Costa Mesa (Safety Fire)", 13.75], ["City of Costa Mesa (Safety Police)", 14.0], ["City of Cotati (Safety Police)", 13.75], ["City of Covina (Safety Police)", 14.5], ["City of Crescent City (Safety Fire)", 13.75], ["City of Crescent City (Safety Police)", 13.75], ["City of Culver City (Safety Fire)", 12.5], ["City of Culver City (Safety Police)", 12.5], ["City of Cypress (Safety Police)", 14.5], ["City of Daly City (Safety Fire)", 11.5], ["City of Daly City (Safety Police)", 11.5], ["City of Davis (Safety Fire)", 13.75], ["City of Davis (Safety Police)", 13.75], ["City of Del Mar (Other Safety)", 13.75], ["City of Del Mar (Safety Fire)", 13.75], ["City of Del Rey Oaks (Safety Police)", 11.0], ["City of Delano (Safety Police)", 13.75], ["City of Desert Hot Springs (Safety Police)", 15.75], ["City of Dinuba (Safety Fire)", 13.75], ["City of Dinuba (Safety Police)", 13.75], ["City of Dixon (Safety Fire)", 13.75], ["City of Dixon (Safety Police)", 13.75], ["City of Dos Palos (Safety Police)", 13.75], ["City of Downey (Safety Fire)", 13.25], ["City of Downey (Safety Police)", 13.25], ["City of Dunsmuir (Safety Fire)", 13.75], ["City of East Palo Alto (Safety Police)", 13.75], ["City of El Cajon (Safety Fire)", 14.5], ["City of El Cajon (Safety Police)", 14.5], ["City of El Centro (Safety Fire)", 14.5], ["City of El Centro (Safety Police)", 14.5], ["City of El Cerrito (Safety Fire)", 13.75], ["City of El Cerrito (Safety Police)", 13.75], ["City of El Monte (Safety Police)", 15.0], ["City of El Segundo (Safety Fire)", 14.5], ["City of El Segundo (Safety Police)", 14.5], ["City of Elk Grove (Safety Police)", 13.75], ["City of Emeryville (Safety Police)", 14.5], ["City of Encinitas (Other Safety)", 13.75], ["City of Encinitas (Safety Fire)", 14.5], ["City of Escalon (Safety Police)", 11.0], ["City of Escondido (Safety Fire)", 14.5], ["City of Escondido (Safety Police)", 14.5], ["City of Etna (Safety Police)", 11.0], ["City of Eureka (Safety Police)", 14.5], ["City of Exeter (Safety Police)", 13.75], ["City of Fairfield (Safety Fire)", 12.75], ["City of Fairfield (Safety Police)", 12.75], ["City of Farmersville (Safety Fire)", 11.0], ["City of Farmersville (Safety Police)", 11.0], ["City of Fillmore (Safety Fire)", 14.25], ["City of Firebaugh (Safety Police)", 13.75], ["City of Folsom (Safety Fire)", 12.75], ["City of Folsom (Safety Police)", 12.75], ["City of Fontana (Safety Police)", 13.0], ["City of Fort Bragg (Safety Police)", 13.75], ["City of Fortuna (Safety Police)", 13.75], ["City of Foster City (Safety Police)", 13.75], ["City of Fountain Valley (Safety Fire)", 13.75], ["City of Fountain Valley (Safety Police)", 13.75], ["City of Fowler (Safety Police)", 13.75], ["City of Fremont (Safety Fire)", 11.75], ["City of Fremont (Safety Police)", 11.75], ["City of Fullerton (Safety Fire)", 13.25], ["City of Fullerton (Safety Police)", 13.25], ["City of Galt (Safety Police)", 13.75], ["City of Garden Grove (Safety Fire)", 14.25], ["City of Garden Grove (Safety Police)", 14.25], ["City of Gardena (Safety Police)", 14.5], ["City of Gilroy (Safety Fire)", 11.0], ["City of Gilroy (Safety Police)", 13.75], ["City of Glendale (Safety Fire)", 13.25], ["City of Glendale (Safety Police)", 13.25], ["City of Glendora (Safety Police)", 14.5], ["City of Gonzales (Safety Fire)", 11.0], ["City of Gonzales (Safety Police)", 11.0], ["City of Grass Valley (Safety Fire)", 13.75], ["City of Grass Valley (Safety Police)", 13.75], ["City of Greenfield (Safety Fire)", 13.75], ["City of Greenfield (Safety Police)", 13.75], ["City of Gridley (Safety Police)", 13.75], ["City of Grover Beach (Safety Police)", 13.75], ["City of Guadalupe (Safety Fire)", 11.0], ["City of Guadalupe (Safety Police)", 11.0], ["City of Gustine (Safety Police)", 13.75], ["City of Hanford (Safety Fire)", 14.5], ["City of Hanford (Safety Police)", 14.5], ["City of Hawthorne (Safety Police)", 14.5], ["City of Hayward (Safety Fire)", 11.25], ["City of Hayward (Safety Police)", 13.5], ["City of Healdsburg (Safety Fire)", 13.75], ["City of Healdsburg (Safety Police)", 13.75], ["City of Hemet (Safety Fire)", 14.75], ["City of Hemet (Safety Police)", 14.75], ["City of Hercules (Safety Police)", 13.75], ["City of Hermosa Beach (Safety Police)", 14.5], ["City of Hollister (Safety Fire)", 13.75], ["City of Hollister (Safety Police)", 13.75], ["City of Huntington Beach (Other Safety)", 12.5], ["City of Huntington Beach (Safety Fire)", 13.5], ["City of Huntington Beach (Safety Police)", 12.5], ["City of Huntington Park (Safety Police)", 14.5], ["City of Imperial (Safety Police)", 13.75], ["City of Imperial Beach (Other Safety)", 13.75], ["City of Imperial Beach (Safety Fire)", 13.75], ["City of Indio (Safety Police)", 14.5], ["City of Inglewood (Safety Police)", 13.75], ["City of Ione (Safety Fire)", 11.0], ["City of Ione (Safety Police)", 13.75], ["City of Irvine (Safety Police)", 13.75], ["City of Irwindale (Safety Police)", 14.5], ["City of Jackson (Safety Fire)", 13.75], ["City of Jackson (Safety Police)", 13.75], ["City of Kerman (Safety Police)", 11.0], ["City of King City (Safety Police)", 13.75], ["City of Kingsburg (Safety Fire)", 13.75], ["City of Kingsburg (Safety Police)", 13.75], ["City of La Habra (Safety Police)", 14.5], ["City of La Habra Heights (Safety Fire)", 11.0], ["City of La Mesa (Safety Fire)", 14.0], ["City of La Mesa (Safety Police)", 14.0], ["City of La Palma (Safety Police)", 11.75], ["City of La Verne (Safety Fire)", 13.75], ["City of La Verne (Safety Police)", 13.75], ["City of Laguna Beach (Other Safety)", 13.75], ["City of Laguna Beach (Safety Fire)", 13.75], ["City of Laguna Beach (Safety Police)", 13.75], ["City of Lakeport (Safety Police)", 13.75], ["City of Lancaster (Safety Police)", 13.75], ["City of Lathrop (Safety Police)", 14.5], ["City of Lemon Grove (Safety Fire)", 13.75], ["City of Lemoore (Safety Police)", 13.75], ["City of Lincoln (Safety Fire)", 13.75], ["City of Lincoln (Safety Police)", 13.75], ["City of Lindsay (Safety Fire)", 13.75], ["City of Lindsay (Safety Police)", 13.75], ["City of Livermore (Safety Police)", 13.75], ["City of Livingston (Safety Police)", 11.0], ["City of Lodi (Safety Fire)", 13.0], ["City of Lodi (Safety Police)", 13.0], ["City of Loma Linda (Safety Fire)", 13.75], ["City of Lompoc (Safety Fire)", 14.5], ["City of Lompoc (Safety Police)", 14.5], ["City of Long Beach (Other Safety)", 13.25], ["City of Long Beach (Safety Fire)", 13.25], ["City of Long Beach (Safety Police)", 13.25], ["City of Los Alamitos (Safety Police)", 13.75], ["City of Los Altos (Safety Police)", 13.75], ["City of Los Banos (Safety Fire)", 14.5], ["City of Los Banos (Safety Police)", 14.5], ["City of Madera (Safety Police)", 13.75], ["City of Manhattan Beach (Safety Fire)", 14.5], ["City of Manhattan Beach (Safety Police)", 14.5], ["City of Manteca (Safety Fire)", 14.5], ["City of Manteca (Safety Police)", 14.5], ["City of Marina (Safety Fire)", 13.75], ["City of Marina (Safety Police)", 13.75], ["City of Martinez (Safety Police)", 13.75], ["City of Marysville (Safety Fire)", 13.75], ["City of Marysville (Safety Police)", 13.75], ["City of Mendota (Safety Police)", 13.75], ["City of Menifee (Safety Police)", 14.5], ["City of Menlo Park (Safety Police)", 13.75], ["City of Merced (Safety Fire)", 13.0], ["City of Merced (Safety Police)", 13.0], ["City of Mill Valley (Safety Fire)", 13.75], ["City of Mill Valley (Safety Police)", 13.75], ["City of Milpitas (Safety Fire)", 11.75], ["City of Milpitas (Safety Police)", 11.75], ["City of Modesto (Safety Fire)", 14.25], ["City of Modesto (Safety Police)", 14.25], ["City of Monrovia (Safety Fire)", 15.0], ["City of Monrovia (Safety Police)", 15.0], ["City of Montclair (Safety Fire)", 14.5], ["City of Montclair (Safety Police)", 13.75], ["City of Montebello (Safety Fire)", 15.25], ["City of Montebello (Safety Police)", 15.25], ["City of Monterey (Safety Fire)", 13.75], ["City of Monterey (Safety Police)", 13.75], ["City of Monterey Park (Safety Fire)", 13.75], ["City of Monterey Park (Safety Police)", 13.75], ["City of Morgan Hill (Safety Police)", 13.75], ["City of Morro Bay (Safety Fire)", 13.75], ["City of Morro Bay (Safety Police)", 13.75], ["City of Mountain View (Safety Fire)", 12.0], ["City of Mountain View (Safety Police)", 12.0], ["City of Mt. Shasta (Safety Fire)", 13.75], ["City of Mt. Shasta (Safety Police)", 13.75], ["City of Murrieta (Safety Police)", 13.75], ["City of Napa (Safety Fire)", 12.75], ["City of Napa (Safety Police)", 12.75], ["City of National City (Safety Fire)", 14.25], ["City of National City (Safety Police)", 14.25], ["City of Nevada City (Safety Fire)", 11.0], ["City of Nevada City (Safety Police)", 11.0], ["City of Newark (Safety Police)", 13.75], ["City of Newman (Safety Police)", 13.75], ["City of Newport Beach (Other Safety)", 13.5], ["City of Newport Beach (Safety Fire)", 13.5], ["City of Newport Beach (Safety Police)", 13.5], ["City of Novato (Safety Police)", 13.75], ["City of Oakdale (Safety Police)", 14.5], ["City of Oakland (Safety Fire)", 12.75], ["City of Oakland (Safety Police)", 12.75], ["City of Oakley (Safety Police)", 14.25], ["City of Oceanside (Other Safety)", 14.25], ["City of Oceanside (Safety Fire)", 14.25], ["City of Oceanside (Safety Police)", 14.25], ["City of Ontario (Safety Fire)", 12.0], ["City of Ontario (Safety Police)", 14.0], ["City of Orange (Safety Fire)", 12.75], ["City of Orange (Safety Police)", 12.75], ["City of Orange Cove (Safety Police)", 13.75], ["City of Orland (Safety Fire)", 13.75], ["City of Orland (Safety Police)", 13.75], ["City of Oroville (Safety Police)", 14.5], ["City of Oxnard (Safety Fire)", 14.5], ["City of Oxnard (Safety Police)", 16.5], ["City of Pacific Grove (Safety Police)", 13.75], ["City of Pacifica (Safety Fire)", 13.75], ["City of Pacifica (Safety Police)", 13.75], ["City of Palm Springs (Safety Fire)", 14.25], ["City of Palm Springs (Safety Police)", 14.25], ["City of Palo Alto (Safety Fire)", 11.75], ["City of Palo Alto (Safety Police)", 11.75], ["City of Palos Verdes Estates (Safety Police)", 13.75], ["City of Parlier (Safety Police)", 11.0], ["City of Pasadena (Safety Fire)", 13.0], ["City of Pasadena (Safety Police)", 13.0], ["City of Paso Robles (Safety Fire)", 13.75], ["City of Paso Robles (Safety Police)", 13.75], ["City of Patterson (Safety Fire)", 13.75], ["City of Petaluma (Safety Fire)", 13.5], ["City of Petaluma (Safety Police)", 12.75], ["City of Piedmont (Safety Fire)", 14.5], ["City of Piedmont (Safety Police)", 14.5], ["City of Pinole (Safety Police)", 13.75], ["City of Pismo Beach (Safety Police)", 13.75], ["City of Pittsburg (Safety Police)", 13.75], ["City of Placentia (Safety Police)", 13.75], ["City of Placerville (Safety Police)", 13.75], ["City of Pleasant Hill (Safety Police)", 13.75], ["City of Pleasanton (Safety Fire)", 12.0], ["City of Pleasanton (Safety Police)", 13.75], ["City of Pomona (Safety Police)", 14.0], ["City of Port Hueneme (Safety Police)", 13.75], ["City of Porterville (Safety Fire)", 13.75], ["City of Porterville (Safety Police)", 13.75], ["City of Poway (Safety Fire)", 13.75], ["City of Red Bluff (Safety Fire)", 13.75], ["City of Red Bluff (Safety Police)", 13.75], ["City of Redding (Safety Fire)", 14.5], ["City of Redding (Safety Police)", 14.5], ["City of Redlands (Safety Fire)", 14.5], ["City of Redlands (Safety Police)", 14.5], ["City of Redondo Beach (Safety Fire)", 13.5], ["City of Redondo Beach (Safety Police)", 13.5], ["City of Redwood City (Safety Fire)", 13.25], ["City of Redwood City (Safety Police)", 13.25], ["City of Reedley (Safety Fire)", 13.75], ["City of Reedley (Safety Police)", 13.75], ["City of Rialto (Safety Fire)", 14.75], ["City of Rialto (Safety Police)", 14.75], ["City of Richmond (Safety Fire)", 13.0], ["City of Richmond (Safety Police)", 13.0], ["City of Ridgecrest (Safety Police)", 13.75], ["City of Rio Vista (Safety Fire)", 13.75], ["City of Ripon (Safety Police)", 13.75], ["City of Riverside (Safety Fire)", 14.0], ["City of Riverside (Safety Police)", 14.0], ["City of Rocklin (Safety Fire)", 13.75], ["City of Rocklin (Safety Police)", 13.75], ["City of Rohnert Park (Safety Police)", 13.75], ["City of Roseville (Safety Fire 1st)", 15.25], ["City of Roseville (Safety Fire 2nd)", 14.75], ["City of Roseville (Safety Police)", 14.75], ["City of Sacramento (Safety Fire)", 13.5], ["City of Sacramento (Safety Police)", 13.5], ["City of Salinas (Safety Fire 2nd)", 13.75], ["City of Salinas (Safety Police)", 13.25], ["City of San Bernardino (Safety Fire)", 14.0], ["City of San Bernardino (Safety Police 1st)", 14.0], ["City of San Bernardino (Safety Police 2nd)", 13.5], ["City of San Bruno (Safety Fire)", 13.75], ["City of San Bruno (Safety Police)", 13.75], ["City of San Buenaventura (Safety Fire)", 13.75], ["City of San Buenaventura (Safety Police)", 13.75], ["City of San Carlos (Safety Fire)", 13.75], ["City of San Clemente (Other Safety)", 14.5], ["City of San Fernando (Safety Police)", 13.75], ["City of San Gabriel (Safety Fire)", 14.5], ["City of San Gabriel (Safety Police)", 14.5], ["City of San Leandro (Safety Police)", 14.5], ["City of San Luis Obispo (Safety Fire)", 14.5], ["City of San Luis Obispo (Safety Police)", 14.5], ["City of San Marcos (Safety Fire)", 14.5], ["City of San Marino (Safety Fire 2nd)", 14.5], ["City of San Marino (Safety Police)", 11.75], ["City of San Mateo (Safety Fire)", 12.25], ["City of San Mateo (Safety Police)", 12.25], ["City of San Pablo (Safety Police)", 13.75], ["City of San Ramon (Safety Police)", 14.5], ["City of Sand City (Safety Police)", 13.75], ["City of Sanger (Safety Fire)", 13.75], ["City of Sanger (Safety Police)", 13.75], ["City of Santa Ana (Safety Fire)", 13.5], ["City of Santa Ana (Safety Police)", 13.5], ["City of Santa Barbara (Safety Fire)", 14.5], ["City of Santa Barbara (Safety Police)", 14.0], ["City of Santa Clara (Safety Fire)", 12.25], ["City of Santa Clara (Safety Police)", 12.25], ["City of Santa Cruz (Other Safety)", 13.75], ["City of Santa Cruz (Safety Fire)", 14.5], ["City of Santa Cruz (Safety Police)", 14.5], ["City of Santa Fe Springs (Safety Fire)", 14.5], ["City of Santa Maria (Safety Fire)", 14.5], ["City of Santa Maria (Safety Police)", 13.75], ["City of Santa Monica (Other Safety)", 8.0], ["City of Santa Monica (Safety Fire)", 11.0], ["City of Santa Monica (Safety Police)", 13.5], ["City of Santa Paula (Safety Police)", 13.75], ["City of Santa Rosa (Safety Fire)", 11.5], ["City of Santa Rosa (Safety Police)", 13.25], ["City of Santee (Safety Fire)", 14.5], ["City of Sausalito (Safety Police)", 14.5], ["City of Scotts Valley (Safety Police)", 13.75], ["City of Seal Beach (Other Safety)", 14.5], ["City of Seal Beach (Safety Police)", 14.5], ["City of Seaside (Safety Fire)", 13.75], ["City of Seaside (Safety Police)", 13.75], ["City of Sebastopol (Safety Police)", 13.75], ["City of Selma (Safety Fire)", 13.75], ["City of Selma (Safety Police)", 13.75], ["City of Shafter (Safety Police)", 13.75], ["City of Sierra Madre (Safety Fire)", 14.5], ["City of Sierra Madre (Safety Police)", 14.5], ["City of Signal Hill (Safety Police)", 14.5], ["City of Simi Valley (Safety Police)", 14.0], ["City of Solana Beach (Other Safety)", 13.75], ["City of Solana Beach (Safety Fire)", 13.75], ["City of Soledad (Safety Police)", 13.75], ["City of Sonora (Safety Fire)", 13.75], ["City of Sonora (Safety Police)", 13.75], ["City of South Gate (Safety Police)", 14.5], ["City of South Lake Tahoe (Safety Fire)", 14.5], ["City of South Lake Tahoe (Safety Police)", 14.5], ["City of South Pasadena (Safety Fire)", 14.5], ["City of South Pasadena (Safety Police)", 14.5], ["City of South San Francisco (Safety Fire)", 12.5], ["City of South San Francisco (Safety Police)", 12.5], ["City of St. Helena (Safety Fire)", 11.0], ["City of St. Helena (Safety Police)", 13.75], ["City of Stockton (Safety Fire)", 13.5], ["City of Stockton (Safety Police 1st)", 14.5], ["City of Stockton (Safety Police 2nd)", 13.5], ["City of Suisun City (Safety Fire)", 11.0], ["City of Suisun City (Safety Police)", 13.75], ["City of Sunnyvale (Safety Police)", 12.75], ["City of Susanville (Safety Fire)", 13.75], ["City of Susanville (Safety Police)", 13.75], ["City of Sutter Creek (Safety Police)", 13.75], ["City of Taft (Safety Police)", 11.0], ["City of Tehachapi (Safety Police)", 13.75], ["City of Torrance (Safety Fire 1st)", 12.25], ["City of Torrance (Safety Fire 2nd)", 12.0], ["City of Torrance (Safety Police 1st)", 15.5], ["City of Torrance (Safety Police 2nd)", 13.0], ["City of Tracy (Safety Fire)", 15.0], ["City of Tracy (Safety Police)", 15.0], ["City of Tulare (Safety Fire)", 13.75], ["City of Tulare (Safety Police)", 13.75], ["City of Tulelake (Safety Police)", 11.0], ["City of Turlock (Safety Fire)", 13.75], ["City of Turlock (Safety Police)", 13.75], ["City of Tustin (Safety Police)", 13.75], ["City of Ukiah (Safety Fire)", 14.5], ["City of Ukiah (Safety Police)", 14.5], ["City of Union City (Safety Police)", 13.75], ["City of Upland (Safety Police)", 14.5], ["City of Vacaville (Safety Fire)", 13.75], ["City of Vacaville (Safety Police)", 13.75], ["City of Vallejo (Safety Fire)", 13.25], ["City of Vallejo (Safety Police)", 13.25], ["City of Vernon (Safety Police)", 14.5], ["City of Victorville (Safety Fire)", 14.5], ["City of Visalia (Safety Fire)", 14.5], ["City of Visalia (Safety Police)", 14.5], ["City of Vista (Safety Fire)", 13.75], ["City of Walnut Creek (Safety Police)", 14.5], ["City of Wasco (Safety Police)", 11.0], ["City of Watsonville (Safety Fire)", 13.75], ["City of Watsonville (Safety Police)", 13.75], ["City of Weed (Safety Fire)", 11.0], ["City of Weed (Safety Police)", 11.0], ["City of West Covina (Safety Fire)", 13.5], ["City of West Covina (Safety Police)", 13.5], ["City of West Sacramento (Safety Fire)", 13.75], ["City of West Sacramento (Safety Police)", 13.75], ["City of Westminster (Safety Police)", 14.5], ["City of Whittier (Safety Police)", 13.5], ["City of Williams (Safety Police)", 13.75], ["City of Willits (Safety Police)", 13.75], ["City of Willows (Safety Fire)", 13.75], ["City of Winters (Safety Fire)", 13.75], ["City of Winters (Safety Police)", 13.75], ["City of Woodlake (Safety Police)", 11.0], ["City of Woodland (Safety Fire)", 13.5], ["City of Woodland (Safety Police)", 13.5], ["City of Yreka (Safety Fire)", 13.75], ["City of Yreka (Safety Police)", 13.75], ["City of Yuba City (Safety Fire)", 15.0], ["City of Yuba City (Safety Police)", 15.0], ["Cloverdale Fire Protection District (Safety Fire)", 13.75], ["Coast Life Support District (Safety Fire)", 11.0], ["Compton Unified School District (Safety School Police)", 14.5], ["Contra Costa Community College District (Safety School Police)", 14.5], ["Copperopolis Fire Protection District (Safety Fire)", 14.25], ["Cosumnes Community Services District (Safety Fire)", 12.25], ["Cottonwood Fire Protection District (Safety Fire)", 13.75], ["County of Alpine (Safety County Peace Officer)", 14.5], ["County of Alpine (Safety Fire)", 11.75], ["County of Amador (Safety County Peace Officer)", 13.75], ["County of Amador (Safety Local Prosecutor)", 11.0], ["County of Butte (Safety County Peace Officer)", 13.5], ["County of Butte (Safety Sheriff)", 13.5], ["County of Calaveras (Safety County Peace Officer)", 13.75], ["County of Colusa (Safety County Peace Officer 1st)", 13.75], ["County of Colusa (Safety County Peace Officer 2nd)", 13.0], ["County of Del Norte (Safety County Peace Officer)", 13.75], ["County of El Dorado (Safety County Peace Officer)", 12.75], ["County of Glenn (Safety County Peace Officer)", 13.75], ["County of Humboldt (Safety County Peace Officer)", 14.25], ["County of Humboldt (Safety Fire)", 13.0], ["County of Inyo (Safety County Peace Officer)", 13.75], ["County of Kings (Safety County Peace Officer)", 13.5], ["County of Kings (Safety Fire)", 13.5], ["County of Lake (Safety County Peace Officer)", 14.0], ["County of Lassen (Safety County Peace Officer)", 13.75], ["County of Madera (Safety County Peace Officer)", 13.5], ["County of Mariposa (Safety County Peace Officer)", 13.75], ["County of Modoc (Safety County Peace Officer)", 13.75], ["County of Mono (Safety County Peace Officer)", 13.75], ["County of Mono (Safety Fire)", 13.75], ["County of Mono (Safety Sheriff)", 13.75], ["County of Monterey (Safety County Peace Officer)", 12.75], ["County of Napa (Safety County Peace Officer)", 13.75], ["County of Nevada (Safety County Peace Officer)", 14.5], ["County of Placer (Safety County Peace Officer)", 12.0], ["County of Plumas (Safety Sheriff)", 14.5], ["County of Riverside (Safety County Peace Officer)", 13.5], ["County of Riverside (Safety Fire)", 13.5], ["County of San Benito (Safety County Peace Officer)", 14.5], ["County of Santa Clara (Safety County Peace Officer)", 12.5], ["County of Santa Cruz (Safety County Peace Officer)", 13.25], ["County of Santa Cruz (Safety Sheriff)", 13.5], ["County of Shasta (Safety County Peace Officer)", 11.5], ["County of Shasta (Safety Sheriff)", 14.75], ["County of Sierra (Safety County Peace Officer)", 13.75], ["County of Siskiyou (Safety County Peace Officer)", 14.5], ["County of Solano (Safety County Peace Officer)", 11.0], ["County of Solano (Safety Sheriff)", 13.75], ["County of Sutter (Safety County Peace Officer)", 13.5], ["County of Sutter (Safety Fire)", 13.5], ["County of Tehama (Safety County Peace Officer)", 13.75], ["County of Trinity (Safety County Peace Officer)", 13.75], ["County of Tuolumne (Safety County Peace Officer)", 13.75], ["County of Yolo (Safety County Peace Officer)", 13.75], ["County of Yolo (Safety Sheriff)", 13.75], ["County of Yuba (Safety County Peace Officer)", 13.0], ["Diamond Springs/El Dorado Fire Protection District (Safety Fire)", 13.75], ["East Bay Regional Park District (Safety Fire)", 13.75], ["East Bay Regional Park District (Safety Police)", 13.75], ["Ebbetts Pass Fire Protection District (Safety Fire)", 13.75], ["El Dorado County Fire Protection District (Safety Fire)", 13.75], ["El Dorado Hills County Water District (Safety Fire)", 13.75], ["Esparto Fire Protection District (Safety Fire)", 13.75], ["Felton Fire Protection District (Safety Fire)", 13.75], ["Fontana Unified School District (Safety School Police)", 14.5], ["Foothill-De Anza Community College District (Safety School Police)", 14.5], ["Garden Valley Fire Protection District (Safety Fire)", 13.75], ["Georgetown Fire Protection District (Safety Fire)", 13.75], ["Glendale Community College District (Safety School Police)", 14.5], ["Gold Ridge Fire Protection District (Safety Fire)", 14.5], ["Graton Fire Protection District (Safety Fire)", 13.75], ["Hacienda La Puente Unified School District (Safety School Police)", 14.5], ["Happy Valley Fire District (Safety Fire)", 13.75], ["Hesperia Unified School District (Safety School Police)", 14.5], ["Higgins Area Fire Protection District (Safety Fire)", 13.75], ["Humboldt Bay Fire Joint Powers Authority (Safety Fire)", 14.5], ["Idyllwild Fire Protection District (Safety Fire)", 13.75], ["Inverness Public Utility District (Safety Fire)", 11.0], ["Kelseyville Fire Protection District (Safety Fire)", 14.5], ["Kensington Community Services District (Safety Police)", 13.75], ["Kentfield Fire Protection District (Safety Fire)", 14.5], ["Lake County Fire Protection District (Safety Fire)", 14.25], ["Lake Shastina Community Services District (Safety Fire)", 13.0], ["Lake Shastina Community Services District (Safety Police)", 13.75], ["Lake Valley Fire Protection District (Safety Fire)", 13.75], ["Lakeport County Fire Protection District (Safety Fire)", 13.75], ["Lakeside Fire Protection District (Safety Fire)", 14.5], ["Linda Fire Protection District (Safety Fire)", 13.75], ["Linden-Peters Rural County Fire Protection District (Safety Fire)", 13.75], ["Little Lake Fire Protection District (Safety Fire)", 11.0], ["Los Angeles Unified School District (Safety School Police)", 14.75], ["Los Osos Community Services District (Safety Fire)", 14.5], ["Los Rios Community College District (Safety School Police)", 14.5], ["Mammoth Lakes Fire District (Safety Fire)", 13.75], ["Marin Community College District (Safety School Police)", 14.5], ["Marinwood Community Services District (Safety Fire)", 13.75], ["McCloud Community Services District (Safety Fire)", 11.0], ["Menlo Park Fire Protection District (Safety Fire)", 14.5], ["Mokelumne Rural Fire District (Safety Fire)", 13.75], ["Montebello Unified School District (Safety School Police)", 13.75], ["Montecito Fire Protection District (Safety Fire)", 15.0], ["Monterey County Regional Fire Protection District (Safety Fire)", 14.5], ["Montezuma Fire Protection District (Safety Fire)", 13.75], ["Murrieta Fire Protection District (Safety Fire)", 13.75], ["Nevada County Consolidated Fire District (Safety Fire)", 13.75], ["North County Fire Protection District of Monterey County (Safety Fire)", 13.75], ["North County Fire Protection District of San Diego County (Safety Fire)", 14.5], ["North Tahoe Fire Protection District (Safety Fire)", 13.75], ["Northshore Fire Protection District (Safety Fire)", 13.75], ["Northstar Community Services District (Safety Fire)", 13.75], ["Oakland City Housing Authority (Safety Police)", 13.75], ["Olympic Valley Public Service District (Safety Fire)", 13.75], ["Ophir Hill Fire Protection District (Safety Fire)", 11.0], ["Peardale Chicago Park Fire Protection District (Safety Fire)", 11.0], ["Peninsula Fire Protection District (Safety Fire)", 13.75], ["Penn Valley Fire Protection District (Safety Fire)", 11.0], ["Penryn Fire Protection District (Safety Fire)", 13.75], ["Placer Hills Fire Protection District (Safety Fire)", 11.0], ["Port San Luis Harbor District (Safety Police)", 13.75], ["Public Transportation Services Corporation (Safety Police)", 13.75], ["Rancho Adobe Fire Protection District (Safety Fire)", 14.5], ["Rancho Cucamonga Fire Protection District (Safety Fire)", 13.75], ["Rancho Santa Fe Fire Protection District (Safety Fire)", 13.75], ["Rescue Fire Protection District (Safety Fire)", 11.75], ["Resort Improvement District No. 1 (Safety Fire)", 11.0], ["Ross Valley Fire Department (Safety Fire)", 14.5], ["Running Springs Water District (Safety Fire)", 13.75], ["Sacramento Metropolitan Fire District (Safety Fire)", 12.5], ["San Bernardino City Unified School District (Safety School Police)", 17.0], ["San Bernardino Community College District (Safety School Police)", 14.5], ["San Diego Community College District (Safety School Police)", 14.5], ["San Diego Unified School District (Safety School Police)", 14.5], ["San Francisco Bay Area Rapid Transit District (Safety Police)", 14.25], ["San Joaquin Delta Community College District (Safety School Police)", 14.5], ["San Mateo Consolidated Fire Department (Safety Fire)", 13.75], ["San Miguel Community Services District (Safety Fire)", 13.75], ["San Miguel Consolidated Fire Protection District (Safety Fire)", 14.5], ["Santa Ana Unified School District (Safety School Police)", 14.5], ["Santa Clara County Central Fire Protection District (Safety Fire)", 11.75], ["Santa Monica Community College District (Safety School Police)", 14.5], ["Schell Vista Fire Protection District (Safety Fire)", 14.5], ["Scotts Valley Fire Protection District (Safety Fire)", 13.75], ["Shasta Lake Fire Protection District (Safety Fire)", 13.75], ["Sonoma County Fire District (Safety Fire)", 13.75], ["Sonoma County Junior College District (Safety School Police)", 14.5], ["Sonoma Marin Area Rail Transit District (Other Safety)", 13.75], ["South Placer Fire District (Safety Fire)", 13.75], ["South San Joaquin County Fire Authority (Safety Fire)", 14.5], ["Stallion Springs Community Services District (Safety Police)", 13.75], ["Stanislaus Consolidated Fire Protection District (Safety Fire)", 13.75], ["State Center Community College District (Safety School Police)", 14.5], ["Stinson Beach Fire Protection District (Safety Fire)", 13.75], ["Stockton Unified School District (Safety School Police)", 14.5], ["Suisun Fire Protection District (Safety Fire)", 13.75], ["Templeton Community Services District (Safety Fire)", 13.75], ["Tiburon Fire Protection District (Safety Fire)", 13.75], ["Town of Atherton (Safety Police)", 14.5], ["Town of Colma (Safety Police)", 13.75], ["Town of Fairfax (Safety Police)", 14.5], ["Town of Hillsborough (Safety Police)", 14.5], ["Town of Los Gatos (Safety Police)", 14.5], ["Town of Mammoth Lakes (Safety Police)", 13.75], ["Town of Moraga (Safety Police)", 13.75], ["Town of Paradise (Safety Police)", 13.75], ["Town of Ross (Safety Police)", 13.75], ["Town of Tiburon (Safety Police)", 13.75], ["Town of Truckee (Safety Police)", 14.5], ["Truckee Fire Protection District (Safety Fire)", 15.0], ["Tuolumne Fire District (Safety Fire)", 11.0], ["Twain Harte Community Services District (Safety Fire)", 13.75], ["Twin Rivers Unified School District (Safety School Police)", 17.0], ["Vacaville Fire Protection District (Safety Fire)", 11.0], ["Val Verde Unified School District (Safety School Police)", 14.5], ["Ventura County Community College District (Safety School Police)", 14.5], ["Ventura Port District (Safety Police)", 11.0], ["West Almanor Community Services District (Safety Fire)", 13.75], ["West Valley-Mission Community College District (Safety School Police)", 14.5], ["Westwood Community Services District (Safety Fire)", 13.75], ["Williams Fire Protection Authority (Safety Fire)", 13.75], ["Woodbridge Rural County Fire Protection District (Safety Fire)", 13.75], ["Woodlake Fire District (Safety Fire)", 11.0], ["Woodside Fire Protection District (Safety Fire)", 14.5]];
+    const CALPERS_PEPRA_MISC_DATA = [["Academic Senate for California Community Colleges (Miscellaneous)", 7.75], ["Access Services Incorporated (Miscellaneous)", 7.75], ["Alameda Alliance for Health (Miscellaneous)", 8.0], ["Alameda Corridor Transportation Authority (Miscellaneous)", 7.75], ["Alameda County Fire Department (Miscellaneous)", 7.75], ["Alameda County Law Library (Miscellaneous)", 7.75], ["Alameda County Mosquito Abatement District (Miscellaneous)", 8.25], ["Alameda County Schools Insurance Group (Miscellaneous)", 7.75], ["Alameda County Transportation Commission (Miscellaneous)", 7.75], ["Alameda County Waste Management Authority (Miscellaneous)", 7.75], ["Alameda County Water District (Miscellaneous)", 7.75], ["Alliance of Schools for Cooperative Insurance Programs (Miscellaneous)", 7.75], ["Alpine Fire Protection District (Miscellaneous)", 8.0], ["Alpine Springs County Water District (Miscellaneous)", 7.75], ["Alta California Regional Center, Inc. (Miscellaneous)", 7.5], ["Alta Irrigation District (Miscellaneous)", 8.25], ["Altadena Library District (Miscellaneous)", 8.25], ["Amador County Transportation Commission (Miscellaneous)", 7.75], ["Amador Transit (Miscellaneous)", 7.75], ["Amador Water Agency (Miscellaneous)", 7.75], ["American Canyon Fire Protection District (Miscellaneous)", 7.75], ["American River Flood Control District (Miscellaneous)", 7.75], ["Anderson Fire Protection District (Miscellaneous)", 7.75], ["Angiola Water District (Miscellaneous)", 7.75], ["Antelope Valley Mosquito and Vector Control District (Miscellaneous)", 8.25], ["Antelope Valley Schools Transportation Agency (Miscellaneous)", 9.0], ["Antelope Valley Transit Authority (Miscellaneous)", 7.75], ["Apple Valley Fire Protection District (Miscellaneous)", 8.25], ["Arcade Creek Recreation and Park District (Miscellaneous)", 7.75], ["Arcata Fire Protection District (Miscellaneous)", 7.75], ["Area 12 Agency on Aging (Miscellaneous)", 7.75], ["Aromas Water District (Miscellaneous)", 7.75], ["Arrowbear Park County Water District (Miscellaneous)", 7.75], ["Arroyo Grande District Cemetery (Miscellaneous)", 7.75], ["Associated Students California State University San Bernardino (Miscellaneous)", 8.25], ["Associated Students Inc., California State University, Fullerton (Miscellaneous)", 8.5], ["Associated Students Incorporated of California State University East Bay (Miscellaneous)", 8.25], ["Associated Students Incorporated of California State University Stanislaus (Miscellaneous)", 7.75], ["Associated Students of California State University, Chico (Miscellaneous)", 7.75], ["Association of California Water Agencies (Miscellaneous)", 7.75], ["Association of California Water Agencies - Joint Powers Insurance Authority (Miscellaneous)", 8.25], ["Association of Monterey Bay Area Governments (Miscellaneous)", 8.0], ["Atascadero Cemetery District (Miscellaneous)", 7.75], ["Auburn Area Recreation and Park District (Miscellaneous)", 8.25], ["Auburn Public Cemetery District (Miscellaneous)", 7.75], ["Avila Beach Community Services District (Miscellaneous)", 7.75], ["Aztec Shops, Ltd. (Miscellaneous)", 7.75], ["BETA Healthcare Group Risk Management Authority (Miscellaneous)", 7.75], ["Bard Water District (Miscellaneous)", 7.75], ["Barstow Cemetery District (Miscellaneous)", 8.25], ["Bay Area Air Quality Management District (Miscellaneous)", 7.25], ["Bay Area Water Supply and Conservation Agency (Miscellaneous)", 8.25], ["Beach Cities Health District (Miscellaneous)", 7.75], ["Bear Mountain Recreation and Park District (Miscellaneous)", 7.75], ["Bear Valley Community Services District (Miscellaneous)", 7.75], ["Beaumont District Library (Miscellaneous)", 7.75], ["Beaumont-Cherry Valley Recreation and Park District (Miscellaneous)", 7.75], ["Beaumont-Cherry Valley Water District (Miscellaneous)", 8.25], ["Bella Vista Water District (Miscellaneous)", 7.75], ["Belvedere-Tiburon Library Agency (Miscellaneous)", 7.75], ["Benicia City Housing Authority (Miscellaneous)", 8.25], ["Berkeley Housing Authority (Miscellaneous)", 8.25], ["Big Bear Area Regional Wastewater Agency (Miscellaneous)", 8.25], ["Big Bear City Airport District (Miscellaneous)", 8.25], ["Big Bear City Community Services District (Miscellaneous)", 8.25], ["Big Bear Municipal Water District (Miscellaneous)", 7.75], ["Bighorn-Desert View Water Agency (Miscellaneous)", 7.75], ["Black Gold Cooperative Library System (Miscellaneous)", 7.75], ["Blanchard/Santa Paula Public Library District (Miscellaneous)", 7.75], ["Bolinas Community Public Utility District (Miscellaneous)", 7.75], ["Bolinas Fire Protection District (Miscellaneous)", 7.75], ["Boron Community Services District (Miscellaneous)", 8.25], ["Borrego Water District (Miscellaneous)", 7.75], ["Brannan-Andrus Levee Maintenance District (Miscellaneous)", 7.75], ["Broadmoor Police Protection District (Miscellaneous)", 7.75], ["Brooktrails Township Community Services District (Miscellaneous)", 7.75], ["Browns Valley Irrigation District (Miscellaneous)", 8.25], ["Buckingham Park Water District (Miscellaneous)", 7.75], ["Buena Park Library District (Miscellaneous)", 7.75], ["Burney Basin Mosquito Abatement District (Miscellaneous)", 7.75], ["Burney Fire District (Miscellaneous)", 7.75], ["Burney Water District (Miscellaneous)", 7.75], ["Butte County Air Quality Management District (Miscellaneous)", 7.75], ["Butte County Association of Governments (Miscellaneous)", 7.75], ["Butte County Fair Association (Miscellaneous)", 7.75], ["Butte County Mosquito and Vector Control District (Miscellaneous)", 7.75], ["Butte Local Agency Formation Commission (Miscellaneous)", 7.75], ["Butte Schools Self-Funded Programs (Miscellaneous)", 8.25], ["Byron-Bethany Irrigation District (Miscellaneous)", 7.75], ["Cabrillo College Foundation (Miscellaneous)", 7.75], ["Cachuma Operation and Maintenance Board (Miscellaneous)", 7.75], ["Cal Poly Corporation (Miscellaneous)", 8.75], ["Cal Poly Pomona Foundation, Inc. (Miscellaneous)", 7.75], ["Calaveras Council of Governments (Miscellaneous)", 8.0], ["Calaveras County Water District (Miscellaneous)", 7.75], ["Calaveras Public Utility District (Miscellaneous)", 7.75], ["California Association for Park and Recreation Indemnity (Miscellaneous)", 7.75], ["California Authority of Racing Fairs (Miscellaneous)", 7.75], ["California Fair Services Authority (Miscellaneous)", 7.75], ["California Fairs Financing Authority (Miscellaneous)", 7.75], ["California Firefighter's Joint Apprenticeship Committee (Miscellaneous)", 7.75], ["California Intergovernmental Risk Authority (Miscellaneous)", 8.0], ["California Interscholastic Federation, Central Coast Section (Miscellaneous)", 7.75], ["California Interscholastic Federation, Central Section (Miscellaneous)", 7.75], ["California Interscholastic Federation, North Coast Section (Miscellaneous)", 8.25], ["California Interscholastic Federation, Northern Section (Miscellaneous)", 7.75], ["California Interscholastic Federation, Sac-Joaquin Section (Miscellaneous)", 7.75], ["California Interscholastic Federation, San Diego Section (Miscellaneous)", 8.25], ["California Interscholastic Federation, Southern Section (Miscellaneous)", 7.75], ["California Interscholastic Federation, State Office (Miscellaneous)", 7.75], ["California Joint Powers Insurance Authority (Miscellaneous)", 7.75], ["California Joint Powers Risk Management Authority (Miscellaneous)", 7.75], ["California Municipal Utilities Association (Miscellaneous)", 8.25], ["California Pines Community Services District (Miscellaneous)", 7.75], ["California School Boards Association (Miscellaneous)", 8.25], ["California Special Districts Association (Miscellaneous)", 7.75], ["California State University, Fresno Athletic Corporation (Miscellaneous)", 7.75], ["California State University-Fresno Association, Inc. (Miscellaneous)", 7.75], ["Callayomi County Water District (Miscellaneous)", 7.75], ["Calleguas Municipal Water District (Miscellaneous)", 7.75], ["Camarillo Health Care District (Miscellaneous)", 7.75], ["Cambria Community Healthcare District (Miscellaneous)", 7.75], ["Cambria Community Services District (Miscellaneous)", 7.75], ["Cameron Park Community Services District (Miscellaneous)", 7.75], ["Camrosa Water District (Miscellaneous)", 7.75], ["Capitol Area Development Authority (Miscellaneous)", 8.25], ["Carmel Area Wastewater District (Miscellaneous)", 7.75], ["Carmichael Water District (Miscellaneous)", 8.0], ["Carpinteria Sanitary District (Miscellaneous)", 7.75], ["Carpinteria Valley Water District (Miscellaneous)", 7.75], ["Casitas Municipal Water District (Miscellaneous)", 7.75], ["Castro Valley Sanitary District (Miscellaneous)", 7.75], ["Castroville Community Services District (Miscellaneous)", 8.25], ["Cawelo Water District (Miscellaneous)", 7.75], ["Cayucos Sanitary District (Miscellaneous)", 7.75], ["Cayucos-Morro Bay Cemetery District (Miscellaneous)", 7.75], ["Centerville Community Services District (Miscellaneous)", 7.75], ["Central Basin Municipal Water District (Miscellaneous)", 8.25], ["Central Calaveras Fire and Rescue Protection District (Miscellaneous)", 7.75], ["Central Coast Water Authority (Miscellaneous)", 8.25], ["Central Contra Costa Solid Waste Authority (Miscellaneous)", 8.25], ["Central Contra Costa Transit Authority (Miscellaneous)", 9.25], ["Central County Fire Department (Miscellaneous)", 8.25], ["Central Fire Protection District of Santa Cruz County (Miscellaneous)", 7.75], ["Central Marin Fire Authority (Miscellaneous)", 8.25], ["Central Marin Police Authority (Miscellaneous)", 7.75], ["Central Marin Sanitation Agency (Miscellaneous)", 7.75], ["Central Sierra Child Support Agency (Miscellaneous)", 8.25], ["Central Valley Regional Center, Inc. (Miscellaneous)", 7.75], ["Central Water District (Miscellaneous)", 7.75], ["Channel Islands Beach Community Services District (Miscellaneous)", 7.75], ["Chester Public Utility District (Miscellaneous)", 7.75], ["Chico Area Recreation and Park District (Miscellaneous)", 7.75], ["Children and Families Commission of San Luis Obispo County (Miscellaneous)", 8.5], ["Chino Basin Water Conservation District (Miscellaneous)", 7.75], ["Chino Basin Watermaster (Miscellaneous)", 7.75], ["Chino Valley Independent Fire District (Miscellaneous)", 8.25], ["Citrus Heights Water District (Miscellaneous)", 7.75], ["City of Adelanto (Miscellaneous)", 7.75], ["City of Agoura Hills (Miscellaneous)", 7.75], ["City of Alameda (Miscellaneous)", 8.75], ["City of Albany (Miscellaneous)", 7.75], ["City of Alhambra (Miscellaneous)", 7.75], ["City of Aliso Viejo (Miscellaneous)", 7.75], ["City of Alturas (Miscellaneous)", 7.75], ["City of American Canyon (Miscellaneous)", 8.25], ["City of Anaheim (Miscellaneous)", 8.0], ["City of Anderson (Miscellaneous)", 7.75], ["City of Angels (Miscellaneous)", 7.75], ["City of Antioch (Miscellaneous)", 8.0], ["City of Arcadia (Miscellaneous)", 7.5], ["City of Arcata (Miscellaneous)", 7.75], ["City of Arroyo Grande (Miscellaneous)", 7.75], ["City of Artesia (Miscellaneous)", 7.75], ["City of Arvin (Miscellaneous)", 7.75], ["City of Atascadero (Miscellaneous)", 8.25], ["City of Atwater (Miscellaneous)", 7.75], ["City of Auburn (Miscellaneous)", 7.75], ["City of Avalon (Miscellaneous)", 7.75], ["City of Avenal (Miscellaneous)", 7.75], ["City of Azusa (Miscellaneous)", 7.5], ["City of Bakersfield (Miscellaneous)", 7.25], ["City of Baldwin Park (Miscellaneous)", 7.5], ["City of Banning (Miscellaneous)", 7.75], ["City of Barstow (Miscellaneous)", 7.75], ["City of Beaumont (Miscellaneous)", 7.75], ["City of Bell (Miscellaneous)", 8.0], ["City of Bell Gardens (Miscellaneous)", 7.75], ["City of Bellflower (Miscellaneous)", 8.25], ["City of Belmont (Miscellaneous)", 8.0], ["City of Belvedere (Miscellaneous)", 7.75], ["City of Benicia (Miscellaneous)", 8.25], ["City of Berkeley (Miscellaneous)", 8.25], ["City of Beverly Hills (Miscellaneous)", 7.5], ["City of Biggs (Miscellaneous)", 7.75], ["City of Bishop (Miscellaneous)", 8.0], ["City of Blue Lake (Miscellaneous)", 7.75], ["City of Blythe (Miscellaneous)", 7.75], ["City of Bradbury (Miscellaneous)", 7.75], ["City of Brawley (Miscellaneous)", 7.75], ["City of Brea (Miscellaneous)", 7.25], ["City of Brentwood (Miscellaneous)", 7.5], ["City of Brisbane (Miscellaneous)", 7.75], ["City of Buellton (Miscellaneous)", 8.25], ["City of Buena Park (Miscellaneous)", 7.25], ["City of Burbank (Miscellaneous)", 7.5], ["City of Burlingame (Miscellaneous)", 8.0], ["City of Calabasas (Miscellaneous)", 7.75], ["City of Calexico (Miscellaneous)", 7.75], ["City of California City (Miscellaneous)", 7.75], ["City of Calimesa (Miscellaneous)", 7.75], ["City of Calipatria (Miscellaneous)", 7.75], ["City of Calistoga (Miscellaneous)", 7.75], ["City of Camarillo (Miscellaneous)", 8.25], ["City of Campbell (Miscellaneous)", 8.5], ["City of Canyon Lake (Miscellaneous)", 7.75], ["City of Capitola (Miscellaneous)", 7.75], ["City of Carlsbad (Miscellaneous)", 8.5], ["City of Carmel-By-The-Sea (Miscellaneous)", 7.75], ["City of Carpinteria (Miscellaneous)", 8.0], ["City of Carson (Miscellaneous)", 8.25], ["City of Cathedral City (Miscellaneous)", 7.75], ["City of Cerritos (Miscellaneous)", 8.0], ["City of Chico (Miscellaneous)", 8.5], ["City of Chino (Miscellaneous)", 7.25], ["City of Chowchilla (Miscellaneous)", 7.75], ["City of Chula Vista (Miscellaneous)", 7.5], ["City of Citrus Heights (Miscellaneous)", 7.75], ["City of Claremont (Miscellaneous)", 7.25], ["City of Clayton (Miscellaneous)", 7.75], ["City of Clearlake (Miscellaneous)", 7.75], ["City of Cloverdale (Miscellaneous)", 7.75], ["City of Clovis (Miscellaneous)", 7.5], ["City of Coachella City (Miscellaneous)", 7.75], ["City of Coalinga (Miscellaneous)", 7.75], ["City of Colfax (Miscellaneous)", 7.75], ["City of Colton (Miscellaneous)", 7.5], ["City of Colusa (Miscellaneous)", 7.75], ["City of Commerce (Miscellaneous)", 9.0], ["City of Compton (Miscellaneous)", 8.75], ["City of Concord (Miscellaneous)", 7.25], ["City of Corcoran (Miscellaneous)", 7.75], ["City of Corning (Miscellaneous)", 7.75], ["City of Corona (Miscellaneous)", 7.75], ["City of Coronado (Miscellaneous)", 7.5], ["City of Costa Mesa (Miscellaneous)", 8.5], ["City of Cotati (Miscellaneous)", 7.75], ["City of Covina (Miscellaneous)", 8.25], ["City of Crescent City (Miscellaneous)", 7.75], ["City of Cudahy (Miscellaneous)", 7.75], ["City of Culver City (Miscellaneous)", 7.75], ["City of Cupertino (Miscellaneous)", 7.75], ["City of Cypress (Miscellaneous)", 8.25], ["City of Daly City (Miscellaneous)", 8.0], ["City of Dana Point (Miscellaneous)", 7.75], ["City of Davis (Miscellaneous)", 8.25], ["City of Del Mar (Miscellaneous)", 8.0], ["City of Del Rey Oaks (Miscellaneous)", 7.75], ["City of Desert Hot Springs (Miscellaneous)", 7.75], ["City of Diamond Bar (Miscellaneous)", 7.75], ["City of Dinuba (Miscellaneous)", 7.75], ["City of Dixon (Miscellaneous)", 7.75], ["City of Dos Palos (Miscellaneous)", 7.75], ["City of Downey (Miscellaneous)", 7.25], ["City of Duarte (Miscellaneous)", 8.25], ["City of Dublin (Miscellaneous)", 7.75], ["City of Dunsmuir (Miscellaneous)", 7.75], ["City of East Palo Alto (Miscellaneous)", 7.75], ["City of Eastvale (Miscellaneous)", 7.75], ["City of El Cajon (Miscellaneous)", 7.25], ["City of El Centro (Miscellaneous)", 7.75], ["City of El Cerrito (Miscellaneous)", 7.75], ["City of El Monte (Miscellaneous)", 8.0], ["City of El Segundo (Miscellaneous)", 7.5], ["City of Elk Grove (Miscellaneous)", 7.75], ["City of Emeryville (Miscellaneous)", 8.25], ["City of Encinitas (Miscellaneous)", 7.75], ["City of Escalon (Miscellaneous)", 7.75], ["City of Escondido (Miscellaneous)", 7.75], ["City of Etna (Miscellaneous)", 7.75], ["City of Eureka (Miscellaneous)", 7.75], ["City of Exeter (Miscellaneous)", 7.75], ["City of Fairfield (Miscellaneous)", 7.75], ["City of Farmersville (Miscellaneous)", 7.75], ["City of Fillmore (Miscellaneous)", 8.0], ["City of Firebaugh (Miscellaneous)", 7.75], ["City of Folsom (Miscellaneous)", 8.0], ["City of Fontana (Miscellaneous)", 7.5], ["City of Fort Bragg (Miscellaneous)", 8.25], ["City of Fortuna (Miscellaneous)", 7.75], ["City of Foster City (Miscellaneous)", 7.25], ["City of Fountain Valley (Miscellaneous)", 7.75], ["City of Fowler (Miscellaneous)", 7.75], ["City of Fremont (Miscellaneous)", 7.25], ["City of Fullerton (Miscellaneous)", 8.0], ["City of Galt (Miscellaneous)", 7.75], ["City of Garden Grove (Miscellaneous)", 7.75], ["City of Gardena (Miscellaneous)", 7.75], ["City of Gilroy (Miscellaneous)", 8.0], ["City of Glendale (Miscellaneous)", 7.5], ["City of Glendora (Miscellaneous)", 7.5], ["City of Goleta (Miscellaneous)", 7.75], ["City of Gonzales (Miscellaneous)", 7.75], ["City of Grand Terrace (Miscellaneous)", 7.75], ["City of Grass Valley (Miscellaneous)", 7.75], ["City of Greenfield (Miscellaneous)", 7.75], ["City of Gridley (Miscellaneous)", 7.75], ["City of Grover Beach (Miscellaneous)", 7.75], ["City of Guadalupe (Miscellaneous)", 7.75], ["City of Gustine (Miscellaneous)", 7.75], ["City of Half Moon Bay (Miscellaneous)", 8.25], ["City of Hanford (Miscellaneous)", 8.25], ["City of Hawaiian Gardens (Miscellaneous)", 8.25], ["City of Hawthorne (Miscellaneous)", 7.5], ["City of Hayward (Miscellaneous)", 7.25], ["City of Healdsburg (Miscellaneous)", 8.25], ["City of Hemet (Miscellaneous)", 8.0], ["City of Hercules (Miscellaneous)", 7.75], ["City of Hermosa Beach (Miscellaneous)", 7.75], ["City of Hesperia (Miscellaneous)", 7.75], ["City of Hidden Hills (Miscellaneous)", 7.75], ["City of Highland (Miscellaneous)", 8.25], ["City of Hollister (Miscellaneous)", 7.75], ["City of Hughson (Miscellaneous)", 7.75], ["City of Huntington Beach (Miscellaneous)", 7.25], ["City of Huntington Park (Miscellaneous)", 8.25], ["City of Imperial (Miscellaneous)", 7.75], ["City of Imperial Beach (Miscellaneous)", 7.75], ["City of Indian Wells (Miscellaneous)", 8.25], ["City of Indio (Miscellaneous)", 7.75], ["City of Industry (Miscellaneous)", 8.25], ["City of Inglewood (Miscellaneous)", 7.75], ["City of Ione (Miscellaneous)", 7.75], ["City of Irvine (Miscellaneous)", 8.0], ["City of Irwindale (Miscellaneous)", 8.25], ["City of Jackson (Miscellaneous)", 7.75], ["City of Kerman (Miscellaneous)", 7.75], ["City of King City (Miscellaneous)", 7.75], ["City of Kingsburg (Miscellaneous)", 7.75], ["City of La Canada Flintridge (Miscellaneous)", 7.75], ["City of La Habra (Miscellaneous)", 7.75], ["City of La Habra Heights (Miscellaneous)", 7.75], ["City of La Mesa (Miscellaneous)", 7.75], ["City of La Mirada (Miscellaneous)", 7.75], ["City of La Palma (Miscellaneous)", 7.75], ["City of La Puente (Miscellaneous)", 8.25], ["City of La Quinta (Miscellaneous)", 7.75], ["City of La Verne (Miscellaneous)", 7.75], ["City of Laguna Beach (Miscellaneous)", 7.75], ["City of Laguna Hills (Miscellaneous)", 8.25], ["City of Laguna Niguel (Miscellaneous)", 7.75], ["City of Laguna Woods (Miscellaneous)", 8.0], ["City of Lake Elsinore (Miscellaneous)", 7.75], ["City of Lake Forest (Miscellaneous)", 7.75], ["City of Lakeport (Miscellaneous)", 7.75], ["City of Lakewood (Miscellaneous)", 7.75], ["City of Lancaster (Miscellaneous)", 7.25], ["City of Larkspur (Miscellaneous)", 7.75], ["City of Lathrop (Miscellaneous)", 7.75], ["City of Lawndale (Miscellaneous)", 7.75], ["City of Lemon Grove (Miscellaneous)", 7.75], ["City of Lemoore (Miscellaneous)", 7.75], ["City of Lincoln (Miscellaneous)", 7.75], ["City of Lindsay (Miscellaneous)", 7.75], ["City of Live Oak (Miscellaneous)", 7.75], ["City of Livermore (Miscellaneous)", 7.5], ["City of Livingston (Miscellaneous)", 7.75], ["City of Lodi (Miscellaneous)", 8.0], ["City of Loma Linda (Miscellaneous)", 7.75], ["City of Lomita (Miscellaneous)", 7.75], ["City of Lompoc (Miscellaneous)", 8.0], ["City of Long Beach (Miscellaneous)", 8.0], ["City of Los Alamitos (Miscellaneous)", 7.75], ["City of Los Altos (Miscellaneous)", 7.75], ["City of Los Banos (Miscellaneous)", 8.25], ["City of Lynwood (Miscellaneous)", 7.25], ["City of Madera (Miscellaneous)", 7.75], ["City of Malibu (Miscellaneous)", 8.25], ["City of Manhattan Beach (Miscellaneous)", 7.75], ["City of Manteca (Miscellaneous)", 7.75], ["City of Marina (Miscellaneous)", 7.75], ["City of Martinez (Miscellaneous)", 7.75], ["City of Marysville (Miscellaneous)", 7.75], ["City of Maywood (Miscellaneous)", 7.75], ["City of Mendota (Miscellaneous)", 7.75], ["City of Menifee (Miscellaneous)", 8.25], ["City of Menlo Park (Miscellaneous)", 7.5], ["City of Merced (Miscellaneous)", 7.5], ["City of Mill Valley (Miscellaneous)", 8.25], ["City of Millbrae (Miscellaneous)", 8.25], ["City of Milpitas (Miscellaneous)", 7.5], ["City of Mission Viejo (Miscellaneous)", 8.25], ["City of Modesto (Miscellaneous)", 7.75], ["City of Monrovia (Miscellaneous)", 7.5], ["City of Montague (Miscellaneous)", 7.75], ["City of Montclair (Miscellaneous)", 7.75], ["City of Monte Sereno (Miscellaneous)", 7.75], ["City of Montebello (Miscellaneous)", 7.5], ["City of Monterey (Miscellaneous)", 8.25], ["City of Monterey Park (Miscellaneous)", 7.75], ["City of Moorpark (Miscellaneous)", 7.75], ["City of Moreno Valley (Miscellaneous)", 7.75], ["City of Morgan Hill (Miscellaneous)", 7.5], ["City of Morro Bay (Miscellaneous)", 7.75], ["City of Mountain View (Miscellaneous)", 7.0], ["City of Mt. Shasta (Miscellaneous)", 7.75], ["City of Murrieta (Miscellaneous)", 8.0], ["City of Napa (Miscellaneous)", 7.25], ["City of National City (Miscellaneous)", 8.5], ["City of Needles (Miscellaneous)", 7.75], ["City of Nevada City (Miscellaneous)", 7.75], ["City of Newark (Miscellaneous)", 7.75], ["City of Newman (Miscellaneous)", 7.75], ["City of Newport Beach (Miscellaneous)", 7.5], ["City of Norco (Miscellaneous)", 7.75], ["City of Norwalk (Miscellaneous)", 8.5], ["City of Novato (Miscellaneous)", 8.0], ["City of Oakdale (Miscellaneous)", 8.25], ["City of Oakland (Miscellaneous)", 8.25], ["City of Oakley (Miscellaneous)", 7.75], ["City of Oceanside (Miscellaneous)", 8.25], ["City of Ojai (Miscellaneous)", 7.75], ["City of Ontario (Miscellaneous)", 7.25], ["City of Orange (Miscellaneous)", 7.75], ["City of Orange Cove (Miscellaneous)", 7.75], ["City of Orland (Miscellaneous)", 7.75], ["City of Oroville (Miscellaneous)", 8.25], ["City of Oxnard (Miscellaneous)", 8.25], ["City of Pacific Grove (Miscellaneous)", 7.75], ["City of Pacifica (Miscellaneous)", 8.0], ["City of Palm Desert (Miscellaneous)", 8.75], ["City of Palm Springs (Miscellaneous)", 8.75], ["City of Palmdale (Miscellaneous)", 7.75], ["City of Palo Alto (Miscellaneous)", 7.25], ["City of Palos Verdes Estates (Miscellaneous)", 7.75], ["City of Paramount (Miscellaneous)", 8.25], ["City of Parlier (Miscellaneous)", 7.75], ["City of Pasadena (Miscellaneous)", 7.75], ["City of Paso Robles (Miscellaneous)", 7.75], ["City of Patterson (Miscellaneous)", 7.75], ["City of Perris (Miscellaneous)", 7.75], ["City of Petaluma (Miscellaneous)", 8.0], ["City of Pico Rivera (Miscellaneous)", 7.5], ["City of Piedmont (Miscellaneous)", 7.75], ["City of Pinole (Miscellaneous)", 7.75], ["City of Pismo Beach (Miscellaneous)", 7.75], ["City of Pittsburg (Miscellaneous)", 7.25], ["City of Placentia (Miscellaneous)", 7.75], ["City of Placerville (Miscellaneous)", 8.0], ["City of Pleasant Hill (Miscellaneous)", 7.75], ["City of Pleasanton (Miscellaneous)", 8.0], ["City of Pomona (Miscellaneous)", 7.5], ["City of Port Hueneme (Miscellaneous)", 7.75], ["City of Porterville (Miscellaneous)", 7.75], ["City of Portola (Miscellaneous)", 7.75], ["City of Poway (Miscellaneous)", 7.75], ["City of Rancho Cordova (Miscellaneous)", 7.75], ["City of Rancho Cucamonga (Miscellaneous)", 7.5], ["City of Rancho Mirage (Miscellaneous)", 7.75], ["City of Rancho Palos Verdes (Miscellaneous)", 7.75], ["City of Rancho Santa Margarita (Miscellaneous)", 8.0], ["City of Red Bluff (Miscellaneous)", 7.75], ["City of Redding (Miscellaneous)", 8.0], ["City of Redlands (Miscellaneous)", 8.25], ["City of Redondo Beach (Miscellaneous)", 7.75], ["City of Redwood City (Miscellaneous)", 7.0], ["City of Reedley (Miscellaneous)", 7.75], ["City of Rialto (Miscellaneous)", 8.25], ["City of Richmond (Miscellaneous)", 8.25], ["City of Ridgecrest (Miscellaneous)", 7.75], ["City of Rio Vista (Miscellaneous)", 7.75], ["City of Riverbank (Miscellaneous)", 7.75], ["City of Riverside (Miscellaneous)", 8.25], ["City of Rocklin (Miscellaneous)", 8.25], ["City of Rohnert Park (Miscellaneous)", 8.0], ["City of Rolling Hills (Miscellaneous)", 8.25], ["City of Rolling Hills Estates (Miscellaneous)", 8.25], ["City of Rosemead (Miscellaneous)", 7.75], ["City of Roseville (Miscellaneous)", 7.75], ["City of Sacramento (Miscellaneous)", 8.0], ["City of Salinas (Miscellaneous)", 7.5], ["City of San Bernardino (Miscellaneous)", 7.75], ["City of San Bruno (Miscellaneous)", 7.25], ["City of San Buenaventura (Miscellaneous)", 7.75], ["City of San Carlos (Miscellaneous)", 8.0], ["City of San Clemente (Miscellaneous)", 8.25], ["City of San Dimas (Miscellaneous)", 7.75], ["City of San Fernando (Miscellaneous)", 8.0], ["City of San Gabriel (Miscellaneous)", 8.25], ["City of San Jacinto (Miscellaneous)", 7.75], ["City of San Joaquin (Miscellaneous)", 7.75], ["City of San Jose (Miscellaneous)", 7.75], ["City of San Leandro (Miscellaneous)", 7.5], ["City of San Luis Obispo (Miscellaneous)", 7.5], ["City of San Marcos (Miscellaneous)", 8.0], ["City of San Marino (Miscellaneous)", 8.25], ["City of San Mateo (Miscellaneous)", 7.5], ["City of San Pablo (Miscellaneous)", 7.75], ["City of San Ramon (Miscellaneous)", 8.0], ["City of Sand City (Miscellaneous)", 7.75], ["City of Sanger (Miscellaneous)", 7.75], ["City of Santa Ana (Miscellaneous)", 7.75], ["City of Santa Barbara (Miscellaneous)", 7.75], ["City of Santa Clara (Miscellaneous)", 7.0], ["City of Santa Clarita (Miscellaneous)", 7.25], ["City of Santa Cruz (Miscellaneous)", 8.5], ["City of Santa Fe Springs (Miscellaneous)", 7.25], ["City of Santa Maria (Miscellaneous)", 8.25], ["City of Santa Monica (Miscellaneous)", 7.5], ["City of Santa Paula (Miscellaneous)", 7.75], ["City of Santa Rosa (Miscellaneous)", 8.0], ["City of Santee (Miscellaneous)", 7.75], ["City of Saratoga (Miscellaneous)", 8.25], ["City of Sausalito (Miscellaneous)", 8.25], ["City of Scotts Valley (Miscellaneous)", 7.75], ["City of Seal Beach (Miscellaneous)", 8.25], ["City of Seaside (Miscellaneous)", 7.75], ["City of Sebastopol (Miscellaneous)", 7.75], ["City of Selma (Miscellaneous)", 7.75], ["City of Shafter (Miscellaneous)", 7.75], ["City of Shasta Lake (Miscellaneous)", 7.75], ["City of Sierra Madre (Miscellaneous)", 8.25], ["City of Signal Hill (Miscellaneous)", 7.75], ["City of Simi Valley (Miscellaneous)", 8.0], ["City of Solana Beach (Miscellaneous)", 7.75], ["City of Soledad (Miscellaneous)", 7.75], ["City of Solvang (Miscellaneous)", 8.25], ["City of Sonoma (Miscellaneous)", 8.25], ["City of Sonora (Miscellaneous)", 8.25], ["City of South El Monte (Miscellaneous)", 7.75], ["City of South Gate (Miscellaneous)", 8.0], ["City of South Lake Tahoe (Miscellaneous)", 8.0], ["City of South Pasadena (Miscellaneous)", 8.25], ["City of South San Francisco (Miscellaneous)", 7.25], ["City of St. Helena (Miscellaneous)", 7.75], ["City of Stanton (Miscellaneous)", 7.75], ["City of Stockton (Miscellaneous)", 7.5], ["City of Suisun City (Miscellaneous)", 7.75], ["City of Sunnyvale (Miscellaneous)", 7.5], ["City of Susanville (Miscellaneous)", 7.75], ["City of Sutter Creek (Miscellaneous)", 7.75], ["City of Taft (Miscellaneous)", 7.75], ["City of Tehachapi (Miscellaneous)", 7.75], ["City of Temecula (Miscellaneous)", 8.0], ["City of Temple City (Miscellaneous)", 8.25], ["City of Thousand Oaks (Miscellaneous)", 7.75], ["City of Torrance (Miscellaneous)", 8.0], ["City of Tracy (Miscellaneous)", 7.5], ["City of Tulare (Miscellaneous)", 8.25], ["City of Tulelake (Miscellaneous)", 7.75], ["City of Turlock (Miscellaneous)", 7.25], ["City of Tustin (Miscellaneous)", 7.25], ["City of Twentynine Palms (Miscellaneous)", 7.75], ["City of Ukiah (Miscellaneous)", 8.0], ["City of Union City (Miscellaneous)", 8.75], ["City of Upland (Miscellaneous)", 8.0], ["City of Vacaville (Miscellaneous)", 7.5], ["City of Vallejo (Miscellaneous)", 7.75], ["City of Vernon (Miscellaneous)", 8.0], ["City of Victorville (Miscellaneous)", 7.75], ["City of Villa Park (Miscellaneous)", 7.75], ["City of Visalia (Miscellaneous)", 8.25], ["City of Vista (Miscellaneous)", 8.25], ["City of Walnut (Miscellaneous)", 7.75], ["City of Walnut Creek (Miscellaneous)", 8.0], ["City of Wasco (Miscellaneous)", 7.75], ["City of Waterford (Miscellaneous)", 7.75], ["City of Watsonville (Miscellaneous)", 7.5], ["City of Weed (Miscellaneous)", 7.75], ["City of West Covina (Miscellaneous)", 7.75], ["City of West Hollywood (Miscellaneous)", 7.25], ["City of West Sacramento (Miscellaneous)", 7.75], ["City of Westlake Village (Miscellaneous)", 7.75], ["City of Westminster (Miscellaneous)", 8.25], ["City of Whittier (Miscellaneous)", 7.25], ["City of Wildomar (Miscellaneous)", 7.75], ["City of Williams (Miscellaneous)", 7.75], ["City of Willits (Miscellaneous)", 7.75], ["City of Willows (Miscellaneous)", 7.75], ["City of Winters (Miscellaneous)", 7.75], ["City of Woodlake (Miscellaneous)", 7.75], ["City of Woodland (Miscellaneous)", 7.25], ["City of Yorba Linda (Miscellaneous)", 7.75], ["City of Yreka (Miscellaneous)", 7.75], ["City of Yuba City (Miscellaneous)", 8.25], ["City of Yucaipa (Miscellaneous)", 8.25], ["City/County Association of Governments of San Mateo County (Miscellaneous)", 7.75], ["Clear Creek Community Services District (Miscellaneous)", 7.75], ["Clearlake Oaks County Water District (Miscellaneous)", 7.75], ["Cloverdale Citrus Fair (Miscellaneous)", 7.75], ["Cloverdale Fire Protection District (Miscellaneous)", 7.75], ["Clovis Cemetery District (Miscellaneous)", 8.25], ["Coachella Valley Association of Governments (Miscellaneous)", 8.25], ["Coachella Valley Mosquito and Vector Control District (Miscellaneous)", 7.75], ["Coachella Valley Public Cemetery District (Miscellaneous)", 7.75], ["Coachella Valley Water District (Miscellaneous)", 7.75], ["Coalinga-Huron Cemetery District (Miscellaneous)", 7.75], ["Coalinga-Huron Recreation and Park District (Miscellaneous)", 7.75], ["Coalinga/Huron Unified School District Library District (Miscellaneous)", 7.75], ["Coast Life Support District (Miscellaneous)", 7.75], ["Coastal Animal Services Authority (Miscellaneous)", 7.75], ["Coastal Developmental Services Fdn DBA Westside Regional Center (Miscellaneous)", 8.0], ["Coastside County Water District (Miscellaneous)", 8.25], ["College of the Canyons Foundation (Miscellaneous)", 8.25], ["Colusa County One-Stop Partnership (Miscellaneous)", 7.75], ["Colusa Mosquito Abatement District (Miscellaneous)", 7.75], ["Community College League of California (Miscellaneous)", 7.75], ["Community Development Commission of Mendocino County (Miscellaneous)", 7.75], ["Compass Community Credit Union (Miscellaneous)", 7.75], ["Compton Creek Mosquito Abatement District (Miscellaneous)", 8.25], ["Conejo Recreation and Park District (Miscellaneous)", 8.0], ["Connecting Point (Miscellaneous)", 7.75], ["Consolidated Mosquito Abatement District (Miscellaneous)", 7.75], ["Contra Costa County Law Library (Miscellaneous)", 7.75], ["Contra Costa County Schools Insurance Group (Miscellaneous)", 7.75], ["Contra Costa Transportation Authority (Miscellaneous)", 7.75], ["Cooperative Organization for the Development of Employee Selection Procedures (Miscellaneous)", 8.25], ["Cooperative Personnel Services (Miscellaneous)", 9.5], ["Copperopolis Fire Protection District (Miscellaneous)", 8.0], ["Cordova Recreation and Park District (Miscellaneous)", 8.0], ["Corning Water District (Miscellaneous)", 7.75], ["Costa Mesa Sanitary District (Miscellaneous)", 8.25], ["Cosumnes Community Services District (Miscellaneous)", 7.75], ["Cottonwood Water District (Miscellaneous)", 7.75], ["County of Alpine (Miscellaneous)", 8.25], ["County of Amador (Miscellaneous)", 8.5], ["County of Butte (Miscellaneous)", 7.75], ["County of Calaveras (Miscellaneous)", 8.75], ["County of Colusa (Miscellaneous)", 7.5], ["County of Del Norte (Miscellaneous)", 7.75], ["County of El Dorado (Miscellaneous)", 8.25], ["County of Glenn (Miscellaneous)", 7.5], ["County of Humboldt (Miscellaneous)", 8.0], ["County of Inyo (Miscellaneous)", 8.25], ["County of Kings (Miscellaneous)", 7.25], ["County of Lake (Miscellaneous)", 8.25], ["County of Lassen (Miscellaneous)", 8.0], ["County of Madera (Miscellaneous)", 7.75], ["County of Mariposa (Miscellaneous)", 7.75], ["County of Modoc (Miscellaneous)", 8.5], ["County of Mono (Miscellaneous)", 7.75], ["County of Monterey (Miscellaneous)", 7.0], ["County of Napa (Miscellaneous)", 7.75], ["County of Nevada (Miscellaneous)", 8.5], ["County of Placer (Miscellaneous)", 8.0], ["County of Plumas (Miscellaneous)", 8.0], ["County of Riverside (Miscellaneous)", 7.75], ["County of San Benito (Miscellaneous)", 8.25], ["County of Santa Clara (Miscellaneous)", 7.5], ["County of Santa Cruz (Miscellaneous)", 7.75], ["County of Shasta (Miscellaneous)", 8.5], ["County of Sierra (Miscellaneous)", 7.75], ["County of Siskiyou (Miscellaneous)", 8.25], ["County of Solano (Miscellaneous)", 7.5], ["County of Sutter (Miscellaneous)", 7.75], ["County of Tehama (Miscellaneous)", 8.0], ["County of Trinity (Miscellaneous)", 8.5], ["County of Tuolumne (Miscellaneous)", 8.0], ["County of Yolo (Miscellaneous)", 7.5], ["County of Yuba (Miscellaneous)", 7.75], ["Crescent City Harbor District (Miscellaneous)", 7.75], ["Crescenta Valley Water District (Miscellaneous)", 7.75], ["Crestline Lake Arrowhead Water Agency (Miscellaneous)", 8.0], ["Crestline Village Water District (Miscellaneous)", 7.75], ["Crockett Community Services District (Miscellaneous)", 7.75], ["Cucamonga Valley Water District (Miscellaneous)", 7.25], ["Cutler Public Utility District (Miscellaneous)", 7.75], ["Cutler-Orosi Joint Powers Wastewater Authority (Miscellaneous)", 7.75], ["Dairy Council of California (Miscellaneous)", 7.75], ["Davis Cemetery District (Miscellaneous)", 7.75], ["De Luz Community Services District (Miscellaneous)", 7.75], ["Del Norte County Library District (Miscellaneous)", 7.75], ["Del Puerto Water District (Miscellaneous)", 7.75], ["Del Rey Community Services District (Miscellaneous)", 7.75], ["Delano Mosquito Abatement District (Miscellaneous)", 7.75], ["Delta Diablo (Miscellaneous)", 8.0], ["Delta Mosquito and Vector Control District (Miscellaneous)", 7.75], ["Denair Community Services District (Miscellaneous)", 7.75], ["Desert Water Agency (Miscellaneous)", 8.25], ["Diablo Water District (Miscellaneous)", 8.0], ["Diamond Springs/El Dorado Fire Protection District (Miscellaneous)", 7.75], ["Donald P. And Katherine B. Loker University Student Union, Inc. (Miscellaneous)", 7.75], ["Dublin San Ramon Services District (Miscellaneous)", 7.75], ["East Bay Dischargers Authority (Miscellaneous)", 7.75], ["East Bay Regional Park District (Miscellaneous)", 7.75], ["East Contra Costa Irrigation District (Miscellaneous)", 7.75], ["East County Schools Federal Credit Union (Miscellaneous)", 8.25], ["East Orange County Water District (Miscellaneous)", 7.75], ["East Palo Alto Sanitary District (Miscellaneous)", 7.75], ["East Quincy Services District (Miscellaneous)", 7.75], ["East Valley Water District (Miscellaneous)", 8.0], ["Eastern Municipal Water District (Miscellaneous)", 7.5], ["Eastern Sierra Transit Authority (Miscellaneous)", 7.75], ["Edgemont Community Services District (Miscellaneous)", 7.75], ["El Dorado County Fire Protection District (Miscellaneous)", 8.0], ["El Dorado County Resource Conservation District (Miscellaneous)", 8.25], ["El Dorado County Transit Authority (Miscellaneous)", 8.25], ["El Dorado County Transportation Commission (Miscellaneous)", 7.75], ["El Dorado County Water Agency (Miscellaneous)", 7.75], ["El Dorado Hills Community Services District (Miscellaneous)", 8.25], ["El Dorado Hills County Water District (Miscellaneous)", 7.75], ["El Dorado Irrigation District (Miscellaneous)", 7.5], ["El Dorado Local Agency Formation Commission (Miscellaneous)", 7.75], ["Encina Wastewater Authority (Miscellaneous)", 8.0], ["Esparto Community Services District (Miscellaneous)", 7.75], ["Exeter District Ambulance (Miscellaneous)", 7.75], ["Fair Oaks Recreation & Park District (Miscellaneous)", 7.75], ["Fair Oaks Water District (Miscellaneous)", 7.75], ["Fairfield-Suisun Sewer District (Miscellaneous)", 8.0], ["Fall River Valley Community Services District (Miscellaneous)", 7.75], ["Fallbrook Public Utility District (Miscellaneous)", 8.25], ["Far Northern Coordinating Council on Developmental Disabilities (Miscellaneous)", 8.0], ["Feather River Air Quality Management District (Miscellaneous)", 7.75], ["Feather River Recreation and Park District (Miscellaneous)", 7.75], ["Fern Valley Water District (Miscellaneous)", 8.25], ["Florin County Water District (Miscellaneous)", 7.75], ["Florin Resource Conservation District Elk Grove Water District (Miscellaneous)", 7.75], ["Foothill Municipal Water District (Miscellaneous)", 8.25], ["Foresthill Public Utility District (Miscellaneous)", 7.75], ["Forestville Water District (Miscellaneous)", 7.75], ["Foundation for California Community Colleges (Miscellaneous)", 7.75], ["Foundation for Grossmont and Cuyamaca Colleges (Miscellaneous)", 7.75], ["Fresno City Housing Authority (Miscellaneous)", 7.75], ["Fresno County Housing Authority (Miscellaneous)", 8.25], ["Fresno County Law Library (Miscellaneous)", 7.75], ["Fresno Westside Mosquito Abatement District (Miscellaneous)", 7.75], ["Fulton-El Camino Recreation and Park District (Miscellaneous)", 7.75], ["Garden Valley Fire Protection District (Miscellaneous)", 7.75], ["Georgetown Divide Public Utility District (Miscellaneous)", 7.75], ["Georgetown Divide Resource Conservation District (Miscellaneous)", 8.25], ["Georgetown Fire Protection District (Miscellaneous)", 7.75], ["Glenn County Mosquito and Vector Control District (Miscellaneous)", 8.25], ["Gold Coast Transit (Miscellaneous)", 8.0], ["Gold Ridge Fire Protection District (Miscellaneous)", 7.75], ["Gold Ridge Resource Conservation District (Miscellaneous)", 7.75], ["Golden Gate Bridge Highway and Transportation District (Miscellaneous)", 7.75], ["Golden Hills Community Services District (Miscellaneous)", 7.75], ["Golden Sierra Job Training Agency (Miscellaneous)", 7.75], ["Goleta Sanitary District (Miscellaneous)", 8.25], ["Goleta Water District (Miscellaneous)", 7.75], ["Goleta West Sanitary District (Miscellaneous)", 8.25], ["Granada Community Services District (Miscellaneous)", 7.75], ["Graton Community Services District (Miscellaneous)", 7.75], ["Great Basin Unified Air Pollution Control District (Miscellaneous)", 7.75], ["Great Redwood Trail Agency (Miscellaneous)", 7.75], ["Greater Anaheim Special Education Local Plan Area (Miscellaneous)", 7.75], ["Greater Los Angeles County Vector Control District (Miscellaneous)", 7.75], ["Greater Vallejo Recreation District (Miscellaneous)", 7.75], ["Green Valley County Water District (Miscellaneous)", 7.75], ["Gridley Biggs Cemetery District (Miscellaneous)", 7.75], ["Grossmont Healthcare District (Miscellaneous)", 7.75], ["Groveland Community Services District (Miscellaneous)", 7.75], ["Gualala Community Services District (Miscellaneous)", 7.75], ["Happy Homestead Cemetery District (Miscellaneous)", 7.75], ["Hayward Area Recreation and Park District (Miscellaneous)", 7.75], ["Health Plan of San Joaquin (Miscellaneous)", 7.75], ["Heartland Communications Facility Authority (Miscellaneous)", 8.0], ["Heber Public Utility District (Miscellaneous)", 7.75], ["Helendale Community Services District (Miscellaneous)", 7.75], ["Helix Water District (Miscellaneous)", 7.75], ["Henry Miller Reclamation District No. 2131 (Miscellaneous)", 7.75], ["Heritage Ranch Community Services District (Miscellaneous)", 7.75], ["Herlong Public Utility District (Miscellaneous)", 7.75], ["Hesperia Water District (Miscellaneous)", 7.75], ["Hi-Desert Water District (Miscellaneous)", 8.25], ["Hidden Valley Lake Community Services District (Miscellaneous)", 7.75], ["Higgins Area Fire Protection District (Miscellaneous)", 7.75], ["Hilton Creek Community Services District (Miscellaneous)", 7.75], ["Housing Authority of the City of Alameda (Miscellaneous)", 8.25], ["Housing Authority of the City of Calexico (Miscellaneous)", 7.75], ["Housing Authority of the City of Eureka (Miscellaneous)", 7.75], ["Housing Authority of the City of Livermore (Miscellaneous)", 7.75], ["Housing Authority of the City of Los Angeles (Miscellaneous)", 7.75], ["Housing Authority of the City of Madera (Miscellaneous)", 7.75], ["Housing Authority of the City of San Buenaventura (Miscellaneous)", 7.75], ["Housing Authority of the City of San Luis Obispo (Miscellaneous)", 7.75], ["Housing Authority of the City of Santa Paula (Miscellaneous)", 8.25], ["Housing Authority of the City of South San Francisco (Miscellaneous)", 7.75], ["Housing Authority of the County of Butte (Miscellaneous)", 7.75], ["Housing Authority of the County of Kern (Miscellaneous)", 8.0], ["Housing Authority of the County of Santa Cruz (Miscellaneous)", 7.75], ["Hub Cities Consortium (Miscellaneous)", 8.0], ["Humboldt Bay Fire Joint Powers Authority (Miscellaneous)", 7.75], ["Humboldt Bay Harbor Recreation and Conservation District (Miscellaneous)", 7.75], ["Humboldt Bay Municipal Water District (Miscellaneous)", 7.75], ["Humboldt Community Services District (Miscellaneous)", 7.75], ["Humboldt County Association of Governments (Miscellaneous)", 7.75], ["Humboldt Transit Authority (Miscellaneous)", 7.75], ["Humboldt Waste Management Authority (Miscellaneous)", 7.75], ["Idyllwild Fire Protection District (Miscellaneous)", 7.75], ["Indian Wells Valley Water District (Miscellaneous)", 7.75], ["Inland Counties Regional Center, Inc. (Miscellaneous)", 7.5], ["Inland Empire Health Plan (Miscellaneous)", 8.25], ["Inland Empire Resource Conservation District (Miscellaneous)", 7.75], ["Inland Empire Utilities Agency (Miscellaneous)", 6.75], ["Intergovernmental Training and Development Center (Miscellaneous)", 7.75], ["Inverness Public Utility District (Miscellaneous)", 7.75], ["Ironhouse Sanitary District (Miscellaneous)", 8.0], ["Irvine Ranch Water District (Miscellaneous)", 7.5], ["Isla Vista Recreation and Park District (Miscellaneous)", 7.75], ["Jackson Valley Irrigation District (Miscellaneous)", 7.75], ["Jamestown Sanitary District (Miscellaneous)", 7.75], ["Joshua Basin Water District (Miscellaneous)", 8.25], ["June Lake Public Utility District (Miscellaneous)", 7.75], ["Jurupa Area Recreation and Park District (Miscellaneous)", 8.25], ["Jurupa Community Services District (Miscellaneous)", 7.75], ["Kaweah Delta Water Conservation District (Miscellaneous)", 7.75], ["Kelseyville Fire Protection District (Miscellaneous)", 7.75], ["Kentfield Fire Protection District (Miscellaneous)", 7.75], ["Kern County Council of Governments (Miscellaneous)", 7.75], ["Kern County Local Agency Formation Commission (Miscellaneous)", 8.25], ["Kern Health Systems (Miscellaneous)", 7.75], ["Kern River Valley Cemetery District (Miscellaneous)", 7.75], ["Kern-Tulare Water District (Miscellaneous)", 7.75], ["Kings County Area Public Transit Agency (Miscellaneous)", 7.75], ["Kings County Association of Governments (Miscellaneous)", 7.75], ["Kings Mosquito Abatement District (Miscellaneous)", 7.75], ["Kings Waste and Recycling Authority (Miscellaneous)", 7.75], ["Kinneloa Irrigation District (Miscellaneous)", 7.75], ["Kirkwood Meadows Public Utility District (Miscellaneous)", 7.75], ["Konocti County Water District (Miscellaneous)", 7.75], ["La Habra Heights County Water District (Miscellaneous)", 7.75], ["La Puente Valley County Water District (Miscellaneous)", 7.75], ["Laguna Beach County Water District (Miscellaneous)", 7.75], ["Lake Arrowhead Community Services District (Miscellaneous)", 7.75], ["Lake County Fire Protection District (Miscellaneous)", 8.0], ["Lake County Vector Control District (Miscellaneous)", 7.75], ["Lake Don Pedro Community Services District (Miscellaneous)", 8.25], ["Lake Hemet Municipal Water District (Miscellaneous)", 7.75], ["Lake Oroville Area Public Utility District (Miscellaneous)", 7.75], ["Lake Shastina Community Services District (Miscellaneous)", 7.75], ["Lake Valley Fire Protection District (Miscellaneous)", 7.75], ["Lakeport County Fire Protection District (Miscellaneous)", 7.75], ["Lakeside Fire Protection District (Miscellaneous)", 8.25], ["Lakeside Water District (Miscellaneous)", 4.5], ["Lamont Public Utility District (Miscellaneous)", 7.75], ["Las Gallinas Valley Sanitary District of Marin County (Miscellaneous)", 7.75], ["Las Virgenes Municipal Water District (Miscellaneous)", 7.0], ["League of California Cities (Miscellaneous)", 7.75], ["Leucadia Wastewater District (Miscellaneous)", 7.75], ["Levee District No. 1 of Sutter County (Miscellaneous)", 7.75], ["Linda County Water District (Miscellaneous)", 7.75], ["Linda Fire Protection District (Miscellaneous)", 7.75], ["Lindsay Strathmore Public Cemetery District (Miscellaneous)", 7.75], ["Little Lake Fire Protection District (Miscellaneous)", 7.75], ["Littlerock Creek Irrigation District (Miscellaneous)", 7.75], ["Live Oak Cemetery District (Miscellaneous)", 7.75], ["Livermore/Amador Valley Transit Authority (Miscellaneous)", 7.75], ["Local Agency Formation Commission of Monterey County (Miscellaneous)", 7.75], ["Local Agency Formation Commission of Solano County (Miscellaneous)", 8.25], ["Long Beach State University, Associated Students (Miscellaneous)", 8.25], ["Long Beach State University, Forty-Niner Shops, Inc. (Miscellaneous)", 7.75], ["Los Alamos Community Services District (Miscellaneous)", 7.75], ["Los Angeles County Development Authority (Miscellaneous)", 8.25], ["Los Angeles County Law Library (Miscellaneous)", 8.25], ["Los Angeles County Office of Education (Miscellaneous)", 7.75], ["Los Angeles County Sanitation District No. 2 (Miscellaneous)", 7.75], ["Los Angeles County West Vector Control District (Miscellaneous)", 7.75], ["Los Gatos-Saratoga Department of Community Education and Recreation (Miscellaneous)", 8.25], ["Los Osos Community Services District (Miscellaneous)", 8.25], ["Lower Lake County Waterworks District No. 1 (Miscellaneous)", 7.75], ["Lower Tule River Irrigation District (Miscellaneous)", 7.75], ["MT. View Sanitary District of Contra Costa County (Miscellaneous)", 8.25], ["Madera Cemetery District (Miscellaneous)", 7.75], ["Madera County Mosquito and Vector Control District (Miscellaneous)", 7.75], ["Main San Gabriel Basin Watermaster (Miscellaneous)", 7.75], ["Majestic Pines Community Services District (Miscellaneous)", 7.75], ["Mammoth Lakes Fire District (Miscellaneous)", 7.75], ["March Joint Powers Authority (Miscellaneous)", 7.75], ["Marin Children and Families Commission (Miscellaneous)", 7.75], ["Marin County Housing Authority (Miscellaneous)", 7.75], ["Marin County In-Home Supportive Services Public Authority (Miscellaneous)", 7.75], ["Marin Municipal Water District (Miscellaneous)", 7.0], ["Marina Coast Water District (Miscellaneous)", 7.75], ["Marinwood Community Services District (Miscellaneous)", 7.75], ["Mariposa Public Utility District (Miscellaneous)", 7.75], ["Maxwell Public Utility District (Miscellaneous)", 7.75], ["McCloud Community Services District (Miscellaneous)", 7.75], ["McFarland Recreation and Park District (Miscellaneous)", 7.75], ["McKinleyville Community Services District (Miscellaneous)", 7.75], ["Meiners Oaks County Water District (Miscellaneous)", 7.75], ["Mendocino City Community Services District (Miscellaneous)", 7.75], ["Mendocino County Russian River Flood Control & Water Conservation Improvement Dt (Miscellaneous)", 7.75], ["Mendocino Transit Authority (Miscellaneous)", 7.75], ["Menlo Park Fire Protection District (Miscellaneous)", 8.25], ["Merced County Housing Authority (Miscellaneous)", 7.75], ["Merced County Mosquito Abatement District (Miscellaneous)", 7.75], ["Merced Irrigation District (Miscellaneous)", 7.5], ["Mesa Water District (Miscellaneous)", 8.25], ["Metropolitan Transportation Commission (Miscellaneous)", 7.25], ["Metropolitan Water District of Southern California (Miscellaneous)", 8.0], ["Mid-Peninsula Water District (Miscellaneous)", 7.75], ["Mid-Placer Public Schools Transportation Agency (Miscellaneous)", 7.75], ["Midpeninsula Regional Open Space District (Miscellaneous)", 8.0], ["Midway City Sanitary District (Miscellaneous)", 7.75], ["Midway Heights County Water District (Miscellaneous)", 8.25], ["Minter Field Airport District (Miscellaneous)", 8.0], ["Mission Springs Water District (Miscellaneous)", 7.75], ["Mojave Air and Space Port (Miscellaneous)", 8.0], ["Mojave Water Agency (Miscellaneous)", 8.25], ["Monte Vista County Water District (Miscellaneous)", 7.75], ["Montecito Fire Protection District (Miscellaneous)", 8.25], ["Montecito Sanitary District of Santa Barbara County (Miscellaneous)", 7.75], ["Montecito Water District (Miscellaneous)", 7.75], ["Monterey Bay Unified Air Pollution Control District (Miscellaneous)", 7.75], ["Monterey County Mosquito Abatement District (Miscellaneous)", 7.75], ["Monterey County Regional Fire Protection District (Miscellaneous)", 8.25], ["Monterey County Water Resources Agency (Miscellaneous)", 7.75], ["Monterey One Water (Miscellaneous)", 7.75], ["Monterey Peninsula Airport District (Miscellaneous)", 7.75], ["Monterey Peninsula Regional Park District (Miscellaneous)", 8.0], ["Monterey Peninsula Water Management District (Miscellaneous)", 7.75], ["Monterey Regional Waste Management District (Miscellaneous)", 8.25], ["Monterey-Salinas Transit District (Miscellaneous)", 8.0], ["Morongo Basin Transit Authority (Miscellaneous)", 7.75], ["Mother Lode Job Training Agency (Miscellaneous)", 7.75], ["Moulton-Niguel Water District (Miscellaneous)", 8.0], ["Mountains Recreation and Conservation Authority (Miscellaneous)", 8.0], ["Municipal Pooling Authority (Miscellaneous)", 7.75], ["Municipal Water District of Orange County (Miscellaneous)", 7.75], ["Murphys Sanitary District (Miscellaneous)", 7.75], ["Murrieta Valley Cemetery District (Miscellaneous)", 7.75], ["Napa County Mosquito Abatement District (Miscellaneous)", 8.25], ["Napa County Resource Conservation District (Miscellaneous)", 7.75], ["Napa Sanitation District (Miscellaneous)", 8.25], ["Napa Valley Transportation Authority (Miscellaneous)", 7.75], ["National Orange Show (Miscellaneous)", 7.75], ["Nevada Cemetery District (Miscellaneous)", 7.75], ["Nevada County Consolidated Fire District (Miscellaneous)", 7.75], ["Nevada County Local Agency Formation Commission (Miscellaneous)", 7.75], ["Nevada County Resource Conservation District (Miscellaneous)", 7.75], ["Nevada Irrigation District (Miscellaneous)", 8.75], ["Newcastle, Rocklin, Gold Hill Cemetery District (Miscellaneous)", 7.75], ["Nipomo Community Services District (Miscellaneous)", 8.25], ["North Bay Regional Center (Miscellaneous)", 7.75], ["North Bay Schools Insurance Authority (Miscellaneous)", 8.25], ["North Central Counties Consortium (Miscellaneous)", 7.75], ["North Coast County Water District (Miscellaneous)", 7.75], ["North Coast Unified Air Quality Management District (Miscellaneous)", 7.75], ["North County Dispatch Joint Powers Authority (Miscellaneous)", 7.75], ["North County Fire Protection District of San Diego County (Miscellaneous)", 8.25], ["North County Transit District (Miscellaneous 1st)", 8.25], ["North County Transit District (Miscellaneous 2nd)", 5.25], ["North Kern Cemetery District (Miscellaneous)", 8.25], ["North Kern Water Storage District (Miscellaneous)", 7.75], ["North Kern-South Tulare Hospital District (Miscellaneous)", 7.75], ["North Los Angeles County Regional Center, Inc. (Miscellaneous)", 7.75], ["North Marin Water District (Miscellaneous)", 7.75], ["North Tahoe Fire Protection District (Miscellaneous)", 7.75], ["North Tahoe Public Utility District (Miscellaneous)", 7.75], ["North Yuba Water District (Miscellaneous)", 7.75], ["North of the River Recreation and Park District (Miscellaneous)", 7.75], ["Northern California Power Agency (Miscellaneous)", 7.25], ["Northern Sierra Air Quality Management District (Miscellaneous)", 8.25], ["Northshore Fire Protection District (Miscellaneous)", 7.75], ["Northstar Community Services District (Miscellaneous)", 7.75], ["Northwest Mosquito and Vector Control District (Miscellaneous)", 8.25], ["Novato Sanitary District (Miscellaneous)", 7.75], ["Oakdale Irrigation District (Miscellaneous)", 7.75], ["Oakland City Housing Authority (Miscellaneous)", 8.25], ["Oceano Community Services District (Miscellaneous)", 7.75], ["Ojai Valley Sanitary District (Miscellaneous)", 8.25], ["Olcese Water District (Miscellaneous)", 7.75], ["Olivenhain Municipal Water District (Miscellaneous)", 7.75], ["Olympic Valley Public Service District (Miscellaneous)", 8.25], ["Omnitrans (Miscellaneous)", 8.5], ["Orange County Health Authority (Miscellaneous)", 8.25], ["Orange County Vector Control District (Miscellaneous)", 7.75], ["Orchard Dale Water District (Miscellaneous)", 8.25], ["Orland Cemetery District (Miscellaneous)", 7.75], ["Oro Loma Sanitary District (Miscellaneous)", 8.25], ["Oroville Cemetery District (Miscellaneous)", 7.75], ["Otay Water District (Miscellaneous)", 7.5], ["Oxnard Harbor District (Miscellaneous)", 7.75], ["Padre Dam Municipal Water District (Miscellaneous)", 7.25], ["Pajaro Regional Flood Management Agency (Miscellaneous)", 7.75], ["Pajaro Valley Public Cemetery District (Miscellaneous)", 7.75], ["Pajaro Valley Water Management Agency (Miscellaneous)", 7.75], ["Palm Ranch Irrigation District (Miscellaneous)", 7.75], ["Palmdale Water District (Miscellaneous)", 7.75], ["Palo Verde Valley District Library (Miscellaneous)", 7.75], ["Palos Verdes Library District (Miscellaneous)", 7.75], ["Paradise Recreation and Park District (Miscellaneous)", 7.75], ["Paso Robles City Housing Authority (Miscellaneous)", 8.25], ["Patterson Irrigation District (Miscellaneous)", 7.75], ["Pauma Valley Community Services District (Miscellaneous)", 7.75], ["Pebble Beach Community Services District (Miscellaneous)", 8.25], ["Peninsula Health Care District (Miscellaneous)", 8.0], ["Peninsula Traffic Congestion Relief Alliance (Miscellaneous)", 7.75], ["Penn Valley Fire Protection District (Miscellaneous)", 8.0], ["Personal Assistance Services Council (Miscellaneous)", 7.75], ["Phelan Pinon Hills Community Services District (Miscellaneous)", 7.75], ["Pico Water District (Miscellaneous)", 8.0], ["Pine Cove Water District (Miscellaneous)", 7.75], ["Pine Grove Mosquito Abatement District (Miscellaneous)", 7.75], ["Pinedale County Water District (Miscellaneous)", 8.5], ["Pioneer Cemetery District (Miscellaneous)", 7.75], ["Placer County Cemetery District No. 1 (Miscellaneous)", 7.75], ["Placer County Resource Conservation District (Miscellaneous)", 7.75], ["Placer County Transportation Planning Agency (Miscellaneous)", 8.25], ["Placer County Water Agency (Miscellaneous)", 7.5], ["Placer Hills Fire Protection District (Miscellaneous)", 7.75], ["Placer Mosquito and Vector Control District (Miscellaneous)", 7.75], ["Planning and Service Area II Area Agency on Aging (Miscellaneous)", 8.25], ["Pleasant Hill Recreation and Park District (Miscellaneous)", 7.75], ["Pleasant Valley County Water District (Miscellaneous)", 7.75], ["Pleasant Valley Recreation and Park District (Miscellaneous)", 7.75], ["Plumas Eureka Community Services District (Miscellaneous)", 7.75], ["Pomerado Cemetery District (Miscellaneous)", 7.75], ["Pomona Valley Transportation Authority (Miscellaneous)", 7.75], ["Pomona, Calif State Polytechnic University, Associated Students, Inc. (Miscellaneous)", 7.75], ["Port San Luis Harbor District (Miscellaneous)", 7.75], ["Porter Vista Public Utility District (Miscellaneous)", 7.75], ["Porterville Irrigation District (Miscellaneous)", 7.75], ["Porterville Public Cemetery District (Miscellaneous)", 7.75], ["Public Cemetery District No. 1 of Kern County (Miscellaneous)", 7.75], ["Public Entity Risk Management Authority (Miscellaneous)", 8.25], ["Public Risk Innovation, Solutions and Management (Miscellaneous)", 8.0], ["Public Transportation Services Corporation (Miscellaneous)", 8.0], ["Purissima Hills Water District (Miscellaneous)", 8.25], ["Quartz Hill Water District (Miscellaneous)", 8.0], ["Quincy Community Services District (Miscellaneous)", 8.0], ["Rainbow Municipal Water District (Miscellaneous)", 7.75], ["Ramona Municipal Water District (Miscellaneous)", 8.25], ["Rancho Adobe Fire Protection District (Miscellaneous)", 8.25], ["Rancho California Water District (Miscellaneous)", 7.25], ["Rancho Cucamonga Fire Protection District (Miscellaneous)", 7.75], ["Rancho Murieta Community Services District (Miscellaneous)", 7.75], ["Rancho Santa Fe Fire Protection District (Miscellaneous)", 7.75], ["Rancho Simi Recreation & Park District (Miscellaneous)", 7.75], ["Reclamation District No. 1000 (Miscellaneous)", 7.75], ["Reclamation District No. 1001 (Miscellaneous)", 7.75], ["Reclamation District No. 833 (Miscellaneous)", 7.75], ["Reclamation District No. 999 (Miscellaneous)", 7.75], ["Red Bluff Cemetery District (Miscellaneous)", 7.75], ["Redwood Coast Regional Center (Miscellaneous)", 7.75], ["Redwood Empire School Insurance Group (Miscellaneous)", 8.25], ["Reedley Cemetery District (Miscellaneous)", 7.75], ["Regional Center of Orange County (Miscellaneous)", 7.25], ["Regional Center of the East Bay (Miscellaneous)", 7.75], ["Regional Housing Authority (Miscellaneous)", 7.75], ["Regional Water Authority (Miscellaneous)", 8.25], ["Resort Improvement District No. 1 (Miscellaneous)", 7.75], ["Resource Conservation District of the Santa Monica Mountains (Miscellaneous)", 7.75], ["Rincon Del Diablo Municipal Water District (Miscellaneous)", 8.25], ["Rio Alto Water District (Miscellaneous)", 7.75], ["Rio Linda Elverta Community Water District (Miscellaneous)", 7.75], ["Rio Vista-Montezuma Cemetery District (Miscellaneous)", 7.75], ["Riverside County Flood Control and Water Conservation District (Miscellaneous)", 7.75], ["Riverside County Law Library (Miscellaneous)", 7.75], ["Riverside County Regional Park and Open Space District (Miscellaneous)", 8.25], ["Riverside County Transportation Commission (Miscellaneous)", 8.5], ["Riverside Transit Agency (Miscellaneous)", 8.25], ["Rosamond Community Services District (Miscellaneous)", 7.75], ["Rose Bowl Operating Company (Miscellaneous)", 7.75], ["Rosedale-Rio Bravo Water Storage District (Miscellaneous)", 7.75], ["Roseville Public Cemetery District (Miscellaneous)", 7.75], ["Ross Valley Fire Department (Miscellaneous)", 7.75], ["Ross Valley Sanitary District (Miscellaneous)", 7.75], ["Rowland Water District (Miscellaneous)", 7.75], ["Rubidoux Community Services District (Miscellaneous)", 7.75], ["Running Springs Water District (Miscellaneous)", 7.75], ["Rural County Representatives of California (Miscellaneous)", 7.75], ["Sacramento Area Council of Governments (Miscellaneous)", 8.0], ["Sacramento Area Flood Control Agency (Miscellaneous)", 8.25], ["Sacramento City Housing Authority (Miscellaneous)", 8.5], ["Sacramento County Public Law Library (Miscellaneous)", 7.75], ["Sacramento Groundwater Authority (Miscellaneous)", 8.25], ["Sacramento Metropolitan Air Quality Management District (Miscellaneous)", 7.75], ["Sacramento Metropolitan Cable Television Commission (Miscellaneous)", 8.25], ["Sacramento Metropolitan Fire District (Miscellaneous)", 8.25], ["Sacramento Municipal Utility District (Miscellaneous 1st)", 7.5], ["Sacramento Municipal Utility District (Miscellaneous 2nd)", 7.25], ["Sacramento Public Library Authority (Miscellaneous)", 8.0], ["Sacramento Regional Fire/EMS Communications Center (Miscellaneous)", 8.0], ["Sacramento Suburban Water District (Miscellaneous)", 8.25], ["Sacramento Transportation Authority (Miscellaneous)", 7.75], ["Sacramento-Yolo Mosquito and Vector Control District (Miscellaneous)", 8.0], ["Salinas Valley Solid Waste Authority (Miscellaneous)", 7.75], ["Salton Community Services District (Miscellaneous)", 7.75], ["San Andreas Regional Center, Inc. (Miscellaneous)", 7.5], ["San Andreas Sanitary District (Miscellaneous)", 7.75], ["San Benito County Water District (Miscellaneous)", 7.75], ["San Bernardino County Housing Authority (Miscellaneous)", 7.75], ["San Bernardino Valley Municipal Water District (Miscellaneous)", 8.25], ["San Bernardino Valley Water Conservation District (Miscellaneous)", 7.75], ["San Diego Association of Governments (Miscellaneous)", 7.75], ["San Diego County Law Library (Miscellaneous)", 8.25], ["San Diego County Office Of Education (Miscellaneous)", 8.25], ["San Diego County Water Authority (Miscellaneous)", 7.75], ["San Diego Metropolitan Transit System (Miscellaneous)", 7.75], ["San Diego State University Associated Students (Miscellaneous)", 8.25], ["San Diego Trolley, Inc. (Miscellaneous)", 7.5], ["San Dieguito Water District (Miscellaneous)", 7.75], ["San Elijo Joint Powers Authority (Miscellaneous)", 7.75], ["San Francisco Bay Area Rapid Transit District (Miscellaneous)", 7.75], ["San Francisco Bay Area Water Emergency Transportation Authority (Miscellaneous)", 7.75], ["San Francisco City and County Housing Authority (Miscellaneous)", 8.0], ["San Francisco County Transportation Authority (Miscellaneous)", 7.75], ["San Francisco Health Authority (Miscellaneous)", 7.75], ["San Francisco Law Library (Miscellaneous)", 7.75], ["San Francisquito Creek Joint Powers Authority (Miscellaneous)", 7.75], ["San Gabriel County Water District (Miscellaneous)", 8.25], ["San Gabriel Valley Council of Governments (Miscellaneous)", 7.75], ["San Gabriel Valley Mosquito and Vector Control District (Miscellaneous)", 7.75], ["San Gabriel Valley Municipal Water District (Miscellaneous)", 8.25], ["San Gorgonio Pass Water Agency (Miscellaneous)", 8.25], ["San Jacinto Valley Cemetery District (Miscellaneous)", 7.75], ["San Joaquin County Housing Authority (Miscellaneous)", 7.75], ["San Joaquin County IHSS Public Authority (Miscellaneous)", 8.5], ["San Juan Water District (Miscellaneous)", 7.75], ["San Lorenzo Valley Water District (Miscellaneous)", 7.75], ["San Luis Obispo Cal Poly Associated Students, Inc. (Miscellaneous)", 8.25], ["San Luis Obispo Council of Governments (Miscellaneous)", 8.25], ["San Luis Water District (Miscellaneous)", 7.75], ["San Mateo Consolidated Fire Department (Miscellaneous)", 7.75], ["San Mateo County Harbor District (Miscellaneous)", 7.75], ["San Mateo County In-Home Supportive Services Public Authority (Miscellaneous)", 7.75], ["San Mateo County Law Library (Miscellaneous)", 7.75], ["San Mateo County Schools Insurance Group (Miscellaneous)", 7.75], ["San Mateo County Transit District (Miscellaneous)", 8.0], ["San Miguel Community Services District (Miscellaneous)", 8.0], ["San Miguel Consolidated Fire Protection District (Miscellaneous)", 8.5], ["Sanger Cemetery District (Miscellaneous)", 7.75], ["Sanitary District No. 5 of Marin County (Miscellaneous)", 7.75], ["Santa Ana Watershed Project Authority (Miscellaneous)", 8.0], ["Santa Barbara County Law Library (Miscellaneous)", 7.75], ["Santa Barbara County Special Education Local Plan Area (Miscellaneous)", 7.75], ["Santa Barbara Regional Health Authority (Miscellaneous)", 7.75], ["Santa Clara County Central Fire Protection District (Miscellaneous)", 8.25], ["Santa Clara County Health Authority (Miscellaneous)", 7.75], ["Santa Clara County Housing Authority (Miscellaneous)", 7.25], ["Santa Clara County Schools Insurance Group (Miscellaneous)", 7.75], ["Santa Clara Valley Open Space Authority (Miscellaneous)", 7.75], ["Santa Clara Valley Transportation Authority (Miscellaneous)", 8.0], ["Santa Clara Valley Water District (Miscellaneous)", 7.25], ["Santa Clarita Valley School Food Services Agency (Miscellaneous)", 8.25], ["Santa Clarita Valley Water Agency (Miscellaneous)", 8.25], ["Santa Cruz County Regional Transportation Commission (Miscellaneous)", 7.75], ["Santa Cruz Local Agency Formation Commission (Miscellaneous)", 7.75], ["Santa Cruz Metropolitan Transit District (Miscellaneous)", 8.0], ["Santa Cruz Port District (Miscellaneous)", 7.75], ["Santa Cruz Regional 9-1-1 (Miscellaneous)", 7.75], ["Santa Fe Irrigation District (Miscellaneous)", 7.75], ["Santa Margarita Water District (Miscellaneous)", 7.5], ["Santa Maria Public Airport District (Miscellaneous)", 7.75], ["Santa Nella County Water District (Miscellaneous)", 7.75], ["Santa Ynez River Water Conservation District, Improvement District No. 1 (Miscellaneous)", 8.25], ["Santos Manuel Student Union of California State University, San Bernardino (Miscellaneous)", 7.75], ["Sausalito-Marin City Sanitary District (Miscellaneous)", 7.75], ["School Risk And Insurance Management Group (Miscellaneous)", 7.75], ["Schools Excess Liability Fund (Miscellaneous)", 7.75], ["Schools Insurance Authority (Miscellaneous)", 8.25], ["Scotts Valley Fire Protection District (Miscellaneous)", 7.75], ["Scotts Valley Water District (Miscellaneous)", 7.75], ["Selma Cemetery District (Miscellaneous)", 8.25], ["Selma-Kingsburg-Fowler County Sanitation District (Miscellaneous)", 7.75], ["Serrano Water District (Miscellaneous)", 7.75], ["Sewer Authority Mid-Coastside (Miscellaneous)", 8.25], ["Sewerage Commission-Oroville Region (Miscellaneous)", 7.75], ["Shafter Wasco Irrigation District (Miscellaneous)", 7.75], ["Shasta Area Safety Communications Agency (Miscellaneous)", 7.75], ["Shasta Community Services District (Miscellaneous)", 7.75], ["Shasta Mosquito and Vector Control District (Miscellaneous)", 7.75], ["Shasta Regional Transportation Agency (Miscellaneous)", 8.25], ["Shasta Valley Cemetery District (Miscellaneous)", 7.75], ["Shiloh Public Cemetery District (Miscellaneous)", 7.75], ["Sierra Lakes County Water District (Miscellaneous)", 7.75], ["Sierra-Sacramento Valley Emergency Medical Services Agency (Miscellaneous)", 7.75], ["Silicon Valley Animal Control Authority (Miscellaneous)", 7.75], ["Silicon Valley Clean Water (Miscellaneous)", 7.75], ["Silveyville Cemetery District (Miscellaneous)", 7.75], ["Solano Cemetery District (Miscellaneous)", 7.75], ["Solano County Mosquito Abatement District (Miscellaneous)", 7.75], ["Solano County Water Agency (Miscellaneous)", 7.75], ["Solano Irrigation District (Miscellaneous)", 7.75], ["Solano Transportation Authority (Miscellaneous)", 7.75], ["Sonoma County Fire District (Miscellaneous)", 7.75], ["Sonoma County Library (Miscellaneous)", 8.75], ["Sonoma Marin Area Rail Transit District (Miscellaneous)", 7.75], ["Soquel Creek Water District (Miscellaneous)", 7.75], ["South Bay Regional Public Communications Authority (Miscellaneous)", 7.75], ["South Central Los Angeles Regional Center for Developmentally Disabled Persons (Miscellaneous)", 7.5], ["South Coast Water District (Miscellaneous)", 7.75], ["South County Support Services Agency (Miscellaneous)", 4.75], ["South Feather Water and Power Agency (Miscellaneous)", 7.75], ["South Kern Cemetery District (Miscellaneous)", 7.75], ["South Orange County Wastewater Authority (Miscellaneous)", 7.75], ["South Placer Fire District (Miscellaneous)", 7.75], ["South Placer Municipal Utility District (Miscellaneous)", 7.75], ["South San Joaquin County Fire Authority (Miscellaneous)", 7.75], ["South San Joaquin Irrigation District (Miscellaneous)", 7.75], ["South San Luis Obispo County Sanitation District (Miscellaneous)", 7.75], ["South Tahoe Public Utility District (Miscellaneous)", 7.75], ["Southeast Area Social Services Funding Authority (Miscellaneous)", 7.75], ["Southern California Association of Governments (Miscellaneous)", 7.0], ["Southern California Library Cooperative (Miscellaneous)", 7.75], ["Southern California Public Power Authority (Miscellaneous)", 8.0], ["Southern California Regional Rail Authority (Miscellaneous)", 8.0], ["Southern San Joaquin Municipal Utility District (Miscellaneous)", 7.75], ["Southwest Transportation Agency (Miscellaneous)", 4.75], ["Special District Risk Management Authority (Miscellaneous)", 7.75], ["Stallion Springs Community Services District (Miscellaneous)", 7.75], ["Stanislaus Consolidated Fire Protection District (Miscellaneous)", 7.75], ["Stanislaus Regional Housing Authority (Miscellaneous)", 7.75], ["State Bar of California (Miscellaneous)", 7.25], ["State Water Contractors (Miscellaneous)", 7.75], ["Stege Sanitary District (Miscellaneous)", 7.75], ["Stinson Beach County Water District (Miscellaneous)", 7.75], ["Stinson Beach Fire Protection District (Miscellaneous)", 7.75], ["Stockton East Water District (Miscellaneous)", 8.25], ["Strawberry Recreation District (Miscellaneous)", 7.75], ["Successor Agency to the Redevelopment Agency of the City of Fresno (Miscellaneous)", 7.75], ["Successor Agency to the Redevelopment Agy of the City & County of San Francisco (Miscellaneous)", 8.0], ["Suisun Resource Conservation District (Miscellaneous)", 7.75], ["Summit Cemetery District (Miscellaneous)", 7.75], ["Sunnyslope County Water District (Miscellaneous)", 7.75], ["Susanville Sanitary District (Miscellaneous)", 8.0], ["Sutter Cemetery District (Miscellaneous)", 7.75], ["Sweetwater Authority (Miscellaneous)", 7.0], ["Sweetwater Springs Water District (Miscellaneous)", 7.75], ["Sylvan Cemetery District (Miscellaneous)", 7.75], ["Tahoe City Public Utility District (Miscellaneous)", 7.75], ["Tahoe Resource Conservation District (Miscellaneous)", 8.25], ["Tahoe-Truckee Sanitation Agency (Miscellaneous)", 8.0], ["Tehachapi Valley Recreation and Park District (Miscellaneous)", 7.75], ["Tehachapi-Cummings County Water District (Miscellaneous)", 8.0], ["Tehama County Mosquito Abatement District (Miscellaneous)", 7.75], ["Temescal Valley Water District (Miscellaneous)", 7.75], ["Templeton Community Services District (Miscellaneous)", 7.75], ["Thermalito Water and Sewer District (Miscellaneous)", 7.75], ["Three Valleys Municipal Water District (Miscellaneous)", 7.75], ["Tiburon Fire Protection District (Miscellaneous)", 7.75], ["Town of Apple Valley (Miscellaneous)", 7.75], ["Town of Atherton (Miscellaneous)", 8.25], ["Town of Colma (Miscellaneous)", 7.75], ["Town of Corte Madera (Miscellaneous)", 8.25], ["Town of Fairfax (Miscellaneous)", 8.25], ["Town of Hillsborough (Miscellaneous)", 8.25], ["Town of Loomis (Miscellaneous)", 7.75], ["Town of Los Altos Hills (Miscellaneous)", 8.25], ["Town of Los Gatos (Miscellaneous)", 7.75], ["Town of Mammoth Lakes (Miscellaneous)", 7.75], ["Town of Moraga (Miscellaneous)", 7.75], ["Town of Paradise (Miscellaneous)", 7.75], ["Town of Portola Valley (Miscellaneous)", 7.75], ["Town of Ross (Miscellaneous)", 7.75], ["Town of San Anselmo (Miscellaneous)", 7.75], ["Town of Tiburon (Miscellaneous)", 7.75], ["Town of Truckee (Miscellaneous)", 8.25], ["Town of Windsor (Miscellaneous)", 7.75], ["Town of Woodside (Miscellaneous)", 7.75], ["Town of Yountville (Miscellaneous)", 7.75], ["Town of Yucca Valley (Miscellaneous)", 7.75], ["Trabuco Canyon Water District (Miscellaneous)", 8.25], ["Transbay Joint Powers Authority (Miscellaneous)", 7.75], ["Transportation Agency for Monterey County (Miscellaneous)", 7.75], ["Transportation Authority of Marin (Miscellaneous)", 7.75], ["Tri-City Mental Health Authority (Miscellaneous)", 7.75], ["Tri-Counties Association for the Developmentally Disabled (Miscellaneous)", 7.5], ["Tri-County Schools Insurance Group (Miscellaneous)", 7.75], ["Tri-Dam Project (Miscellaneous)", 7.75], ["Trindel Insurance Fund (Miscellaneous)", 7.75], ["Trinity Public Utilities District (Miscellaneous)", 7.75], ["Truckee Donner Public Utility District (Miscellaneous)", 7.75], ["Truckee Fire Protection District (Miscellaneous)", 8.5], ["Truckee Sanitary District (Miscellaneous)", 7.75], ["Truckee Tahoe Airport District (Miscellaneous)", 7.75], ["Tulare Mosquito Abatement District (Miscellaneous)", 7.75], ["Tulare Public Cemetery District (Miscellaneous)", 7.75], ["Tuolumne City Sanitary District (Miscellaneous)", 7.75], ["Tuolumne County Transportation Council (Miscellaneous)", 7.75], ["Tuolumne Utilities District (Miscellaneous)", 7.75], ["Turlock Mosquito Abatement District (Miscellaneous)", 7.75], ["Twain Harte Community Services District (Miscellaneous)", 7.75], ["Twentynine Palms Water District (Miscellaneous)", 7.75], ["Union Public Utility District (Miscellaneous)", 7.75], ["Union Sanitary District (Miscellaneous)", 7.0], ["United Water Conservation District (Miscellaneous)", 7.75], ["University Enterprises Corporation at CSUSB (Miscellaneous)", 8.25], ["University Enterprises, Inc. (Miscellaneous)", 7.5], ["University Student Center of California State University Stanislaus (Miscellaneous)", 7.75], ["Upper San Gabriel Valley Municipal Water District (Miscellaneous)", 8.25], ["Utica Water and Power Authority (Miscellaneous)", 7.75], ["Vacaville-Elmira Cemetery District (Miscellaneous)", 7.75], ["Vallecitos Water District (Miscellaneous)", 7.75], ["Vallejo Flood and Wastewater District (Miscellaneous)", 7.75], ["Valley Center Municipal Water District (Miscellaneous)", 8.0], ["Valley County Water District (Miscellaneous)", 8.25], ["Valley Mountain Regional Center, Inc. (Miscellaneous)", 7.5], ["Valley Sanitary District (Miscellaneous)", 8.25], ["Valley Springs Public Utility District (Miscellaneous)", 7.75], ["Valley of the Moon Water District (Miscellaneous)", 7.75], ["Valley-Wide Recreation and Park District (Miscellaneous)", 7.75], ["Vandenberg Village Community Services District (Miscellaneous)", 7.75], ["Ventura College Foundation (Miscellaneous)", 7.75], ["Ventura County Law Library (Miscellaneous)", 7.75], ["Ventura County Schools Business Services Authority (Miscellaneous)", 8.25], ["Ventura County Schools Self-Funding Authority (Miscellaneous)", 8.25], ["Ventura County Transportation Commission (Miscellaneous)", 7.75], ["Ventura Port District (Miscellaneous)", 7.75], ["Ventura River Water District (Miscellaneous)", 7.75], ["Victor Valley Transit Authority (Miscellaneous)", 7.75], ["Victor Valley Wastewater Reclamation Authority (Miscellaneous)", 7.75], ["Visalia Public Cemetery District (Miscellaneous)", 7.75], ["Vista Irrigation District (Miscellaneous)", 7.75], ["Walnut Valley Water District (Miscellaneous)", 8.0], ["Wasco Recreation and Park District (Miscellaneous)", 7.75], ["Washington Colony Cemetery District (Miscellaneous)", 7.75], ["Water Employee Services Authority (Miscellaneous)", 7.75], ["Water Facilities Authority (Miscellaneous)", 7.75], ["Water Replenishment District of Southern California (Miscellaneous)", 8.25], ["Weaverville Community Services District (Miscellaneous)", 8.25], ["Weaverville Sanitary District (Miscellaneous)", 7.75], ["West Basin Municipal Water District (Miscellaneous)", 8.25], ["West Bay Sanitary District (Miscellaneous)", 7.75], ["West Cities Communication Center (Miscellaneous)", 8.25], ["West Contra Costa Integrated Waste Management Authority (Miscellaneous)", 7.75], ["West Contra Costa Transportation Advisory Committee (Miscellaneous)", 7.75], ["West County Transportation Agency (Miscellaneous)", 7.75], ["West County Wastewater District (Miscellaneous)", 7.75], ["West Kern Water District (Miscellaneous)", 7.75], ["West Stanislaus Irrigation District (Miscellaneous)", 7.75], ["West Valley Mosquito and Vector Control District (Miscellaneous)", 7.75], ["West Valley Sanitation District of Santa Clara County (Miscellaneous)", 7.75], ["West Valley Water District (Miscellaneous)", 7.75], ["Westborough Water District (Miscellaneous)", 7.75], ["Western Contra Costa Transit Authority (Miscellaneous)", 7.75], ["Western Municipal Water District (Miscellaneous)", 7.75], ["Western Riverside Council of Governments (Miscellaneous)", 8.25], ["Westlands Water District (Miscellaneous)", 7.75], ["Westwood Community Services District (Miscellaneous)", 7.75], ["Wheeler Ridge-Maricopa Water Storage District (Miscellaneous)", 8.0], ["Williams Fire Protection Authority (Miscellaneous)", 7.75], ["Willow County Water District (Miscellaneous)", 8.0], ["Willow Creek Community Services District (Miscellaneous)", 7.75], ["Willows Cemetery District (Miscellaneous)", 7.75], ["Winterhaven Water District (Miscellaneous)", 7.75], ["Winters Cemetery District (Miscellaneous)", 7.75], ["Winton Water and Sanitary District (Miscellaneous)", 7.75], ["Woodbridge Rural County Fire Protection District (Miscellaneous)", 7.75], ["Woodside Fire Protection District (Miscellaneous)", 8.25], ["Yolo County Federal Credit Union (Miscellaneous)", 8.0], ["Yolo County Housing Authority (Miscellaneous)", 7.75], ["Yolo County In-Home Supportive Services Public Authority (Miscellaneous)", 7.75], ["Yolo County Public Agency Risk Management Insurance Authority (Miscellaneous)", 7.75], ["Yolo County Transportation District (Miscellaneous)", 7.75], ["Yolo Emergency Communications Agency (Miscellaneous)", 7.75], ["Yolo-Solano Air Quality Management District (Miscellaneous)", 7.75], ["Yorba Linda Water District (Miscellaneous)", 7.75], ["Yuba County Water Agency (Miscellaneous)", 7.75], ["Yuba Sutter Transit Authority (Miscellaneous)", 7.75], ["Yucaipa Valley Water District (Miscellaneous)", 7.75], ["Yuima Municipal Water District (Miscellaneous)", 7.75]];
+  </script>
   <!-- Calculator Logic Script -->
   <script>
     // 2026 Tax Rates & Pension Systems Constants
@@ -1655,25 +1926,51 @@
 
       // Pension Systems and Member Contribution Rates on Base Pay Only
       PENSION_SYSTEMS: {
-        calpers: {
-          name: 'CalPERS Safety (2.7% @ 57)',
-          shortName: 'CalPERS (13.75%)',
-          rate: 0.1375,
+        calpers_pepra_safety: {
+          name: 'CalPERS Safety 2.7% @ 57 (PEPRA)',
+          shortName: 'CalPERS PEPRA Safety',
+          rate: 0.0000,
           hasSs: false,
           baseOnly: true,
-          label: '13.75% on base pay only',
-          badge: 'Section 218 SS Exempt',
-          notice: 'CalPERS Safety member contribution is fixed at 13.75% on base pay only. Overtime earnings are strictly non-pensionable (PEPRA rule), and members are exempt from 6.2% Social Security under Section 218.'
+          isPepra: true,
+          pepraType: 'safety',
+          label: 'Agency-specific rate on base pay only (PEPRA Overtime Exempt)',
+          badge: 'Section 218 SS Exempt • PEPRA',
+          notice: 'CalPERS Safety 2.7% @ 57 (PEPRA) contributions vary by agency per CalPERS actuarial schedules. Overtime is 100% exempt from pension withholding.'
         },
-        calpers_misc_2at62: {
-          name: 'CalPERS Misc / Civilian (2% @ 62)',
-          shortName: 'CalPERS Misc 2%@62 (8%)',
-          rate: 0.0800,
-          hasSs: true,
+        calpers_classic_safety: {
+          name: 'CalPERS Safety 3% @ 50 (Classic - 9.00%)',
+          shortName: 'CalPERS Classic Safety (9%)',
+          rate: 0.0900,
+          hasSs: false,
           baseOnly: true,
-          label: '8.00% on base pay only + Social Security (6.2%)',
-          badge: 'Social Security + Pension',
-          notice: 'CalPERS Miscellaneous (Civilian PEPRA 2% @ 62) employees contribute 8.00% on base salary only (overtime exempt under PEPRA). Civilian personnel participate in Social Security (6.2% FICA up to $184,500).'
+          isPepra: false,
+          label: '9.00% fixed by statute on base pay only',
+          badge: 'Section 218 SS Exempt • Classic',
+          notice: 'CalPERS Safety 3% @ 50 Classic member contribution is fixed at 9.00% by statute on regular base pay only. Overtime is exempt, and members do not pay Social Security.'
+        },
+        calpers_pepra_misc: {
+          name: 'CalPERS Misc 2% @ 62 (PEPRA)',
+          shortName: 'CalPERS PEPRA Misc',
+          rate: 0.0000,
+          hasSs: false, // Per user feedback: civilian staff noted they do not pay FICA tax
+          baseOnly: true,
+          isPepra: true,
+          pepraType: 'misc',
+          label: 'Agency-specific rate on base pay only (PEPRA Overtime Exempt)',
+          badge: 'Section 218 SS Exempt • PEPRA',
+          notice: 'CalPERS Miscellaneous 2% @ 62 (PEPRA) contributions vary by agency. Per public agency staff guidelines, contributions are on base pay only and exempt from Social Security FICA.'
+        },
+        calpers_classic_misc: {
+          name: 'CalPERS Misc 2.7% @ 55 (Classic - 8.00%)',
+          shortName: 'CalPERS Classic Misc (8%)',
+          rate: 0.0800,
+          hasSs: false, // Per user feedback: civilian staff exempt from FICA
+          baseOnly: true,
+          isPepra: false,
+          label: '8.00% fixed by statute on base pay only',
+          badge: 'Section 218 SS Exempt • Classic',
+          notice: 'CalPERS Miscellaneous 2.7% @ 55 Classic member contribution is fixed at 8.00% by statute on regular base pay only. Overtime is exempt, and members do not pay Social Security.'
         },
         lafpp_tier6: {
           name: 'LAFPP Tier 6 - LAPD / LAFD',
@@ -1851,13 +2148,17 @@
       }
     };
 
+      // Aliases for backward compatibility
+      TAX_2026.PENSION_SYSTEMS.calpers = TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+      TAX_2026.PENSION_SYSTEMS.calpers_misc_2at62 = TAX_2026.PENSION_SYSTEMS.calpers_pepra_misc;
+
     // Application State
     const state = {
       isPercent457: true,
       spouseIsPercent457: true,
       useItemized: false,
-      useW2Annual: false,
-      viewMode: 'both',
+      useW2Annual: true,
+      viewMode: 'biweekly',
       isDark: false
     };
 
@@ -1870,6 +2171,13 @@
       labelPrimaryPensionTitle: document.getElementById('labelPrimaryPensionTitle'),
       labelPrimaryPensionRate: document.getElementById('labelPrimaryPensionRate'),
       socialSecurityNoticeBox: document.getElementById('socialSecurityNoticeBox'),
+
+      // Primary PEPRA Agency Search & Rate Elements
+      primaryPepraSearchContainer: document.getElementById('primaryPepraSearchContainer'),
+      inputPepraAgencySearch: document.getElementById('inputPepraAgencySearch'),
+      pepraSearchResults: document.getElementById('pepraSearchResults'),
+      inputPepraCustomRate: document.getElementById('inputPepraCustomRate'),
+      pepraAgencySelectionBadge: document.getElementById('pepraAgencySelectionBadge'),
 
       // Primary Custom Pension Elements
       primaryCustomPensionContainer: document.getElementById('primaryCustomPensionContainer'),
@@ -1916,11 +2224,28 @@
       checkIncludeSpouse: document.getElementById('checkIncludeSpouse'),
       spousePanelContainer: document.getElementById('spousePanelContainer'),
       spousePensionSystemSelect: document.getElementById('spousePensionSystemSelect'),
+      spousePepraSearchContainer: document.getElementById('spousePepraSearchContainer'),
+      spouseInputPepraAgencySearch: document.getElementById('spouseInputPepraAgencySearch'),
+      spousePepraSearchResults: document.getElementById('spousePepraSearchResults'),
+      spouseInputPepraCustomRate: document.getElementById('spouseInputPepraCustomRate'),
       spouseCustomPensionContainer: document.getElementById('spouseCustomPensionContainer'),
       spouseCustomPensionName: document.getElementById('spouseCustomPensionName'),
       spouseCustomPensionRate: document.getElementById('spouseCustomPensionRate'),
       spouseCustomPensionBaseOnly: document.getElementById('spouseCustomPensionBaseOnly'),
       spouseCustomPensionSocialSecurity: document.getElementById('spouseCustomPensionSocialSecurity'),
+
+      // Accordion Box 2 & Box 3 Elements
+      btnToggleBox2: document.getElementById('btnToggleBox2'),
+      box2Content: document.getElementById('box2Content'),
+      chevronBox2: document.getElementById('chevronBox2'),
+      btnToggleBox3: document.getElementById('btnToggleBox3'),
+      box3Content: document.getElementById('box3Content'),
+      chevronBox3: document.getElementById('chevronBox3'),
+
+      // Additional Federal Withholding Elements
+      inputAdditionalFedWithholding: document.getElementById('inputAdditionalFedWithholding'),
+      rowAddlFedWithholdingItem: document.getElementById('rowAddlFedWithholdingItem'),
+      rowAddlFedWithholding: document.getElementById('rowAddlFedWithholding'),
 
       spouseHourlyRateInput: document.getElementById('spouseHourlyRateInput'),
       spouseHourlyRateSlider: document.getElementById('spouseHourlyRateSlider'),
@@ -1985,8 +2310,17 @@
       annLabelFedDed: document.getElementById('annLabelFedDed'),
       annLabelCaDed: document.getElementById('annLabelCaDed'),
 
-      // Hero Elements
+      // Box 1 Accordion Elements
+      btnToggleBox1: document.getElementById('btnToggleBox1'),
+      box1Content: document.getElementById('box1Content'),
+      chevronBox1: document.getElementById('chevronBox1'),
+
+      // Hero Accordion Elements
       heroCardContainer: document.getElementById('heroCardContainer'),
+      btnToggleHero: document.getElementById('btnToggleHero'),
+      heroCardBody: document.getElementById('heroCardBody'),
+      heroNetBiweeklyHeader: document.getElementById('heroNetBiweeklyHeader'),
+      chevronHero: document.getElementById('chevronHero'),
       heroTitleLabel: document.getElementById('heroTitleLabel'),
       heroNetBiweekly: document.getElementById('heroNetBiweekly'),
       heroNetAnnual: document.getElementById('heroNetAnnual'),
@@ -2091,7 +2425,37 @@
       viewTabBiweekly: document.getElementById('viewTabBiweekly'),
       viewTabAnnual: document.getElementById('viewTabAnnual'),
       biweeklySection: document.getElementById('biweeklySection'),
+      btnToggleBiweekly: document.getElementById('btnToggleBiweekly'),
+      biweeklyContent: document.getElementById('biweeklyContent'),
+      chevronBiweekly: document.getElementById('chevronBiweekly'),
+
       annualSection: document.getElementById('annualSection'),
+      btnToggleAnnual: document.getElementById('btnToggleAnnual'),
+      annualContent: document.getElementById('annualContent'),
+      chevronAnnual: document.getElementById('chevronAnnual'),
+
+      // Tax Settlement & Refund Estimator Elements
+      taxSettlementSection: document.getElementById('taxSettlementSection'),
+      btnToggleTaxSettlement: document.getElementById('btnToggleTaxSettlement'),
+      taxSettlementContent: document.getElementById('taxSettlementContent'),
+      chevronTaxSettlement: document.getElementById('chevronTaxSettlement'),
+      settlementBadgeLabel: document.getElementById('settlementBadgeLabel'),
+      btnSettlementAutoFill: document.getElementById('btnSettlementAutoFill'),
+      inputWithheldFed: document.getElementById('inputWithheldFed'),
+      inputWithheldCa: document.getElementById('inputWithheldCa'),
+      settlementFedBadge: document.getElementById('settlementFedBadge'),
+      settlementFedLiability: document.getElementById('settlementFedLiability'),
+      settlementFedWithheld: document.getElementById('settlementFedWithheld'),
+      settlementFedLabel: document.getElementById('settlementFedLabel'),
+      settlementFedDiff: document.getElementById('settlementFedDiff'),
+      settlementCaBadge: document.getElementById('settlementCaBadge'),
+      settlementCaLiability: document.getElementById('settlementCaLiability'),
+      settlementCaWithheld: document.getElementById('settlementCaWithheld'),
+      settlementCaLabel: document.getElementById('settlementCaLabel'),
+      settlementCaDiff: document.getElementById('settlementCaDiff'),
+      settlementNetBanner: document.getElementById('settlementNetBanner'),
+      settlementNetTitle: document.getElementById('settlementNetTitle'),
+      settlementNetDiff: document.getElementById('settlementNetDiff'),
       annualW2OptionBanner: document.getElementById('annualW2OptionBanner'),
       btnAnnualModeProjected: document.getElementById('btnAnnualModeProjected'),
       btnAnnualModeW2: document.getElementById('btnAnnualModeW2'),
@@ -2103,6 +2467,7 @@
       inputW2Primary457: document.getElementById('inputW2Primary457'),
       inputW2PrimaryPretax: document.getElementById('inputW2PrimaryPretax'),
       inputW2PrimaryPostTax: document.getElementById('inputW2PrimaryPostTax'),
+      checkW2IncludeSpouse: document.getElementById('checkW2IncludeSpouse'),
       w2SpouseContainer: document.getElementById('w2SpouseContainer'),
       inputW2SpouseGross: document.getElementById('inputW2SpouseGross'),
       inputW2SpousePension: document.getElementById('inputW2SpousePension'),
@@ -2122,6 +2487,90 @@
       btnPrint: document.getElementById('btnPrint'),
       btnReset: document.getElementById('btnReset')
     };
+
+    // Helper: Fast multi-token agency search with instant auto-update (resets to 0.00% when empty)
+    function performAgencySearch(query, type, searchInput, resultsContainer, rateInput, badgeEl) {
+      if (!resultsContainer) return;
+      const trimmed = (query || '').trim().toLowerCase();
+      
+      // When there is no city selected or typed, set rate back to 0.00%
+      if (!trimmed || trimmed.length === 0) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.classList.add('hidden');
+        rateInput.value = "0.00";
+        if (badgeEl) {
+          badgeEl.innerHTML = "* Enter or select your city/agency above. Rate defaults to <strong>0.00%</strong> when no agency is selected.";
+        }
+        calculate();
+        return;
+      }
+
+      if (trimmed.length < 2) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.classList.add('hidden');
+        rateInput.value = "0.00";
+        if (badgeEl) {
+          badgeEl.innerHTML = "* Enter or select your city/agency above. Rate defaults to <strong>0.00%</strong> when no agency is selected.";
+        }
+        calculate();
+        return;
+      }
+
+      const dataset = (type === 'safety') ? CALPERS_PEPRA_SAFETY_DATA : CALPERS_PEPRA_MISC_DATA;
+      const tokens = trimmed.split(/\s+/);
+
+      // Multi-word token matching
+      const matches = dataset.filter(item => {
+        const nameLower = item[0].toLowerCase();
+        return tokens.every(token => nameLower.includes(token));
+      });
+
+      if (matches.length === 0) {
+        resultsContainer.innerHTML = '<div class="p-2.5 text-slate-500 text-center italic">No matching CalPERS agencies found</div>';
+        resultsContainer.classList.remove('hidden');
+        rateInput.value = "0.00";
+        if (badgeEl) {
+          badgeEl.innerHTML = "* No matching agency found. Rate defaults to <strong>0.00%</strong>.";
+        }
+        calculate();
+        return;
+      }
+
+      // If there are matches, automatically update rate from the top match!
+      // (E.g. typing "Irvine" automatically applies Irvine's 13.75%, "Newport Beach" automatically applies 13.50%)
+      const topMatch = matches[0];
+      rateInput.value = topMatch[1].toFixed(2);
+      if (badgeEl) {
+        badgeEl.innerHTML = `✓ <strong>${topMatch[0]}</strong> • FY 2026-27 Rate: <strong>${topMatch[1].toFixed(2)}%</strong> on base pay`;
+      }
+      calculate();
+
+      // Render interactive dropdown for user to pick exact branch/plan if multiple exist
+      resultsContainer.innerHTML = matches.slice(0, 15).map(m => `
+        <div class="agency-result-item p-2 hover:bg-amber-100 dark:hover:bg-amber-950/70 cursor-pointer flex justify-between items-center transition-colors" data-name="${m[0]}" data-rate="${m[1]}">
+          <span class="font-semibold text-slate-800 dark:text-slate-200 text-left">${m[0]}</span>
+          <span class="font-bold text-amber-700 dark:text-amber-400 font-mono text-xs ml-2 shrink-0">${m[1].toFixed(2)}%</span>
+        </div>
+      `).join('');
+      resultsContainer.classList.remove('hidden');
+
+      // Click handlers on items
+      const items = resultsContainer.querySelectorAll('.agency-result-item');
+      items.forEach(it => {
+        it.addEventListener('click', () => {
+          const name = it.dataset.name;
+          const rate = parseFloat(it.dataset.rate) || 0;
+          searchInput.value = name;
+          rateInput.value = rate.toFixed(2);
+          if (badgeEl) {
+            badgeEl.innerHTML = `✓ <strong>${name}</strong> • FY 2026-27 Rate: <strong>${rate.toFixed(2)}%</strong> on base pay`;
+          }
+          resultsContainer.innerHTML = '';
+          resultsContainer.classList.add('hidden');
+          calculate();
+        });
+      });
+    }
 
     // Currency Formatting Helpers
     function fmt(val) {
@@ -2196,6 +2645,7 @@
       let primaryPlan = null;
 
       if (primaryKey === 'other') {
+        if (elements.primaryPepraSearchContainer) elements.primaryPepraSearchContainer.classList.add('hidden');
         elements.primaryCustomPensionContainer.classList.remove('hidden');
         const customName = elements.primaryCustomPensionName.value.trim() || 'Custom Pension';
         const customRate = Math.max(0, parseFloat(elements.primaryCustomPensionRate.value) || 0) / 100;
@@ -2208,13 +2658,28 @@
           rate: customRate,
           hasSs: customHasSs,
           baseOnly: customBaseOnly,
+          isPepra: false,
           label: `${(customRate * 100).toFixed(2)}% ${customBaseOnly ? 'on base pay only' : 'on total gross'}`,
           badge: customHasSs ? 'Social Security Active' : 'Section 218 SS Exempt',
           notice: `Custom pension plan "${customName}": ${(customRate * 100).toFixed(2)}% contribution ${customBaseOnly ? 'calculated strictly from base salary (overtime exempt)' : 'calculated from total pay'}. ${customHasSs ? 'Participates in 6.2% Social Security.' : 'Exempt from 6.2% Social Security.'}`
         };
       } else {
         elements.primaryCustomPensionContainer.classList.add('hidden');
-        primaryPlan = TAX_2026.PENSION_SYSTEMS[primaryKey] || TAX_2026.PENSION_SYSTEMS.calpers;
+        const basePlan = TAX_2026.PENSION_SYSTEMS[primaryKey] || TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+        primaryPlan = { ...basePlan };
+
+        if (primaryPlan.isPepra) {
+          if (elements.primaryPepraSearchContainer) elements.primaryPepraSearchContainer.classList.remove('hidden');
+          // Default to 0.00% if no agency has been searched yet
+          if (!elements.inputPepraAgencySearch.value.trim()) {
+            elements.inputPepraCustomRate.value = '0.00';
+          }
+          const customPepraRate = Math.max(0, parseFloat(elements.inputPepraCustomRate.value) || 0) / 100;
+          primaryPlan.rate = customPepraRate;
+          primaryPlan.label = `${(customPepraRate * 100).toFixed(2)}% on base pay only (PEPRA Overtime Exempt)`;
+        } else {
+          if (elements.primaryPepraSearchContainer) elements.primaryPepraSearchContainer.classList.add('hidden');
+        }
       }
 
       // Update primary pension card label and notice
@@ -2336,6 +2801,7 @@
 
         const spouseKey = elements.spousePensionSystemSelect.value;
         if (spouseKey === 'other') {
+          if (elements.spousePepraSearchContainer) elements.spousePepraSearchContainer.classList.add('hidden');
           elements.spouseCustomPensionContainer.classList.remove('hidden');
           const customSpouseName = elements.spouseCustomPensionName.value.trim() || 'Spouse Custom Pension';
           const customSpouseRate = Math.max(0, parseFloat(elements.spouseCustomPensionRate.value) || 0) / 100;
@@ -2348,13 +2814,27 @@
             rate: customSpouseRate,
             hasSs: customSpouseHasSs,
             baseOnly: customSpouseBaseOnly,
+            isPepra: false,
             label: `${(customSpouseRate * 100).toFixed(2)}% ${customSpouseBaseOnly ? 'on base pay only' : 'on total gross'}`,
             badge: customSpouseHasSs ? 'Social Security Active' : 'Section 218 SS Exempt',
             notice: `Spouse custom plan "${customSpouseName}": ${(customSpouseRate * 100).toFixed(2)}% contribution.`
           };
         } else {
           elements.spouseCustomPensionContainer.classList.add('hidden');
-          spousePlan = TAX_2026.PENSION_SYSTEMS[spouseKey] || TAX_2026.PENSION_SYSTEMS.calpers;
+          const baseSpousePlan = TAX_2026.PENSION_SYSTEMS[spouseKey] || TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+          spousePlan = { ...baseSpousePlan };
+
+          if (spousePlan.isPepra) {
+            if (elements.spousePepraSearchContainer) elements.spousePepraSearchContainer.classList.remove('hidden');
+            if (!elements.spouseInputPepraAgencySearch.value.trim()) {
+              elements.spouseInputPepraCustomRate.value = '0.00';
+            }
+            const spouseCustomRate = Math.max(0, parseFloat(elements.spouseInputPepraCustomRate.value) || 0) / 100;
+            spousePlan.rate = spouseCustomRate;
+            spousePlan.label = `${(spouseCustomRate * 100).toFixed(2)}% on base pay only (PEPRA Overtime Exempt)`;
+          } else {
+            if (elements.spousePepraSearchContainer) elements.spousePepraSearchContainer.classList.add('hidden');
+          }
         }
 
         elements.labelSpousePensionTitle.textContent = `Spouse ${spousePlan.name}:`;
@@ -2507,7 +2987,10 @@
         let w2SpousePretax = 0;
         let w2SpousePostTax = 0;
 
-        if (hasSpouse) {
+        // In W-2 mode, spouse inclusion is strictly governed by checkW2IncludeSpouse (independent of biweekly checkIncludeSpouse)
+        const hasW2Spouse = elements.checkW2IncludeSpouse ? elements.checkW2IncludeSpouse.checked : false;
+
+        if (hasW2Spouse) {
           w2SpouseGross = Math.max(0, parseFloat(elements.inputW2SpouseGross.value) || 0);
           w2SpousePension = Math.max(0, parseFloat(elements.inputW2SpousePension.value) || 0);
           w2Spouse457 = Math.max(0, parseFloat(elements.inputW2Spouse457.value) || 0);
@@ -2526,7 +3009,7 @@
           w2PrimarySs = Math.min(w2PrimaryGross, TAX_2026.SS_WAGE_BASE) * TAX_2026.SS_RATE;
         }
         let w2SpouseSs = 0;
-        if (hasSpouse && spousePlan.hasSs) {
+        if (hasW2Spouse && spousePlan.hasSs) {
           w2SpouseSs = Math.min(w2SpouseGross, TAX_2026.SS_WAGE_BASE) * TAX_2026.SS_RATE;
         }
         effectiveSsAnnual = w2PrimarySs + w2SpouseSs;
@@ -2657,8 +3140,11 @@
       const annualEffectiveRate = effectiveGrossAnnual > 0 ? (annualCompositeTaxes / effectiveGrossAnnual) * 100 : 0;
       const annualNetTakeHome = effectiveGrossAnnual - effectivePretaxAnnual - annualCompositeTaxes - effectivePostTaxAnnual - annualAlimonyPaid;
 
-      // 8. Biweekly Tax Withholdings
-      const biweeklyFedTax = annualFedTaxFinal / TAX_2026.PAY_PERIODS_PER_YEAR;
+      // 8. Biweekly Tax Withholdings & Additional Federal Withholding (Form W-4 Step 4c)
+      const additionalFedWithholding = Math.max(0, parseFloat(elements.inputAdditionalFedWithholding.value) || 0);
+
+      const biweeklyFedTaxBase = annualFedTaxFinal / TAX_2026.PAY_PERIODS_PER_YEAR;
+      const biweeklyFedTax = biweeklyFedTaxBase + additionalFedWithholding;
       const biweeklyCaTax = annualCaTaxFinal / TAX_2026.PAY_PERIODS_PER_YEAR;
 
       const biweeklyMedicareWages = Math.max(0, householdGrossBiweekly - householdAdditionalPretaxBiweekly);
@@ -2670,8 +3156,15 @@
       const biweeklyCompositeTaxes = biweeklyFedTax + biweeklyCaTax + biweeklyMedicare + householdSsBiweekly;
       const biweeklyEffectiveRate = householdGrossBiweekly > 0 ? (biweeklyCompositeTaxes / householdGrossBiweekly) * 100 : 0;
 
-      // Net Take-Home Paycheck
+      // Net Take-Home Paycheck (deducts additional federal withholding)
       const biweeklyNetPay = householdGrossBiweekly - householdPretaxBiweekly - biweeklyCompositeTaxes - householdPostTaxBiweekly - biweeklyAlimonyPaid;
+
+      if (additionalFedWithholding > 0) {
+        if (elements.rowAddlFedWithholdingItem) elements.rowAddlFedWithholdingItem.classList.remove('hidden');
+        if (elements.rowAddlFedWithholding) elements.rowAddlFedWithholding.textContent = `-${fmt(additionalFedWithholding)}`;
+      } else {
+        if (elements.rowAddlFedWithholdingItem) elements.rowAddlFedWithholdingItem.classList.add('hidden');
+      }
 
       // Update Mobile Sticky Summary Bar
       if (elements.mobileStickyNet) {
@@ -2705,6 +3198,7 @@
       }
 
       elements.heroNetBiweekly.textContent = fmt(biweeklyNetPay);
+      if (elements.heroNetBiweeklyHeader) elements.heroNetBiweeklyHeader.textContent = fmt(biweeklyNetPay);
       elements.heroNetAnnual.textContent = fmt(annualNetTakeHome);
       elements.heroCompositeTaxesBiweekly.textContent = fmt(biweeklyCompositeTaxes);
       elements.heroEffectiveRate.textContent = `${biweeklyEffectiveRate.toFixed(1)}% of Gross`;
@@ -2820,38 +3314,193 @@
         elements.heroCompositeTaxesBiweekly.textContent = fmt(annualCompositeTaxes / 26) + ' (avg)';
         elements.heroEffectiveRate.textContent = `${annualEffectiveRate.toFixed(1)}% of Gross`;
       }
+
+      // 12. Calculate Tax Settlement (Refund or Outstanding Liability)
+      if (elements.inputWithheldFed && elements.inputWithheldCa) {
+        const withheldFed = Math.max(0, parseFloat(elements.inputWithheldFed.value) || 0);
+        const withheldCa = Math.max(0, parseFloat(elements.inputWithheldCa.value) || 0);
+
+        const fedDiff = withheldFed - annualFedTaxFinal;
+        const caDiff = withheldCa - annualCaTaxFinal;
+        const netDiff = fedDiff + caDiff;
+
+        if (elements.settlementFedLiability) elements.settlementFedLiability.textContent = fmtNoCents(annualFedTaxFinal);
+        if (elements.settlementFedWithheld) elements.settlementFedWithheld.textContent = fmtNoCents(withheldFed);
+
+        if (elements.settlementFedDiff) {
+          if (fedDiff >= 0) {
+            elements.settlementFedLabel.textContent = "Federal Refund Estimate:";
+            elements.settlementFedDiff.textContent = `+${fmtNoCents(fedDiff)}`;
+            elements.settlementFedDiff.className = "font-mono font-bold text-emerald-600 dark:text-emerald-400";
+            if (elements.settlementFedBadge) {
+              elements.settlementFedBadge.textContent = "Refund Due";
+              elements.settlementFedBadge.className = "text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800";
+            }
+          } else {
+            elements.settlementFedLabel.textContent = "Federal Balance Due (Tax Owed):";
+            elements.settlementFedDiff.textContent = `-${fmtNoCents(Math.abs(fedDiff))}`;
+            elements.settlementFedDiff.className = "font-mono font-bold text-rose-600 dark:text-rose-400";
+            if (elements.settlementFedBadge) {
+              elements.settlementFedBadge.textContent = "Balance Owed";
+              elements.settlementFedBadge.className = "text-[10px] font-semibold px-2 py-0.5 rounded bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800";
+            }
+          }
+        }
+
+        if (elements.settlementCaLiability) elements.settlementCaLiability.textContent = fmtNoCents(annualCaTaxFinal);
+        if (elements.settlementCaWithheld) elements.settlementCaWithheld.textContent = fmtNoCents(withheldCa);
+
+        if (elements.settlementCaDiff) {
+          if (caDiff >= 0) {
+            elements.settlementCaLabel.textContent = "California Refund Estimate:";
+            elements.settlementCaDiff.textContent = `+${fmtNoCents(caDiff)}`;
+            elements.settlementCaDiff.className = "font-mono font-bold text-emerald-600 dark:text-emerald-400";
+            if (elements.settlementCaBadge) {
+              elements.settlementCaBadge.textContent = "Refund Due";
+              elements.settlementCaBadge.className = "text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800";
+            }
+          } else {
+            elements.settlementCaLabel.textContent = "California Balance Due (Tax Owed):";
+            elements.settlementCaDiff.textContent = `-${fmtNoCents(Math.abs(caDiff))}`;
+            elements.settlementCaDiff.className = "font-mono font-bold text-rose-600 dark:text-rose-400";
+            if (elements.settlementCaBadge) {
+              elements.settlementCaBadge.textContent = "Balance Owed";
+              elements.settlementCaBadge.className = "text-[10px] font-semibold px-2 py-0.5 rounded bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800";
+            }
+          }
+        }
+
+        if (elements.settlementNetDiff) {
+          if (netDiff >= 0) {
+            if (elements.settlementNetTitle) elements.settlementNetTitle.textContent = "Net Combined Tax Refund";
+            elements.settlementNetDiff.textContent = `+${fmtNoCents(netDiff)}`;
+            elements.settlementNetDiff.className = "text-xl sm:text-2xl font-black font-mono text-emerald-700 dark:text-emerald-400";
+            if (elements.settlementNetBanner) {
+              elements.settlementNetBanner.className = "p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+            }
+            if (elements.settlementBadgeLabel) {
+              elements.settlementBadgeLabel.textContent = `Refund: +${fmtNoCents(netDiff)}`;
+              elements.settlementBadgeLabel.className = "text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800";
+            }
+          } else {
+            if (elements.settlementNetTitle) elements.settlementNetTitle.textContent = "Net Combined Tax Balance Due";
+            elements.settlementNetDiff.textContent = `-${fmtNoCents(Math.abs(netDiff))}`;
+            elements.settlementNetDiff.className = "text-xl sm:text-2xl font-black font-mono text-rose-700 dark:text-rose-400";
+            if (elements.settlementNetBanner) {
+              elements.settlementNetBanner.className = "p-4 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/70 dark:bg-rose-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+            }
+            if (elements.settlementBadgeLabel) {
+              elements.settlementBadgeLabel.textContent = `Due: -${fmtNoCents(Math.abs(netDiff))}`;
+              elements.settlementBadgeLabel.className = "text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800";
+            }
+          }
+        }
+      }
     }
 
     // View Switching Logic
     function setViewMode(mode) {
       state.viewMode = mode;
-      elements.viewTabBoth.className = (mode === 'both')
-        ? 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold'
-        : 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
       elements.viewTabBiweekly.className = (mode === 'biweekly')
         ? 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold'
         : 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
       elements.viewTabAnnual.className = (mode === 'annual')
         ? 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold'
         : 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
+      elements.viewTabBoth.className = (mode === 'both')
+        ? 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all font-semibold'
+        : 'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
 
+      if (mode === 'annual') {
+        // Left Column in Annual View:
+        // 1. Minimize Box 1 (Primary pay rates)
+        if (elements.box1Content) elements.box1Content.classList.add('hidden');
+        if (elements.chevronBox1) elements.chevronBox1.classList.remove('rotate-180');
 
+        // 2. Minimize Box 2 (Pre-tax & pension)
+        if (elements.box2Content) elements.box2Content.classList.add('hidden');
+        if (elements.chevronBox2) elements.chevronBox2.classList.remove('rotate-180');
 
-      if (mode === 'biweekly') {
+        // 3. Open Box 3 automatically (Taxable Deductions & Filing Status)
+        if (elements.box3Content) elements.box3Content.classList.remove('hidden');
+        if (elements.chevronBox3) elements.chevronBox3.classList.add('rotate-180');
+
+        // Right Column in Annual View:
+        // 4. Minimize Net Take-Home Paycheck (Hero card)
+        if (elements.heroCardBody) elements.heroCardBody.classList.add('hidden');
+        if (elements.chevronHero) elements.chevronHero.classList.remove('rotate-180');
+
+        // 5. Hide Biweekly section
+        elements.biweeklySection.classList.add('hidden');
+
+        // 6. Open Annual 2026 Tax Return automatically!
+        elements.annualSection.classList.remove('hidden');
+        if (elements.annualContent) elements.annualContent.classList.remove('hidden');
+        if (elements.chevronAnnual) elements.chevronAnnual.classList.add('rotate-180');
+        if (elements.annualW2OptionBanner) elements.annualW2OptionBanner.classList.remove('hidden');
+
+        // 7. Show Tax Settlement Section (minimized by default below Annual Return)
+        if (elements.taxSettlementSection) {
+          elements.taxSettlementSection.classList.remove('hidden');
+          if (elements.taxSettlementContent) elements.taxSettlementContent.classList.add('hidden');
+          if (elements.chevronTaxSettlement) elements.chevronTaxSettlement.classList.remove('rotate-180');
+        }
+      } else if (mode === 'biweekly') {
+        // Left Column in Biweekly View:
+        // 1. Box 1 open
+        if (elements.box1Content) elements.box1Content.classList.remove('hidden');
+        if (elements.chevronBox1) elements.chevronBox1.classList.add('rotate-180');
+
+        // 2. Box 2 closed by default
+        if (elements.box2Content) elements.box2Content.classList.add('hidden');
+        if (elements.chevronBox2) elements.chevronBox2.classList.remove('rotate-180');
+
+        // 3. Box 3 closed by default
+        if (elements.box3Content) elements.box3Content.classList.add('hidden');
+        if (elements.chevronBox3) elements.chevronBox3.classList.remove('rotate-180');
+
+        // Right Column in Biweekly View:
+        // 4. Hero card open
+        if (elements.heroCardBody) elements.heroCardBody.classList.remove('hidden');
+        if (elements.chevronHero) elements.chevronHero.classList.add('rotate-180');
+
+        // 5. Biweekly Section visible, minimized by default until clicked
         elements.biweeklySection.classList.remove('hidden');
+        if (elements.biweeklyContent) elements.biweeklyContent.classList.add('hidden');
+        if (elements.chevronBiweekly) elements.chevronBiweekly.classList.remove('rotate-180');
+
+        // 6. Annual Section hidden
         elements.annualSection.classList.add('hidden');
         if (elements.annualW2OptionBanner) elements.annualW2OptionBanner.classList.add('hidden');
-      } else if (mode === 'annual') {
-        elements.biweeklySection.classList.add('hidden');
-        elements.annualSection.classList.remove('hidden');
-        // Only have the W-2 option banner available for Annual Return, not split view or biweekly check
-        if (elements.annualW2OptionBanner) elements.annualW2OptionBanner.classList.remove('hidden');
+
+        // 7. Settlement Section hidden
+        if (elements.taxSettlementSection) elements.taxSettlementSection.classList.add('hidden');
       } else {
         // mode === 'both' (Split View)
+        // Left Column:
+        if (elements.box1Content) elements.box1Content.classList.remove('hidden');
+        if (elements.chevronBox1) elements.chevronBox1.classList.add('rotate-180');
+        if (elements.box2Content) elements.box2Content.classList.add('hidden');
+        if (elements.chevronBox2) elements.chevronBox2.classList.remove('rotate-180');
+        if (elements.box3Content) elements.box3Content.classList.add('hidden');
+        if (elements.chevronBox3) elements.chevronBox3.classList.remove('rotate-180');
+
+        // Right Column:
+        if (elements.heroCardBody) elements.heroCardBody.classList.remove('hidden');
+        if (elements.chevronHero) elements.chevronHero.classList.add('rotate-180');
+
+        // Both sections visible, both minimized by default until clicked
         elements.biweeklySection.classList.remove('hidden');
+        if (elements.biweeklyContent) elements.biweeklyContent.classList.add('hidden');
+        if (elements.chevronBiweekly) elements.chevronBiweekly.classList.remove('rotate-180');
+
         elements.annualSection.classList.remove('hidden');
-        // Hidden in Split View per user specification
+        if (elements.annualContent) elements.annualContent.classList.add('hidden');
+        if (elements.chevronAnnual) elements.chevronAnnual.classList.remove('rotate-180');
         if (elements.annualW2OptionBanner) elements.annualW2OptionBanner.classList.add('hidden');
+
+        // Settlement hidden in split view
+        if (elements.taxSettlementSection) elements.taxSettlementSection.classList.add('hidden');
       }
       calculate();
     }
@@ -2872,6 +3521,26 @@
 
       elements.btnThemeToggle.addEventListener('click', () => {
         setTheme(!state.isDark);
+      });
+
+      elements.pensionSystemSelect.addEventListener('change', () => {
+        const key = elements.pensionSystemSelect.value;
+        const plan = TAX_2026.PENSION_SYSTEMS[key];
+        if (plan && plan.isPepra) {
+          elements.inputPepraAgencySearch.value = '';
+          elements.inputPepraCustomRate.value = '0.00';
+          if (elements.pepraAgencySelectionBadge) {
+            elements.pepraAgencySelectionBadge.innerHTML = '* Type your city or agency above to automatically apply your FY 2026-27 rate (deducted from base pay only). Rate defaults to <strong>0.00%</strong> until selected.';
+          }
+        }
+      });
+      elements.spousePensionSystemSelect.addEventListener('change', () => {
+        const key = elements.spousePensionSystemSelect.value;
+        const plan = TAX_2026.PENSION_SYSTEMS[key];
+        if (plan && plan.isPepra) {
+          elements.spouseInputPepraAgencySearch.value = '';
+          elements.spouseInputPepraCustomRate.value = '0.00';
+        }
       });
 
       // Primary Inputs
@@ -2896,7 +3565,9 @@
         elements.inputItemizedPropertyTax,
         elements.inputItemizedCharity,
         elements.inputItemizedMortgageInterest,
-        elements.inputItemizedMortgageBalance
+        elements.inputItemizedMortgageBalance,
+        elements.inputAdditionalFedWithholding,
+        elements.inputPepraCustomRate
       ];
 
       primaryInputs.forEach(input => {
@@ -2917,7 +3588,8 @@
         elements.spouseInput457Value,
         elements.spouseCheckAge50CatchUp,
         elements.spouseInputAdditionalPretax,
-        elements.spouseInputPostTaxDeductions
+        elements.spouseInputPostTaxDeductions,
+        elements.spouseInputPepraCustomRate
       ];
 
       spouseInputs.forEach(input => {
@@ -2925,19 +3597,45 @@
         input.addEventListener('change', calculate);
       });
 
-      // Spouse Checkbox Toggle Handler
-      elements.checkIncludeSpouse.addEventListener('change', (e) => {
-        if (e.target.checked) {
-          if (elements.selectFilingStatus.value === 'single') {
-            elements.selectFilingStatus.value = 'mfj';
+      // Left Column: Qualified Spouse Income Toggle (strictly biweekly / paycheck modeling, opens only spousePanelContainer)
+      if (elements.checkIncludeSpouse) {
+        elements.checkIncludeSpouse.addEventListener('change', (e) => {
+          const isChecked = e.target.checked;
+          if (isChecked) {
+            if (elements.selectFilingStatus.value === 'single') {
+              elements.selectFilingStatus.value = 'mfj';
+            }
+          } else {
+            const w2SpouseActive = elements.checkW2IncludeSpouse && elements.checkW2IncludeSpouse.checked;
+            if (elements.selectFilingStatus.value === 'mfj' && !w2SpouseActive) {
+              elements.selectFilingStatus.value = 'single';
+            }
           }
-        } else {
-          if (elements.selectFilingStatus.value === 'mfj') {
-            elements.selectFilingStatus.value = 'single';
+          calculate();
+        });
+      }
+
+      // Annual View: Qualified Spouse W-2 Toggle (strictly independent, opens ONLY the W-2 pane not spouse income pane)
+      if (elements.checkW2IncludeSpouse) {
+        elements.checkW2IncludeSpouse.addEventListener('change', (e) => {
+          const isChecked = e.target.checked;
+          if (elements.w2SpouseContainer) {
+            if (isChecked) elements.w2SpouseContainer.classList.remove('hidden');
+            else elements.w2SpouseContainer.classList.add('hidden');
           }
-        }
-        calculate();
-      });
+          if (isChecked) {
+            if (elements.selectFilingStatus.value === 'single') {
+              elements.selectFilingStatus.value = 'mfj';
+            }
+          } else {
+            const biweeklySpouseActive = elements.checkIncludeSpouse && elements.checkIncludeSpouse.checked;
+            if (elements.selectFilingStatus.value === 'mfj' && !biweeklySpouseActive) {
+              elements.selectFilingStatus.value = 'single';
+            }
+          }
+          calculate();
+        });
+      }
 
       // Primary Sliders
       elements.hourlyRateSlider.addEventListener('input', (e) => {
@@ -2961,13 +3659,15 @@
         calculate();
       });
 
-      // Primary 457 Toggle
+      // Primary 457 Toggle with proper padding to eliminate $ visual overlap
       elements.toggle457Percent.addEventListener('click', () => {
         state.isPercent457 = true;
         elements.toggle457Percent.className = 'px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-2xs';
         elements.toggle457Dollar.className = 'px-2.5 py-1 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
         elements.unit457Prefix.classList.add('hidden');
         elements.unit457Suffix.classList.remove('hidden');
+        elements.input457Value.classList.remove('pl-8');
+        elements.input457Value.classList.add('pl-3');
         elements.input457Value.value = '8';
         calculate();
       });
@@ -2978,6 +3678,8 @@
         elements.toggle457Percent.className = 'px-2.5 py-1 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
         elements.unit457Prefix.classList.remove('hidden');
         elements.unit457Suffix.classList.add('hidden');
+        elements.input457Value.classList.remove('pl-3');
+        elements.input457Value.classList.add('pl-8');
         elements.input457Value.value = '500';
         calculate();
       });
@@ -3020,20 +3722,20 @@
         calculate();
       });
 
-      // Annual Mode Toggles (Projected vs Direct W-2)
-      elements.btnAnnualModeProjected.addEventListener('click', () => {
-        state.useW2Annual = false;
-        elements.btnAnnualModeProjected.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold';
-        elements.btnAnnualModeW2.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
-        elements.annualW2InputsContainer.classList.add('hidden');
-        calculate();
-      });
-
+      // Annual Mode Toggles (Direct W-2 as default, Standard Projected (26 Checks) as option)
       elements.btnAnnualModeW2.addEventListener('click', () => {
         state.useW2Annual = true;
         elements.btnAnnualModeW2.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold';
         elements.btnAnnualModeProjected.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
         elements.annualW2InputsContainer.classList.remove('hidden');
+        calculate();
+      });
+
+      elements.btnAnnualModeProjected.addEventListener('click', () => {
+        state.useW2Annual = false;
+        elements.btnAnnualModeProjected.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold';
+        elements.btnAnnualModeW2.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+        elements.annualW2InputsContainer.classList.add('hidden');
         calculate();
       });
 
@@ -3069,7 +3771,8 @@
         elements.inputW2PrimaryPretax.value = Math.round(primaryPretaxAnnual);
         elements.inputW2PrimaryPostTax.value = Math.round(primaryPostTaxAnnual);
 
-        if (elements.checkIncludeSpouse.checked) {
+        const hasW2SpouseForAutofill = elements.checkW2IncludeSpouse ? elements.checkW2IncludeSpouse.checked : elements.checkIncludeSpouse.checked;
+        if (hasW2SpouseForAutofill) {
           const spouseHourly = Math.max(0, parseFloat(elements.spouseHourlyRateInput.value) || 0);
           const spouseBaseH = Math.max(0, parseFloat(elements.spouseBaseHoursInput.value) || 0);
           const spouseOtH = Math.max(0, parseFloat(elements.spouseOtHoursInput.value) || 0);
@@ -3138,14 +3841,7 @@
         }
       });
 
-      // Synchronize spouse container in W-2 panel
-      elements.checkIncludeSpouse.addEventListener('change', () => {
-        if (elements.checkIncludeSpouse.checked) {
-          if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.remove('hidden');
-        } else {
-          if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
-        }
-      });
+
 
       // View Switcher Buttons
       elements.viewTabBoth.addEventListener('click', () => setViewMode('both'));
@@ -3166,6 +3862,8 @@
         elements.inputPostTaxDeductions.value = '85';
         elements.inputAlimonyPaid.value = '0';
         elements.checkIncludeSpouse.checked = false;
+        if (elements.checkW2IncludeSpouse) elements.checkW2IncludeSpouse.checked = false;
+        if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
         elements.selectFilingStatus.value = 'single';
         elements.inputChildren.value = '1';
         calculate();
@@ -3199,6 +3897,8 @@
         elements.inputPostTaxDeductions.value = '65';
         elements.inputAlimonyPaid.value = '0';
         elements.checkIncludeSpouse.checked = false;
+        if (elements.checkW2IncludeSpouse) elements.checkW2IncludeSpouse.checked = false;
+        if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
         elements.selectFilingStatus.value = 'single';
         elements.inputChildren.value = '0';
         calculate();
@@ -3219,6 +3919,8 @@
         elements.inputPostTaxDeductions.value = '85';
         elements.inputAlimonyPaid.value = '0';
         elements.checkIncludeSpouse.checked = false;
+        if (elements.checkW2IncludeSpouse) elements.checkW2IncludeSpouse.checked = false;
+        if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
         elements.spousePensionSystemSelect.value = 'calpers';
         elements.selectFilingStatus.value = 'single';
         if (elements.selectCaFilingStatus) elements.selectCaFilingStatus.value = 'same_as_fed';
@@ -3227,6 +3929,11 @@
         if (elements.inputItemizedCharity) elements.inputItemizedCharity.value = '3000';
         if (elements.inputItemizedMortgageInterest) elements.inputItemizedMortgageInterest.value = '26000';
         if (elements.inputItemizedMortgageBalance) elements.inputItemizedMortgageBalance.value = '850000';
+        if (elements.inputAdditionalFedWithholding) elements.inputAdditionalFedWithholding.value = '0.00';
+        if (elements.inputPepraCustomRate) elements.inputPepraCustomRate.value = '0.00';
+        if (elements.inputPepraAgencySearch) elements.inputPepraAgencySearch.value = '';
+        if (elements.spouseInputPepraCustomRate) elements.spouseInputPepraCustomRate.value = '0.00';
+        if (elements.spouseInputPepraAgencySearch) elements.spouseInputPepraAgencySearch.value = '';
         elements.checkAge50CatchUp.checked = false;
         elements.spouseCheckAge50CatchUp.checked = false;
         state.isPercent457 = true;
@@ -3235,7 +3942,7 @@
         elements.spouseToggle457Percent.click();
         state.useItemized = false;
         elements.btnDeductionStandard.click();
-        setViewMode('both');
+        setViewMode('biweekly');
         calculate();
       });
 
@@ -3273,7 +3980,133 @@
         });
       }
 
-      calculate();
+      // CalPERS PEPRA Agency Search & Instant Live Rate Auto-Update
+      if (elements.inputPepraAgencySearch) {
+        elements.inputPepraAgencySearch.addEventListener('input', (e) => {
+          const key = elements.pensionSystemSelect.value;
+          const plan = TAX_2026.PENSION_SYSTEMS[key] || TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+          performAgencySearch(e.target.value, plan.pepraType || 'safety', elements.inputPepraAgencySearch, elements.pepraSearchResults, elements.inputPepraCustomRate, elements.pepraAgencySelectionBadge);
+        });
+        elements.inputPepraAgencySearch.addEventListener('focus', (e) => {
+          if (e.target.value.trim().length >= 2) {
+            const key = elements.pensionSystemSelect.value;
+            const plan = TAX_2026.PENSION_SYSTEMS[key] || TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+            performAgencySearch(e.target.value, plan.pepraType || 'safety', elements.inputPepraAgencySearch, elements.pepraSearchResults, elements.inputPepraCustomRate, elements.pepraAgencySelectionBadge);
+          }
+        });
+      }
+
+      if (elements.inputPepraCustomRate) {
+        elements.inputPepraCustomRate.addEventListener('input', calculate);
+        elements.inputPepraCustomRate.addEventListener('change', calculate);
+      }
+
+      if (elements.spouseInputPepraAgencySearch) {
+        elements.spouseInputPepraAgencySearch.addEventListener('input', (e) => {
+          const key = elements.spousePensionSystemSelect.value;
+          const plan = TAX_2026.PENSION_SYSTEMS[key] || TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+          performAgencySearch(e.target.value, plan.pepraType || 'safety', elements.spouseInputPepraAgencySearch, elements.spousePepraSearchResults, elements.spouseInputPepraCustomRate, null);
+        });
+        elements.spouseInputPepraAgencySearch.addEventListener('focus', (e) => {
+          if (e.target.value.trim().length >= 2) {
+            const key = elements.spousePensionSystemSelect.value;
+            const plan = TAX_2026.PENSION_SYSTEMS[key] || TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+            performAgencySearch(e.target.value, plan.pepraType || 'safety', elements.spouseInputPepraAgencySearch, elements.spousePepraSearchResults, elements.spouseInputPepraCustomRate, null);
+          }
+        });
+      }
+
+      // Close search results dropdown on outside click
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#inputPepraAgencySearch') && !e.target.closest('#pepraSearchResults')) {
+          if (elements.pepraSearchResults) elements.pepraSearchResults.classList.add('hidden');
+        }
+        if (!e.target.closest('#spouseInputPepraAgencySearch') && !e.target.closest('#spousePepraSearchResults')) {
+          if (elements.spousePepraSearchResults) elements.spousePepraSearchResults.classList.add('hidden');
+        }
+      });
+      if (elements.spouseInputPepraCustomRate) {
+        elements.spouseInputPepraCustomRate.addEventListener('input', calculate);
+        elements.spouseInputPepraCustomRate.addEventListener('change', calculate);
+      }
+
+      // Accordion Toggles for Box 1, Box 2, Box 3, Hero Card, Biweekly Breakdown, and Annual Return
+      if (elements.btnToggleBox1) {
+        elements.btnToggleBox1.addEventListener('click', () => {
+          elements.box1Content.classList.toggle('hidden');
+          if (elements.chevronBox1) elements.chevronBox1.classList.toggle('rotate-180');
+        });
+      }
+
+      if (elements.btnToggleHero) {
+        elements.btnToggleHero.addEventListener('click', () => {
+          elements.heroCardBody.classList.toggle('hidden');
+          if (elements.chevronHero) elements.chevronHero.classList.toggle('rotate-180');
+        });
+      }
+
+      if (elements.btnToggleBox2) {
+        elements.btnToggleBox2.addEventListener('click', () => {
+          elements.box2Content.classList.toggle('hidden');
+          if (elements.chevronBox2) elements.chevronBox2.classList.toggle('rotate-180');
+        });
+      }
+      if (elements.btnToggleBox3) {
+        elements.btnToggleBox3.addEventListener('click', () => {
+          elements.box3Content.classList.toggle('hidden');
+          if (elements.chevronBox3) elements.chevronBox3.classList.toggle('rotate-180');
+        });
+      }
+      if (elements.btnToggleBiweekly) {
+        elements.btnToggleBiweekly.addEventListener('click', () => {
+          elements.biweeklyContent.classList.toggle('hidden');
+          if (elements.chevronBiweekly) elements.chevronBiweekly.classList.toggle('rotate-180');
+        });
+      }
+      if (elements.btnToggleAnnual) {
+        elements.btnToggleAnnual.addEventListener('click', () => {
+          elements.annualContent.classList.toggle('hidden');
+          if (elements.chevronAnnual) elements.chevronAnnual.classList.toggle('rotate-180');
+        });
+      }
+
+      // Tax Settlement Accordion Toggle
+      if (elements.btnToggleTaxSettlement) {
+        elements.btnToggleTaxSettlement.addEventListener('click', () => {
+          elements.taxSettlementContent.classList.toggle('hidden');
+          if (elements.chevronTaxSettlement) elements.chevronTaxSettlement.classList.toggle('rotate-180');
+        });
+      }
+
+      // Settlement Input Listeners
+      if (elements.inputWithheldFed) {
+        elements.inputWithheldFed.addEventListener('input', calculate);
+        elements.inputWithheldFed.addEventListener('change', calculate);
+      }
+      if (elements.inputWithheldCa) {
+        elements.inputWithheldCa.addEventListener('input', calculate);
+        elements.inputWithheldCa.addEventListener('change', calculate);
+      }
+
+      // Settlement Auto-Fill from Paycheck Pace
+      if (elements.btnSettlementAutoFill) {
+        elements.btnSettlementAutoFill.addEventListener('click', () => {
+          // Pre-fill using modeled pace
+          const fedWithheldVal = Math.round((parseFloat(elements.rowFedTax.textContent.replace(/[^0-9.]/g, '')) || 0) * 26);
+          const caWithheldVal = Math.round((parseFloat(elements.rowCaTax.textContent.replace(/[^0-9.]/g, '')) || 0) * 26);
+          if (fedWithheldVal > 0) elements.inputWithheldFed.value = fedWithheldVal;
+          if (caWithheldVal > 0) elements.inputWithheldCa.value = caWithheldVal;
+          calculate();
+        });
+      }
+
+      // Additional Federal Tax Withholding listener
+      if (elements.inputAdditionalFedWithholding) {
+        elements.inputAdditionalFedWithholding.addEventListener('input', calculate);
+        elements.inputAdditionalFedWithholding.addEventListener('change', calculate);
+      }
+
+            calculate();
     }
 
     if (document.readyState === 'loading') {
