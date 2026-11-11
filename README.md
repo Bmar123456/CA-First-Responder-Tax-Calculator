@@ -890,25 +890,6 @@
           <!-- Default CLOSED per user request -->
           <div id="box3Content" class="hidden p-4 sm:p-5 space-y-4">
             
-            <!-- Taxable Above-the-Line Deductions (ALIMONY PAID) -->
-            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1.5">
-              <div class="flex items-center justify-between">
-                <label for="inputAlimonyPaid" class="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  Alimony Paid / Above-the-Line Tax Deductions
-                </label>
-                <span class="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
-                  Direct AGI Reduction
-                </span>
-              </div>
-              <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">$</span>
-                <input type="number" id="inputAlimonyPaid" value="0.00" step="500" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 transition-all" placeholder="Annual alimony paid">
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-                Alimony paid under pre-2019 divorce agreements (and 100% deductible on California Form 540) reduces Adjusted Gross Income (AGI) directly.
-              </p>
-            </div>
-
             <!-- Primary Post-Tax Deductions Area -->
             <div>
               <label for="inputPostTaxDeductions" class="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
@@ -1324,11 +1305,7 @@
                   <span>Spouse Post-Tax Deductions</span>
                   <span id="rowSpousePostTax" class="font-semibold font-mono">-$40.00</span>
                 </div>
-                <div id="rowAlimonyItem" class="hidden flex justify-between items-center text-amber-800 dark:text-amber-300">
-                  <span>Alimony Paid (Biweekly Equivalent)</span>
-                  <span id="rowAlimonyDeduction" class="font-semibold font-mono">-$0.00</span>
-                </div>
-              </div>
+</div>
             </div>
 
             <!-- 5. Net Check Total -->
@@ -1458,6 +1435,20 @@
                     </div>
                     <span class="text-[9px] text-slate-400 block mt-0.5">Union Dues (PORAC, IAFF, local)</span>
                   </div>
+
+                  <div>
+                    <label for="inputW2PrimaryFlsaOt" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5 flex items-center justify-between">
+                      <span>FLSA Overtime (No Tax under OBBB) ($)</span>
+                      <span class="text-[9px] bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-1 py-0.2 rounded font-semibold border border-emerald-200 dark:border-emerald-800">
+                        Fed Tax-Free
+                      </span>
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2PrimaryFlsaOt" value="29250" step="500" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">Exempt from federal tax under OBBB (CA taxable)</span>
+                  </div>
                 </div>
               </div>
 
@@ -1532,6 +1523,20 @@
                       <input type="number" id="inputW2SpousePostTax" value="1040" step="50" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
                     </div>
                   </div>
+
+                  <div>
+                    <label for="inputW2SpouseFlsaOt" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5 flex items-center justify-between">
+                      <span>Spouse FLSA Overtime (OBBB) ($)</span>
+                      <span class="text-[9px] bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-1 py-0.2 rounded font-semibold border border-emerald-200 dark:border-emerald-800">
+                        Fed Tax-Free
+                      </span>
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
+                      <input type="number" id="inputW2SpouseFlsaOt" value="11700" step="500" min="0" class="w-full pl-6 pr-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">Exempt from federal tax under OBBB (CA taxable)</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1555,9 +1560,9 @@
                     <span>Pre-Tax Pension, 457(b) & Cafeteria:</span>
                     <span id="annTotalPretax" class="font-semibold font-mono">-$34,515</span>
                   </div>
-                  <div id="annAlimonyRow" class="hidden flex justify-between text-amber-700 dark:text-amber-300">
-                    <span>Alimony Paid (Above-the-Line):</span>
-                    <span id="annAlimonyDeduction" class="font-semibold font-mono">-$0</span>
+                  <div id="annFlsaOtRow" class="hidden flex justify-between text-emerald-700 dark:text-emerald-400">
+                    <span>OBBB FLSA Overtime Exemption:</span>
+                    <span id="annFlsaOtExemption" class="font-semibold font-mono">-$0</span>
                   </div>
                   <div class="flex justify-between font-medium text-slate-800 dark:text-slate-200">
                     <span>Federal Adjusted Gross Income (AGI):</span>
@@ -2282,8 +2287,7 @@
       spouseInputAdditionalPretax: document.getElementById('spouseInputAdditionalPretax'),
       spouseInputPostTaxDeductions: document.getElementById('spouseInputPostTaxDeductions'),
 
-      // Alimony Deduction
-      inputAlimonyPaid: document.getElementById('inputAlimonyPaid'),
+
 
       selectFilingStatus: document.getElementById('selectFilingStatus'),
       selectCaFilingStatus: document.getElementById('selectCaFilingStatus'),
@@ -2374,8 +2378,7 @@
       rowPostTax: document.getElementById('rowPostTax'),
       rowSpousePostTaxItem: document.getElementById('rowSpousePostTaxItem'),
       rowSpousePostTax: document.getElementById('rowSpousePostTax'),
-      rowAlimonyItem: document.getElementById('rowAlimonyItem'),
-      rowAlimonyDeduction: document.getElementById('rowAlimonyDeduction'),
+
       labelRowNet: document.getElementById('labelRowNet'),
       rowNetPay: document.getElementById('rowNetPay'),
 
@@ -2384,8 +2387,8 @@
       annCaStatusLabel: document.getElementById('annCaStatusLabel'),
       annGrossWages: document.getElementById('annGrossWages'),
       annTotalPretax: document.getElementById('annTotalPretax'),
-      annAlimonyRow: document.getElementById('annAlimonyRow'),
-      annAlimonyDeduction: document.getElementById('annAlimonyDeduction'),
+      annFlsaOtRow: document.getElementById('annFlsaOtRow'),
+      annFlsaOtExemption: document.getElementById('annFlsaOtExemption'),
       annFedAgi: document.getElementById('annFedAgi'),
       annFedStdDed: document.getElementById('annFedStdDed'),
       annFedTaxable: document.getElementById('annFedTaxable'),
@@ -2465,6 +2468,7 @@
       inputW2Primary457: document.getElementById('inputW2Primary457'),
       inputW2PrimaryPretax: document.getElementById('inputW2PrimaryPretax'),
       inputW2PrimaryPostTax: document.getElementById('inputW2PrimaryPostTax'),
+      inputW2PrimaryFlsaOt: document.getElementById('inputW2PrimaryFlsaOt'),
       checkW2IncludeSpouse: document.getElementById('checkW2IncludeSpouse'),
       w2SpouseContainer: document.getElementById('w2SpouseContainer'),
       inputW2SpouseGross: document.getElementById('inputW2SpouseGross'),
@@ -2472,6 +2476,7 @@
       inputW2Spouse457: document.getElementById('inputW2Spouse457'),
       inputW2SpousePretax: document.getElementById('inputW2SpousePretax'),
       inputW2SpousePostTax: document.getElementById('inputW2SpousePostTax'),
+      inputW2SpouseFlsaOt: document.getElementById('inputW2SpouseFlsaOt'),
 
       // Theme Toggle Buttons
       btnThemeToggle: document.getElementById('btnThemeToggle'),
@@ -2929,20 +2934,6 @@
         elements.heroSubNetBreakdown.classList.add('hidden');
       }
 
-      // 4. Taxable Above-the-Line Deductions (Alimony Paid)
-      const annualAlimonyPaid = Math.max(0, parseFloat(elements.inputAlimonyPaid.value) || 0);
-      const biweeklyAlimonyPaid = annualAlimonyPaid / TAX_2026.PAY_PERIODS_PER_YEAR;
-
-      if (annualAlimonyPaid > 0) {
-        elements.rowAlimonyItem.classList.remove('hidden');
-        elements.annAlimonyRow.classList.remove('hidden');
-        elements.rowAlimonyDeduction.textContent = `-${fmt(biweeklyAlimonyPaid)}`;
-        elements.annAlimonyDeduction.textContent = `-${fmtNoCents(annualAlimonyPaid)}`;
-      } else {
-        elements.rowAlimonyItem.classList.add('hidden');
-        elements.annAlimonyRow.classList.add('hidden');
-      }
-
       // 5. Total Household Aggregates
       const householdGrossBiweekly = primaryGrossBiweekly + spouseGrossBiweekly;
       const householdGrossAnnual = primaryGrossAnnual + spouseGrossAnnual;
@@ -2996,6 +2987,13 @@
           w2SpousePostTax = Math.max(0, parseFloat(elements.inputW2SpousePostTax.value) || 0);
         }
 
+        const w2PrimaryFlsaOt = Math.max(0, parseFloat(elements.inputW2PrimaryFlsaOt ? elements.inputW2PrimaryFlsaOt.value : 0) || 0);
+        let w2SpouseFlsaOt = 0;
+        if (hasW2Spouse && elements.inputW2SpouseFlsaOt) {
+          w2SpouseFlsaOt = Math.max(0, parseFloat(elements.inputW2SpouseFlsaOt.value) || 0);
+        }
+        const totalFlsaOtExempt = Math.min(w2PrimaryGross + w2SpouseGross, w2PrimaryFlsaOt + w2SpouseFlsaOt);
+
         effectiveGrossAnnual = w2PrimaryGross + w2SpouseGross;
         effectivePensionAnnual = w2PrimaryPension + w2SpousePension;
         effective457Annual = w2Primary457 + w2Spouse457;
@@ -3046,7 +3044,7 @@
       const fedSaltCap = (filingStatus === 'mfs') ? TAX_2026.LIMIT_SALT_MFS : TAX_2026.LIMIT_SALT_ONE_BIG_BEAUTIFUL_BILL;
 
       // Estimate preliminary California State Tax for Federal SALT deduction
-      const tempCaTaxable = Math.max(0, (householdGrossAnnual - householdPretaxAnnual - annualAlimonyPaid) - caStdDed);
+      const tempCaTaxable = Math.max(0, (householdGrossAnnual - householdPretaxAnnual) - caStdDed);
       const tempCaBrackets = TAX_2026.CA_BRACKETS[caFilingStatus];
       const tempCaTaxPreCredit = calculateGraduatedTax(tempCaTaxable, tempCaBrackets);
       let tempCaPersonalCredit = TAX_2026.CA_EXEMPTION_CREDITS['personal_' + caFilingStatus] || TAX_2026.CA_EXEMPTION_CREDITS.personal_single;
@@ -3089,9 +3087,11 @@
         elements.deductionDisplayLabel.textContent = `2026 Standard ($${fedStdDed.toLocaleString()} Fed / $${caStdDed.toLocaleString()} CA)`;
       }
 
-      // 7. Annual Tax Calculations (Form 1040 & CA 540)
-      const annualFedAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual - annualAlimonyPaid);
-      const annualCaAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual - annualAlimonyPaid);
+      // 7. Annual Tax Calculations (Form 1040 & CA 540 with OBBB FLSA Overtime Exemption)
+      const totalObbbOtExempt = isW2Active ? (Math.max(0, parseFloat(elements.inputW2PrimaryFlsaOt ? elements.inputW2PrimaryFlsaOt.value : 0) || 0) + (hasW2Spouse && elements.inputW2SpouseFlsaOt ? (parseFloat(elements.inputW2SpouseFlsaOt.value) || 0) : 0)) : 0;
+      const annualFedAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual - totalObbbOtExempt);
+      // California does not conform to federal OBBB overtime exemption; overtime remains ordinary CA taxable income
+      const annualCaAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual);
 
       const annualFedTaxable = Math.max(0, annualFedAgi - fedDeduction);
       const annualCaTaxable = Math.max(0, annualCaAgi - caDeduction);
@@ -3136,7 +3136,7 @@
       // Composite Taxes
       const annualCompositeTaxes = annualFedTaxFinal + annualCaTaxFinal + annualMedicare + annualTotalSs;
       const annualEffectiveRate = effectiveGrossAnnual > 0 ? (annualCompositeTaxes / effectiveGrossAnnual) * 100 : 0;
-      const annualNetTakeHome = effectiveGrossAnnual - effectivePretaxAnnual - annualCompositeTaxes - effectivePostTaxAnnual - annualAlimonyPaid;
+      const annualNetTakeHome = effectiveGrossAnnual - effectivePretaxAnnual - annualCompositeTaxes - effectivePostTaxAnnual;
 
       // 8. Biweekly Tax Withholdings & Additional Federal Withholding (Form W-4 Step 4c)
       const additionalFedWithholding = Math.max(0, parseFloat(elements.inputAdditionalFedWithholding.value) || 0);
@@ -3155,7 +3155,7 @@
       const biweeklyEffectiveRate = householdGrossBiweekly > 0 ? (biweeklyCompositeTaxes / householdGrossBiweekly) * 100 : 0;
 
       // Net Take-Home Paycheck (deducts additional federal withholding)
-      const biweeklyNetPay = householdGrossBiweekly - householdPretaxBiweekly - biweeklyCompositeTaxes - householdPostTaxBiweekly - biweeklyAlimonyPaid;
+      const biweeklyNetPay = householdGrossBiweekly - householdPretaxBiweekly - biweeklyCompositeTaxes - householdPostTaxBiweekly;
 
       if (additionalFedWithholding > 0) {
         if (elements.rowAddlFedWithholdingItem) elements.rowAddlFedWithholdingItem.classList.remove('hidden');
@@ -3203,7 +3203,7 @@
       elements.heroPensionBiweekly.textContent = fmt(householdCalpersBiweekly);
       elements.heroPensionRateLabel.textContent = (primaryPlan.rate > 0) ? `${(primaryPlan.rate * 100).toFixed(1)}% ${primaryPlan.baseOnly ? 'Base' : 'Total'}` : 'Exempts OT';
       elements.hero457Biweekly.textContent = fmt(household457Biweekly);
-      elements.heroOtherDeductionsBiweekly.textContent = fmt(householdAdditionalPretaxBiweekly + householdPostTaxBiweekly + biweeklyAlimonyPaid);
+      elements.heroOtherDeductionsBiweekly.textContent = fmt(householdAdditionalPretaxBiweekly + householdPostTaxBiweekly);
       elements.labelGrossDistribution.textContent = `100% of ${fmt(householdGrossBiweekly)}`;
 
       // Update Bar Widths
@@ -3212,7 +3212,7 @@
         const pTax = Math.max(0, (biweeklyCompositeTaxes / householdGrossBiweekly) * 100);
         const pPension = Math.max(0, ((householdCalpersBiweekly + householdSsBiweekly) / householdGrossBiweekly) * 100);
         const p457 = Math.max(0, (household457Biweekly / householdGrossBiweekly) * 100);
-        const pOther = Math.max(0, ((householdAdditionalPretaxBiweekly + householdPostTaxBiweekly + biweeklyAlimonyPaid) / householdGrossBiweekly) * 100);
+        const pOther = Math.max(0, ((householdAdditionalPretaxBiweekly + householdPostTaxBiweekly) / householdGrossBiweekly) * 100);
 
         elements.barNet.style.width = pNet.toFixed(1) + '%';
         elements.barTaxes.style.width = pTax.toFixed(1) + '%';
@@ -3242,7 +3242,7 @@
       elements.rowPretaxHealth.textContent = `-${fmt(primaryAdditionalPretax)}`;
       elements.rowTotalPretax.textContent = `-${fmt(householdPretaxBiweekly)}`;
 
-      const biweeklyTaxableWage = Math.max(0, householdGrossBiweekly - householdPretaxBiweekly - biweeklyAlimonyPaid);
+      const biweeklyTaxableWage = Math.max(0, householdGrossBiweekly - householdPretaxBiweekly);
       elements.rowFedTaxableWage.textContent = fmt(biweeklyTaxableWage);
 
       elements.rowFedTax.textContent = `-${fmt(biweeklyFedTax)}`;
@@ -3279,6 +3279,14 @@
 
       elements.annGrossWages.textContent = fmtNoCents(effectiveGrossAnnual);
       elements.annTotalPretax.textContent = `-${fmtNoCents(effectivePretaxAnnual)}`;
+      if (elements.annFlsaOtRow) {
+        if (isW2Active && totalObbbOtExempt > 0) {
+          elements.annFlsaOtRow.classList.remove('hidden');
+          elements.annFlsaOtExemption.textContent = `-${fmtNoCents(totalObbbOtExempt)}`;
+        } else {
+          elements.annFlsaOtRow.classList.add('hidden');
+        }
+      }
       elements.annFedAgi.textContent = fmtNoCents(annualFedAgi);
       elements.annFedStdDed.textContent = `-${fmtNoCents(fedDeduction)}`;
       elements.annFedTaxable.textContent = fmtNoCents(annualFedTaxable);
@@ -3555,7 +3563,6 @@
         elements.checkAge50CatchUp,
         elements.inputAdditionalPretax,
         elements.inputPostTaxDeductions,
-        elements.inputAlimonyPaid,
         elements.selectFilingStatus,
         elements.selectCaFilingStatus,
         elements.inputChildren,
@@ -3768,6 +3775,7 @@
         elements.inputW2Primary457.value = Math.round(primaryAnnual457);
         elements.inputW2PrimaryPretax.value = Math.round(primaryPretaxAnnual);
         elements.inputW2PrimaryPostTax.value = Math.round(primaryPostTaxAnnual);
+        if (elements.inputW2PrimaryFlsaOt) elements.inputW2PrimaryFlsaOt.value = Math.round(primaryOtPay * 26);
 
         const hasW2SpouseForAutofill = elements.checkW2IncludeSpouse ? elements.checkW2IncludeSpouse.checked : elements.checkIncludeSpouse.checked;
         if (hasW2SpouseForAutofill) {
@@ -3800,6 +3808,7 @@
           elements.inputW2Spouse457.value = Math.round(spouseAnnual457);
           elements.inputW2SpousePretax.value = Math.round(spousePretaxAnnual);
           elements.inputW2SpousePostTax.value = Math.round(spousePostTaxAnnual);
+          if (elements.inputW2SpouseFlsaOt) elements.inputW2SpouseFlsaOt.value = Math.round(spouseOtPay * 26);
         }
 
         calculate();
@@ -3811,11 +3820,13 @@
         elements.inputW2Primary457.value = '12740';
         elements.inputW2PrimaryPretax.value = '3900';
         elements.inputW2PrimaryPostTax.value = '2210';
+        if (elements.inputW2PrimaryFlsaOt) elements.inputW2PrimaryFlsaOt.value = '29250';
         elements.inputW2SpouseGross.value = '115000';
         elements.inputW2SpousePension.value = '12000';
         elements.inputW2Spouse457.value = '6900';
         elements.inputW2SpousePretax.value = '2600';
         elements.inputW2SpousePostTax.value = '1040';
+        if (elements.inputW2SpouseFlsaOt) elements.inputW2SpouseFlsaOt.value = '11700';
         calculate();
       });
 
@@ -3826,11 +3837,13 @@
         elements.inputW2Primary457,
         elements.inputW2PrimaryPretax,
         elements.inputW2PrimaryPostTax,
+        elements.inputW2PrimaryFlsaOt,
         elements.inputW2SpouseGross,
         elements.inputW2SpousePension,
         elements.inputW2Spouse457,
         elements.inputW2SpousePretax,
-        elements.inputW2SpousePostTax
+        elements.inputW2SpousePostTax,
+        elements.inputW2SpouseFlsaOt
       ];
       w2InputElements.forEach(input => {
         if (input) {
@@ -3858,7 +3871,7 @@
         elements.otHoursSlider.value = '14';
         elements.inputAdditionalPretax.value = '150';
         elements.inputPostTaxDeductions.value = '85';
-        elements.inputAlimonyPaid.value = '0';
+        
         elements.checkIncludeSpouse.checked = false;
         if (elements.checkW2IncludeSpouse) elements.checkW2IncludeSpouse.checked = false;
         if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
@@ -3876,7 +3889,7 @@
         elements.otHoursSlider.value = '24';
         elements.inputAdditionalPretax.value = '180';
         elements.inputPostTaxDeductions.value = '110';
-        elements.inputAlimonyPaid.value = '0';
+        
         elements.checkIncludeSpouse.checked = true;
         elements.spousePensionSystemSelect.value = 'ocers_plan_u';
         elements.selectFilingStatus.value = 'mfj';
@@ -3893,7 +3906,7 @@
         elements.otHoursSlider.value = '14';
         elements.inputAdditionalPretax.value = '120';
         elements.inputPostTaxDeductions.value = '65';
-        elements.inputAlimonyPaid.value = '0';
+        
         elements.checkIncludeSpouse.checked = false;
         if (elements.checkW2IncludeSpouse) elements.checkW2IncludeSpouse.checked = false;
         if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
@@ -3915,7 +3928,7 @@
         elements.otHoursSlider.value = '12';
         elements.inputAdditionalPretax.value = '150';
         elements.inputPostTaxDeductions.value = '85';
-        elements.inputAlimonyPaid.value = '0';
+        
         elements.checkIncludeSpouse.checked = false;
         if (elements.checkW2IncludeSpouse) elements.checkW2IncludeSpouse.checked = false;
         if (elements.w2SpouseContainer) elements.w2SpouseContainer.classList.add('hidden');
@@ -3932,6 +3945,8 @@
         if (elements.inputPepraAgencySearch) elements.inputPepraAgencySearch.value = '';
         if (elements.spouseInputPepraCustomRate) elements.spouseInputPepraCustomRate.value = '0.00';
         if (elements.spouseInputPepraAgencySearch) elements.spouseInputPepraAgencySearch.value = '';
+        if (elements.inputW2PrimaryFlsaOt) elements.inputW2PrimaryFlsaOt.value = '29250';
+        if (elements.inputW2SpouseFlsaOt) elements.inputW2SpouseFlsaOt.value = '11700';
         elements.checkAge50CatchUp.checked = false;
         elements.spouseCheckAge50CatchUp.checked = false;
         state.isPercent457 = true;
