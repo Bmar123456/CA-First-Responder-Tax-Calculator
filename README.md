@@ -342,6 +342,8 @@
               <option value="calpers_pepra_misc">CalPERS Misc - 2% @ 62 (PEPRA)</option>
               <option value="calpers_classic_misc">CalPERS Misc - 2.7% @ 55 (Classic - 8.00%)</option>
               <option value="lafpp_tier6">LAFPP Tier 6 - LAPD / LAFD (11.00% Base Only - No Social Security)</option>
+              <option value="lafpp_tier5_9">LAFPP Tier 5 - LAPD / LAFD (9.00% Base Only - No Social Security)</option>
+              <option value="lafpp_tier5_8">LAFPP Tier 2-5 (100% Funded) - LAPD / LAFD (8.00% Base Only - No SS)</option>
               <option value="ocers_plan_v">OCERS Plan V - Safety 2.7%@57 (14.61% Base Only - No Social Security)</option>
               <option value="ocers_plan_u">OCERS Plan U - General 2.5%@67 (10.50% Base Only + Social Security)</option>
               <option value="lacera_plan_c">LACERA Plan C - Safety 2.7%@57 (15.36% Base Only - No Social Security)</option>
@@ -448,7 +450,7 @@
                   <input type="number" id="hourlyRateInput" value="62.50" step="0.25" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all">
                 </div>
                 <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
-                  * Include regular base rate plus all pensionable specialty pay (POST certificate, bilingual, FTO, and collateral/incentive differentials).
+                  * Include base rate plus <strong>pensionable</strong> specialty pay (e.g., POST, bilingual, FTO). Put non-pensionable bonuses or back pay in <strong>Additional Income ($)</strong> below, or set an exact paystub pension override in Box 2.
                 </p>
                 <div class="pt-2">
                   <input type="range" id="hourlyRateSlider" min="20" max="150" step="0.5" value="62.5" aria-label="Hourly rate slider">
@@ -495,6 +497,25 @@
               <input type="range" id="otHoursSlider" min="0" max="60" step="1" value="12" aria-label="Overtime hours slider">
             </div>
 
+            <!-- Additional Income / Back Pay / Non-Pensionable Bonus (Fixed Dollar Input) -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="inputAdditionalIncome" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Additional Income / Back Pay ($)
+                </label>
+                <span class="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
+                  Fixed $ • Non-Pensionable
+                </span>
+              </div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-400 text-sm">$</span>
+                <input type="number" id="inputAdditionalIncome" value="0.00" step="50" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="0.00">
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                * Expecting retro/back pay, uniform allowance, or non-pensionable incentives (e.g., LAPD Patrol/Detective/Education bonus) this check? Add the fixed dollar amount here—it adds to gross taxable pay without inflating your pension deduction.
+              </p>
+            </div>
+
             <!-- Mini Live Gross Pay Breakdown Box -->
             <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-200/90 dark:border-slate-700/70 space-y-1.5 text-xs">
               <div class="flex justify-between items-center text-slate-600 dark:text-slate-300">
@@ -504,6 +525,10 @@
               <div class="flex justify-between items-center text-slate-600 dark:text-slate-300">
                 <span>Overtime (<span id="calcOtFormula">12 hrs @ $93.75</span>):</span>
                 <span id="calcOtPay" class="font-semibold text-orange-600 dark:text-orange-400 font-mono">$1,125.00</span>
+              </div>
+              <div id="calcAdditionalIncomeRow" class="hidden flex justify-between items-center text-emerald-700 dark:text-emerald-400">
+                <span>Additional Income (Back Pay / Bonus):</span>
+                <span id="calcAdditionalIncomePay" class="font-semibold font-mono">$0.00</span>
               </div>
               <div class="pt-1.5 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-sm font-bold text-slate-900 dark:text-white">
                 <span>Total Primary Gross Pay:</span>
@@ -547,8 +572,17 @@
                 </div>
               </div>
               <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-tight">
-                * Overtime earnings ($<span id="calpersOtSavings">1,125.00</span>) are exempt from pension deductions, keeping an extra <strong>$<span id="calpersSavedAmount">154.69</span></strong> in your pocket every check.
+                * Overtime &amp; non-pensionable earnings ($<span id="calpersOtSavings">1,125.00</span>) are exempt from pension deductions, keeping an extra <strong>$<span id="calpersSavedAmount">154.69</span></strong> in your pocket every check.
               </p>
+              <div class="pt-2 mt-1.5 border-t border-amber-200/70 dark:border-amber-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
+                <label for="inputPrimaryPensionOverride" class="font-semibold text-amber-950 dark:text-amber-200">
+                  Exact Paystub Pension Override ($/check, optional):
+                </label>
+                <div class="relative w-full sm:w-36 shrink-0">
+                  <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-amber-700 dark:text-amber-400 text-xs">$</span>
+                  <input type="number" id="inputPrimaryPensionOverride" value="" step="1" min="0" placeholder="Auto" class="w-full pl-6 pr-2 py-1 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-lg text-xs font-mono font-bold text-amber-900 dark:text-amber-200 focus:ring-2 focus:ring-amber-500">
+                </div>
+              </div>
             </div>
 
             <!-- Social Security notice box -->
@@ -665,6 +699,8 @@
                     <option value="calpers_pepra_misc">CalPERS Misc - 2% @ 62 (PEPRA)</option>
                     <option value="calpers_classic_misc">CalPERS Misc - 2.7% @ 55 (Classic - 8.00%)</option>
                     <option value="lafpp_tier6">LAFPP Tier 6 - LAPD / LAFD (11.00% Base Only - No Social Security)</option>
+              <option value="lafpp_tier5_9">LAFPP Tier 5 - LAPD / LAFD (9.00% Base Only - No Social Security)</option>
+              <option value="lafpp_tier5_8">LAFPP Tier 2-5 (100% Funded) - LAPD / LAFD (8.00% Base Only - No SS)</option>
                     <option value="ocers_plan_v">OCERS Plan V - Safety 2.7%@57 (14.61% Base Only - No Social Security)</option>
                     <option value="ocers_plan_u">OCERS Plan U - General 2.5%@67 (10.50% Base Only + Social Security)</option>
                     <option value="lacera_plan_c">LACERA Plan C - Safety 2.7%@57 (15.36% Base Only - No Social Security)</option>
@@ -1211,6 +1247,10 @@
                 <div class="flex justify-between items-center">
                   <span class="text-slate-600 dark:text-slate-300">Primary Overtime (<span id="rowOtHours">12</span> hrs @ $<span id="rowOtRate">93.75</span>/hr at 1.5×)</span>
                   <span id="rowOtPay" class="font-semibold text-orange-600 dark:text-orange-400 font-mono">$1,125.00</span>
+                </div>
+                <div id="rowAdditionalIncomeItem" class="hidden flex justify-between items-center text-emerald-700 dark:text-emerald-400">
+                  <span>Primary Additional Income (Back Pay / Bonus)</span>
+                  <span id="rowAdditionalIncomePay" class="font-semibold font-mono">$0.00</span>
                 </div>
                 
                 <!-- Spouse Gross Line -->
@@ -1981,9 +2021,29 @@
           rate: 0.1100,
           hasSs: false,
           baseOnly: true,
-          label: '11.00% on base pay only (9% pension + 2% retiree health)',
+          label: '11.00% on pensionable base pay only (9% pension + 2% retiree health)',
           badge: 'Section 218 SS Exempt',
-          notice: 'LAFPP Tier 6 (LAPD / LAFD) sworn members contribute a flat 11.00% on base salary only (9% toward pension + 2% toward retiree health). Overtime is exempt from pension deductions, and City of LA sworn personnel do not pay Social Security.'
+          notice: 'LAFPP Tier 6 (LAPD / LAFD) sworn members contribute 11.00% on pensionable base pay only (9% pension + 2% retiree health). Overtime and non-pensionable MOU bonuses (Field/Patrol Assignment, Detective Incentive, Education Bonus, Uniform Allowance) are exempt from pension deductions.'
+        },
+        lafpp_tier5_9: {
+          name: 'LAFPP Tier 5 - LAPD / LAFD (9%)',
+          shortName: 'LAFPP Tier 5 (9%)',
+          rate: 0.0900,
+          hasSs: false,
+          baseOnly: true,
+          label: '9.00% on pensionable base pay only',
+          badge: 'Section 218 SS Exempt • Tier 5',
+          notice: 'LAFPP Tier 5 (LAPD / LAFD) sworn members contribute 9.00% on pensionable base pay only (8% base + 1% when <100% funded). Overtime and non-pensionable MOU bonuses are exempt from pension deductions.'
+        },
+        lafpp_tier5_8: {
+          name: 'LAFPP Tier 2-5 - LAPD / LAFD (8%)',
+          shortName: 'LAFPP Tier 2-5 (8%)',
+          rate: 0.0800,
+          hasSs: false,
+          baseOnly: true,
+          label: '8.00% on pensionable base pay only (100%+ Funded Rate)',
+          badge: 'Section 218 SS Exempt • Tier 2-5',
+          notice: 'LAFPP Tiers 2-5 (LAPD / LAFD) sworn members contribute 8.00% on pensionable base pay when the plan is at least 100% actuarially funded. Overtime and non-pensionable MOU bonuses are exempt.'
         },
         ocers_plan_v: {
           name: 'OCERS Plan V - Safety 2.7% @ 57',
@@ -2197,10 +2257,14 @@
       otHoursSlider: document.getElementById('otHoursSlider'),
       sliderOtVal: document.getElementById('sliderOtVal'),
 
+      inputAdditionalIncome: document.getElementById('inputAdditionalIncome'),
+      inputPrimaryPensionOverride: document.getElementById('inputPrimaryPensionOverride'),
       calcBaseFormula: document.getElementById('calcBaseFormula'),
       calcBasePay: document.getElementById('calcBasePay'),
       calcOtFormula: document.getElementById('calcOtFormula'),
       calcOtPay: document.getElementById('calcOtPay'),
+      calcAdditionalIncomeRow: document.getElementById('calcAdditionalIncomeRow'),
+      calcAdditionalIncomePay: document.getElementById('calcAdditionalIncomePay'),
       calcTotalGross: document.getElementById('calcTotalGross'),
 
       biweeklyCalpersDisplay: document.getElementById('biweeklyCalpersDisplay'),
@@ -2355,6 +2419,8 @@
       rowOtHours: document.getElementById('rowOtHours'),
       rowOtRate: document.getElementById('rowOtRate'),
       rowOtPay: document.getElementById('rowOtPay'),
+      rowAdditionalIncomeItem: document.getElementById('rowAdditionalIncomeItem'),
+      rowAdditionalIncomePay: document.getElementById('rowAdditionalIncomePay'),
       rowSpouseEarningsItem: document.getElementById('rowSpouseEarningsItem'),
       rowSpouseBasePay: document.getElementById('rowSpouseBasePay'),
       rowSpouseOtPay: document.getElementById('rowSpouseOtPay'),
@@ -2711,20 +2777,34 @@
       }
       elements.sliderOtVal.textContent = `${primaryOtHours} hrs`;
 
+      const primaryAdditionalIncome = Math.max(0, parseFloat(elements.inputAdditionalIncome ? elements.inputAdditionalIncome.value : 0) || 0);
       const primaryBasePay = primaryBaseHours * primaryHourlyRate;
       const primaryOtPay = primaryOtHours * primaryOtRate;
-      const primaryGrossBiweekly = primaryBasePay + primaryOtPay;
+      const primaryGrossBiweekly = primaryBasePay + primaryOtPay + primaryAdditionalIncome;
       const primaryGrossAnnual = primaryGrossBiweekly * TAX_2026.PAY_PERIODS_PER_YEAR;
 
       elements.calcBaseFormula.textContent = `${primaryBaseHours} hrs @ $${primaryHourlyRate.toFixed(2)}`;
       elements.calcBasePay.textContent = fmt(primaryBasePay);
       elements.calcOtFormula.textContent = `${primaryOtHours} hrs @ $${primaryOtRate.toFixed(2)}`;
       elements.calcOtPay.textContent = fmt(primaryOtPay);
+      if (elements.calcAdditionalIncomeRow && elements.calcAdditionalIncomePay) {
+        if (primaryAdditionalIncome > 0) {
+          elements.calcAdditionalIncomeRow.classList.remove('hidden');
+          elements.calcAdditionalIncomePay.textContent = fmt(primaryAdditionalIncome);
+        } else {
+          elements.calcAdditionalIncomeRow.classList.add('hidden');
+        }
+      }
       elements.calcTotalGross.textContent = fmt(primaryGrossBiweekly);
 
-      // Primary Pension or Social Security
+      // Primary Pension or Social Security (Base-only plans exclude Overtime and Additional/Non-Pensionable Income)
       const primaryPensionablePay = primaryPlan.baseOnly ? primaryBasePay : primaryGrossBiweekly;
-      let primaryBiweeklyCalpers = primaryPensionablePay * primaryPlan.rate;
+      const rawOverrideVal = elements.inputPrimaryPensionOverride ? elements.inputPrimaryPensionOverride.value.trim() : '';
+      const hasPensionOverride = (rawOverrideVal !== '' && !isNaN(parseFloat(rawOverrideVal)) && parseFloat(rawOverrideVal) >= 0);
+      let primaryBiweeklyCalpers = hasPensionOverride ? parseFloat(rawOverrideVal) : (primaryPensionablePay * primaryPlan.rate);
+      if (elements.inputPrimaryPensionOverride && document.activeElement !== elements.inputPrimaryPensionOverride && !hasPensionOverride) {
+        elements.inputPrimaryPensionOverride.placeholder = `Auto (${fmt(primaryPensionablePay * primaryPlan.rate)})`;
+      }
       let primaryAnnualCalpers = primaryBiweeklyCalpers * TAX_2026.PAY_PERIODS_PER_YEAR;
 
       let primaryBiweeklySs = 0;
@@ -2739,10 +2819,11 @@
         elements.socialSecurityNoticeBox.classList.add('hidden');
       }
 
-      if (primaryPlan.rate > 0) {
+      if (primaryPlan.rate > 0 || hasPensionOverride) {
         elements.calpersContainer.classList.remove('hidden');
-        const primarySavedFromExemptOt = primaryPlan.baseOnly ? (primaryOtPay * primaryPlan.rate) : 0;
-        elements.calpersOtSavings.textContent = primaryOtPay.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const exemptPayTotal = primaryOtPay + primaryAdditionalIncome;
+        const primarySavedFromExemptOt = primaryPlan.baseOnly ? (exemptPayTotal * primaryPlan.rate) : 0;
+        elements.calpersOtSavings.textContent = exemptPayTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         elements.calpersSavedAmount.textContent = primarySavedFromExemptOt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         elements.biweeklyCalpersDisplay.textContent = fmt(primaryBiweeklyCalpers);
       } else {
@@ -2955,6 +3036,8 @@
 
       // Check if Direct W-2 / Actual Numbers Mode is active (ONLY when viewing Annual Return)
       const isW2Active = (state.viewMode === 'annual' && state.useW2Annual);
+      // Declare hasW2Spouse in function scope so it is accessible throughout calculate()
+      const hasW2Spouse = elements.checkW2IncludeSpouse ? elements.checkW2IncludeSpouse.checked : false;
 
       let effectiveGrossAnnual = householdGrossAnnual;
       let effectivePensionAnnual = householdCalpersAnnual;
@@ -2962,6 +3045,8 @@
       let effectivePretaxAnnual = householdPretaxAnnual;
       let effectivePostTaxAnnual = householdPostTaxBiweekly * 26;
       let effectiveSsAnnual = householdSsAnnual;
+      let effectiveCafeteriaAnnual = (primaryAdditionalPretax + (hasSpouse ? spouseAdditionalPretax : 0)) * TAX_2026.PAY_PERIODS_PER_YEAR;
+      let totalObbbOtExempt = 0;
 
       if (isW2Active) {
         const w2PrimaryGross = Math.max(0, parseFloat(elements.inputW2PrimaryGross.value) || 0);
@@ -2976,9 +3061,6 @@
         let w2SpousePretax = 0;
         let w2SpousePostTax = 0;
 
-        // In W-2 mode, spouse inclusion is strictly governed by checkW2IncludeSpouse (independent of biweekly checkIncludeSpouse)
-        const hasW2Spouse = elements.checkW2IncludeSpouse ? elements.checkW2IncludeSpouse.checked : false;
-
         if (hasW2Spouse) {
           w2SpouseGross = Math.max(0, parseFloat(elements.inputW2SpouseGross.value) || 0);
           w2SpousePension = Math.max(0, parseFloat(elements.inputW2SpousePension.value) || 0);
@@ -2992,12 +3074,13 @@
         if (hasW2Spouse && elements.inputW2SpouseFlsaOt) {
           w2SpouseFlsaOt = Math.max(0, parseFloat(elements.inputW2SpouseFlsaOt.value) || 0);
         }
-        const totalFlsaOtExempt = Math.min(w2PrimaryGross + w2SpouseGross, w2PrimaryFlsaOt + w2SpouseFlsaOt);
+        totalObbbOtExempt = Math.min(w2PrimaryGross + w2SpouseGross, w2PrimaryFlsaOt + w2SpouseFlsaOt);
 
         effectiveGrossAnnual = w2PrimaryGross + w2SpouseGross;
         effectivePensionAnnual = w2PrimaryPension + w2SpousePension;
         effective457Annual = w2Primary457 + w2Spouse457;
-        effectivePretaxAnnual = effectivePensionAnnual + effective457Annual + w2PrimaryPretax + w2SpousePretax;
+        effectiveCafeteriaAnnual = w2PrimaryPretax + w2SpousePretax;
+        effectivePretaxAnnual = effectivePensionAnnual + effective457Annual + effectiveCafeteriaAnnual;
         effectivePostTaxAnnual = w2PrimaryPostTax + w2SpousePostTax;
 
         let w2PrimarySs = 0;
@@ -3044,7 +3127,7 @@
       const fedSaltCap = (filingStatus === 'mfs') ? TAX_2026.LIMIT_SALT_MFS : TAX_2026.LIMIT_SALT_ONE_BIG_BEAUTIFUL_BILL;
 
       // Estimate preliminary California State Tax for Federal SALT deduction
-      const tempCaTaxable = Math.max(0, (householdGrossAnnual - householdPretaxAnnual) - caStdDed);
+      const tempCaTaxable = Math.max(0, (effectiveGrossAnnual - effectivePretaxAnnual) - caStdDed);
       const tempCaBrackets = TAX_2026.CA_BRACKETS[caFilingStatus];
       const tempCaTaxPreCredit = calculateGraduatedTax(tempCaTaxable, tempCaBrackets);
       let tempCaPersonalCredit = TAX_2026.CA_EXEMPTION_CREDITS['personal_' + caFilingStatus] || TAX_2026.CA_EXEMPTION_CREDITS.personal_single;
@@ -3088,7 +3171,6 @@
       }
 
       // 7. Annual Tax Calculations (Form 1040 & CA 540 with OBBB FLSA Overtime Exemption)
-      const totalObbbOtExempt = isW2Active ? (Math.max(0, parseFloat(elements.inputW2PrimaryFlsaOt ? elements.inputW2PrimaryFlsaOt.value : 0) || 0) + (hasW2Spouse && elements.inputW2SpouseFlsaOt ? (parseFloat(elements.inputW2SpouseFlsaOt.value) || 0) : 0)) : 0;
       const annualFedAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual - totalObbbOtExempt);
       // California does not conform to federal OBBB overtime exemption; overtime remains ordinary CA taxable income
       const annualCaAgi = Math.max(0, effectiveGrossAnnual - effectivePretaxAnnual);
@@ -3122,7 +3204,7 @@
       // Medicare Tax (Annual)
       const primaryMedicareWages = Math.max(0, primaryGrossAnnual - (primaryAdditionalPretax * TAX_2026.PAY_PERIODS_PER_YEAR));
       const spouseMedicareWages = Math.max(0, spouseGrossAnnual - (spouseAdditionalPretax * TAX_2026.PAY_PERIODS_PER_YEAR));
-      const totalMedicareWagesAnnual = isW2Active ? effectiveGrossAnnual : (primaryMedicareWages + (hasSpouse ? spouseMedicareWages : 0));
+      const totalMedicareWagesAnnual = isW2Active ? Math.max(0, effectiveGrossAnnual - effectiveCafeteriaAnnual) : (primaryMedicareWages + (hasSpouse ? spouseMedicareWages : 0));
 
       let annualMedicare = totalMedicareWagesAnnual * TAX_2026.MEDICARE_RATE;
       const addlMedThreshold = (filingStatus === 'mfj') ? TAX_2026.ADDITIONAL_MEDICARE_THRESHOLD_MFJ : TAX_2026.ADDITIONAL_MEDICARE_THRESHOLD_SINGLE;
@@ -3234,6 +3316,14 @@
       elements.rowOtHours.textContent = primaryOtHours;
       elements.rowOtRate.textContent = primaryOtRate.toFixed(2);
       elements.rowOtPay.textContent = fmt(primaryOtPay);
+      if (elements.rowAdditionalIncomeItem && elements.rowAdditionalIncomePay) {
+        if (primaryAdditionalIncome > 0) {
+          elements.rowAdditionalIncomeItem.classList.remove('hidden');
+          elements.rowAdditionalIncomePay.textContent = fmt(primaryAdditionalIncome);
+        } else {
+          elements.rowAdditionalIncomeItem.classList.add('hidden');
+        }
+      }
       elements.rowGrossPay.textContent = fmt(householdGrossBiweekly);
 
       elements.labelRowPrimaryPension.textContent = `Primary ${primaryPlan.shortName} (${primaryPlan.baseOnly ? 'Base Only' : 'Total'})`;
@@ -3308,8 +3398,8 @@
       elements.annSummaryMed.textContent = fmtNoCents(annualMedicare);
       
       let summaryPensionTitle = primaryPlan.shortName;
-      if (hasSpouse && spousePlan.rate > 0) {
-        summaryPensionTitle = `${primaryPlan.shortName} + ${spousePlan.shortName}`;
+      if ((hasSpouse && spousePlan.rate > 0) || (isW2Active && hasW2Spouse)) {
+        summaryPensionTitle = `${primaryPlan.shortName} + Spouse`;
       }
       elements.annSummaryPensionTitle.textContent = (effectivePensionAnnual > 0) ? summaryPensionTitle : 'Social Security';
       elements.annSummaryPension.textContent = (effectivePensionAnnual > 0) ? fmtNoCents(effectivePensionAnnual) : fmtNoCents(annualTotalSs);
@@ -3530,6 +3620,7 @@
       });
 
       elements.pensionSystemSelect.addEventListener('change', () => {
+        if (elements.inputPrimaryPensionOverride) elements.inputPrimaryPensionOverride.value = '';
         const key = elements.pensionSystemSelect.value;
         const plan = TAX_2026.PENSION_SYSTEMS[key];
         if (plan && plan.isPepra) {
@@ -3559,6 +3650,8 @@
         elements.hourlyRateInput,
         elements.baseHoursInput,
         elements.otHoursInput,
+        elements.inputAdditionalIncome,
+        elements.inputPrimaryPensionOverride,
         elements.input457Value,
         elements.checkAge50CatchUp,
         elements.inputAdditionalPretax,
@@ -3749,9 +3842,10 @@
         const primaryHourly = Math.max(0, parseFloat(elements.hourlyRateInput.value) || 0);
         const primaryBaseH = Math.max(0, parseFloat(elements.baseHoursInput.value) || 0);
         const primaryOtH = Math.max(0, parseFloat(elements.otHoursInput.value) || 0);
+        const primaryAddlInc = Math.max(0, parseFloat(elements.inputAdditionalIncome ? elements.inputAdditionalIncome.value : 0) || 0);
         const primaryBasePay = primaryBaseH * primaryHourly;
         const primaryOtPay = primaryOtH * (primaryHourly * 1.5);
-        const primaryGrossBiweekly = primaryBasePay + primaryOtPay;
+        const primaryGrossBiweekly = primaryBasePay + primaryOtPay + primaryAddlInc;
         const primaryGrossAnnual = primaryGrossBiweekly * 26;
 
         const primaryKey = elements.pensionSystemSelect.value;
@@ -3926,6 +4020,8 @@
         elements.baseHoursInput.value = '80';
         elements.otHoursInput.value = '12';
         elements.otHoursSlider.value = '12';
+        if (elements.inputAdditionalIncome) elements.inputAdditionalIncome.value = '0.00';
+        if (elements.inputPrimaryPensionOverride) elements.inputPrimaryPensionOverride.value = '';
         elements.inputAdditionalPretax.value = '150';
         elements.inputPostTaxDeductions.value = '85';
         
