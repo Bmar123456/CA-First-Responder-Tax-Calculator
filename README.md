@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en" class="light">
 <head>
   <meta charset="UTF-8">
@@ -499,7 +500,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label for="hourlyRateInput" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Hourly Rate ($) <span class="text-[11px] font-normal text-slate-500 dark:text-slate-400">(Include POST &amp; Specialty)</span>
+                  Hourly Rate ($) <span class="text-[11px] font-normal text-slate-500 dark:text-slate-400">(Include POST, Specialty &amp; Shift Differential)</span>
                 </label>
                 <div class="relative">
                   <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-400 text-sm">$</span>
@@ -1937,7 +1938,7 @@
               <svg class="w-3 h-3 mr-1 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
               Premium
             </span>
-            <span class="text-xs font-mono text-amber-200/80">26 Biweekly Pay Periods • First Pay Period of Month Rule</span>
+            <span id="pmHeaderCycleBadge" class="text-xs font-mono text-amber-200/80">26 Biweekly Pay Periods • First Pay Period of Month Rule</span>
           </div>
           <h2 class="text-base sm:text-xl font-extrabold text-white tracking-tight">
             Future Pay &amp; Mid-Year Raise Modeling Engine
@@ -1981,6 +1982,93 @@
         </button>
 
         <div id="pmBox1Content" class="p-4 sm:p-5 space-y-4">
+          <!-- Pay Cycle (CHP 13-Check) & Filing Status -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <label for="pmCheckChpCycle" class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/35 text-[11px] font-bold text-amber-800 dark:text-amber-300 cursor-pointer hover:bg-amber-500/20 transition-colors">
+              <input type="checkbox" id="pmCheckChpCycle" class="rounded border-amber-400 text-amber-600 focus:ring-amber-500 w-3.5 h-3.5 cursor-pointer">
+              <span>CHP 28-Day Cycle (13 Checks/Yr)</span>
+            </label>
+            <div class="flex items-center space-x-1.5">
+              <label for="pmFilingStatus" class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Filing:</label>
+              <select id="pmFilingStatus" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-[11px] font-semibold text-slate-900 dark:text-white cursor-pointer">
+                <option value="single">Single</option>
+                <option value="mfj">Married Filing Jointly</option>
+                <option value="hoh">Head of Household</option>
+                <option value="mfs">Married Filing Separately</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Pension System Selector in Pay Modeling -->
+          <div class="space-y-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center justify-between">
+              <label for="pmPensionSystemSelect" class="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                Pension System
+              </label>
+              <span id="pmPepraCapIndicator" class="hidden text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                PEPRA Cap Active
+              </span>
+            </div>
+            <div class="relative">
+              <select id="pmPensionSystemSelect" class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none cursor-pointer">
+                <option value="calpers_pepra_safety" selected>CalPERS Safety - 2.7% @ 57 (PEPRA)</option>
+                <option value="calpers_classic_safety">CalPERS Safety - 3% @ 50 (Classic - 9.00%)</option>
+                <option value="calpers_pepra_misc">CalPERS Misc - 2% @ 62 (PEPRA)</option>
+                <option value="calpers_classic_misc">CalPERS Misc - 2.7% @ 55 (Classic - 8.00%)</option>
+                <option value="lafpp_tier6">LAFPP Tier 6 - LAPD / LAFD (11.00% Base Only)</option>
+                <option value="lafpp_tier5_9">LAFPP Tier 5 - LAPD / LAFD (9.00% Base Only)</option>
+                <option value="lafpp_tier5_8">LAFPP Tier 2-5 - LAPD / LAFD (8.00% Base Only)</option>
+                <option value="ocers_plan_v">OCERS Plan V - Safety 2.7%@57 (14.61% Base Only)</option>
+                <option value="ocers_plan_u">OCERS Plan U - General 2.5%@67 (10.50% + SS)</option>
+                <option value="lacera_plan_c">LACERA Plan C - Safety 2.7%@57 (15.36% Base Only)</option>
+                <option value="lacera_plan_g">LACERA Plan G - General 2.5%@67 (9.22% + SS)</option>
+                <option value="social_security">Social Security Only (FICA 6.2% - No Pension)</option>
+                <option value="other">Other / Custom Pension System</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500 dark:text-slate-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </div>
+            </div>
+
+            <!-- Pay Modeling PEPRA Agency Search -->
+            <div id="pmPepraSearchContainer" class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2 text-xs">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-start">
+                <div class="sm:col-span-2 relative">
+                  <label for="pmInputPepraAgencySearch" class="block text-[10px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">Search City / Agency (FY 2026-27)</label>
+                  <input type="text" id="pmInputPepraAgencySearch" autocomplete="off" placeholder="e.g. Irvine, Anaheim, CHP..." class="w-full px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500">
+                  <div id="pmPepraSearchResults" class="hidden absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl shadow-2xl z-50 divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
+                </div>
+                <div>
+                  <label for="pmInputPepraCustomRate" class="block text-[10px] font-semibold text-slate-700 dark:text-slate-300 mb-0.5">Rate (%)</label>
+                  <input type="number" id="pmInputPepraCustomRate" value="0.00" step="0.25" min="0" max="30" class="w-full px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-amber-700 dark:text-amber-400 font-mono">
+                </div>
+              </div>
+              <div id="pmPepraAgencySelectionBadge" class="text-[10px] text-amber-900 dark:text-amber-200 font-medium">
+                * Type your agency above or enter your PEPRA % rate.
+              </div>
+            </div>
+
+            <!-- Pay Modeling Custom Pension Inputs -->
+            <div id="pmCustomPensionContainer" class="hidden p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="pmCustomPensionRate" class="block text-[10px] font-medium text-slate-700 dark:text-slate-300 mb-0.5">Contribution Rate (%)</label>
+                  <input type="number" id="pmCustomPensionRate" value="12.00" step="0.25" min="0" max="40" class="w-full px-2.5 py-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg font-semibold text-slate-900 dark:text-white text-xs font-mono">
+                </div>
+                <div class="flex flex-col justify-end space-y-1 text-[10px]">
+                  <label class="flex items-center space-x-1 cursor-pointer text-slate-700 dark:text-slate-300">
+                    <input type="checkbox" id="pmCustomPensionBaseOnly" checked class="rounded border-slate-300 text-amber-600 w-3 h-3">
+                    <span>Base Pay Only</span>
+                  </label>
+                  <label class="flex items-center space-x-1 cursor-pointer text-slate-700 dark:text-slate-300">
+                    <input type="checkbox" id="pmCustomPensionSocialSecurity" class="rounded border-slate-300 text-amber-600 w-3 h-3">
+                    <span>Social Security (6.2%)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- January Starting Hourly Rate -->
           <div>
             <div class="flex items-center justify-between mb-1">
@@ -1996,7 +2084,7 @@
               <input type="number" id="pmJanRateInput" value="62.50" step="0.25" min="0" class="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 font-mono">
             </div>
             <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
-              * Enter your total effective hourly rate as of January 1 (includes regular pay, POST, specialty pay, bilingual, and collateral pay).
+              * Enter your total effective hourly rate as of January 1 (includes regular pay, POST, specialty pay, shift differential, bilingual, and collateral pay).
             </p>
             <div class="pt-2">
               <input type="range" id="pmJanRateSlider" min="25" max="160" step="0.25" value="62.50" aria-label="January starting hourly rate slider">
@@ -2010,11 +2098,6 @@
                 <label for="pmBaseHoursInput" class="text-xs font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">
                   Base Hours / Check
                 </label>
-                <div class="flex items-center space-x-1 shrink-0">
-                  <button type="button" data-hours="80" class="pm-hours-preset text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-amber-100 dark:hover:bg-amber-950 font-mono leading-none">80h</button>
-                  <button type="button" data-hours="84" class="pm-hours-preset text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-amber-100 dark:hover:bg-amber-950 font-mono leading-none">84h</button>
-                  <button type="button" data-hours="112" class="pm-hours-preset text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-amber-100 dark:hover:bg-amber-950 font-mono leading-none">112h</button>
-                </div>
               </div>
               <input type="number" id="pmBaseHoursInput" value="80" step="1" min="1" max="168" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 font-mono">
             </div>
@@ -2062,7 +2145,7 @@
           <div class="flex items-center space-x-2">
             <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
             <h3 class="text-xs font-bold uppercase tracking-wider text-amber-300">
-              2. Scheduled Mid-Year Raises (Compounds in Order)
+              2. Scheduled Mid-Year Raises &amp; Promotions (Compounds in Order)
             </h3>
           </div>
           <div class="flex items-center space-x-2.5">
@@ -2076,7 +2159,7 @@
 
         <div id="pmBox2Content" class="p-4 sm:p-5 space-y-3.5">
           <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            Select the month your raise takes effect (modeled from the <strong>first pay period of that month</strong>). Click <strong>+ Add Raise Event</strong> above to add any subsequent raises (such as a COLA or step increase).
+            Select the month your raise or promotion takes effect (modeled from the <strong>first pay period of that month</strong>). Click <strong>+ Add Raise Event</strong> above to add any subsequent step increases, promotions, or COLAs.
           </p>
 
           <!-- Dynamic List of Raise Rows -->
@@ -2084,7 +2167,7 @@
 
           <!-- Empty State if user deletes all raises -->
           <div id="pmNoRaisesNotice" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700 text-center text-xs text-slate-500 dark:text-slate-400">
-            No mid-year raises currently scheduled. Click <strong>+ Add Raise Event</strong> above to model a longevity bump, step increase, or COLA raise.
+            No mid-year raises or promotions currently scheduled. Click <strong>+ Add Raise Event</strong> above to model a longevity bump, step increase, promotion, or COLA raise.
           </div>
         </div>
       </div>
@@ -2253,13 +2336,59 @@
           </div>
         </div>
 
+        <!-- Net Take-Home & Simple Tax Breakdown (Annual & Per-Check) -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-900 text-white border border-amber-400/50 shadow-sm space-y-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-300 block">
+                Estimated Annual Net Take-Home
+              </span>
+              <div class="flex items-baseline space-x-2.5 mt-0.5">
+                <span id="pmEstimatedAnnualNet" class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">$0.00</span>
+                <span id="pmEstimatedAvgCheckNet" class="text-xs font-mono text-slate-300">($0.00 / avg check)</span>
+              </div>
+            </div>
+            <div class="text-left sm:text-right text-[11px] text-slate-300">
+              <span id="pmNetPensionNote" class="block font-medium text-amber-200/90">CalPERS PEPRA Safety • 0.00%</span>
+              <span id="pmPepraCapStatusNote" class="hidden block text-emerald-300 font-mono text-[10px]"></span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/70">
+              <span class="text-[10px] text-slate-400 uppercase font-semibold block">Federal Tax</span>
+              <span id="pmNetFedTax" class="font-bold font-mono text-rose-300 text-sm">$0</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/70">
+              <span class="text-[10px] text-slate-400 uppercase font-semibold block">CA State Tax</span>
+              <span id="pmNetCaTax" class="font-bold font-mono text-rose-300 text-sm">$0</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/70">
+              <span class="text-[10px] text-slate-400 uppercase font-semibold block">Pension</span>
+              <span id="pmNetPensionTotal" class="font-bold font-mono text-amber-300 text-sm">$0</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/70">
+              <span class="text-[10px] text-slate-400 uppercase font-semibold block">457(b) Deferred</span>
+              <span id="pmNet457Total" class="font-bold font-mono text-purple-300 text-sm">$0</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/70">
+              <span class="text-[10px] text-slate-400 uppercase font-semibold block">Medicare</span>
+              <span id="pmNetMedicare" class="font-bold font-mono text-slate-200 text-sm">$0</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/70">
+              <span class="text-[10px] text-slate-400 uppercase font-semibold block">Social Security</span>
+              <span id="pmNetSocialSecurity" class="font-bold font-mono text-slate-200 text-sm">$0</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Milestone Hourly Rate & 457(b) Progression Cards (January -> Raise Months) -->
         <div class="space-y-2.5 pt-2">
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
               Hourly Rate, Biweekly Pay &amp; 457(b) Progression by Raise Milestone
             </h4>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400">26 Pay Periods Total</span>
+            <span id="pmTotalPeriodsBadge" class="text-[11px] text-slate-500 dark:text-slate-400">26 Pay Periods Total</span>
           </div>
 
           <!-- Dynamic Milestone Cards Grid -->
@@ -2272,7 +2401,7 @@
             <div class="flex items-center space-x-2">
               <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               <span class="text-xs font-bold text-amber-300">
-                View Full 26-Pay-Period Breakdown Table (Paychecks #1 – #26)
+                <span id="pmScheduleTableTitle">View Full 26-Pay-Period Breakdown Table (Paychecks #1 – #26)</span>
               </span>
             </div>
             <div class="flex items-center space-x-2">
@@ -2391,6 +2520,8 @@
     const TAX_2026 = {
       LIMIT_457_STANDARD: 24500,
       LIMIT_457_CATCHUP: 32500,
+      PEPRA_COMP_LIMIT_SS: 159733,
+      PEPRA_COMP_LIMIT_NON_SS: 191679,
       SS_WAGE_BASE: 184500,
       SS_RATE: 0.062,
       MEDICARE_RATE: 0.0145,
@@ -2415,6 +2546,7 @@
           rate: 0.0000,
           hasSs: false,
           baseOnly: true,
+          hasPepraCap: true,
           isPepra: true,
           pepraType: 'safety',
           label: 'Agency-specific rate on base pay only (PEPRA Overtime Exempt)',
@@ -2438,6 +2570,7 @@
           rate: 0.0000,
           hasSs: false, // Per user feedback: civilian staff noted they do not pay FICA tax
           baseOnly: true,
+          hasPepraCap: true,
           isPepra: true,
           pepraType: 'misc',
           label: 'Agency-specific rate on base pay only (PEPRA Overtime Exempt)',
@@ -2491,6 +2624,7 @@
           rate: 0.1461,
           hasSs: false,
           baseOnly: true,
+          hasPepraCap: true,
           label: '14.61% on base pay only',
           badge: 'Section 218 SS Exempt',
           notice: 'OCERS Plan V Safety members (Orange County Sheriff & OCFA Firefighters) contribute 14.61% on base salary only under PEPRA. Overtime is 100% exempt from pension deductions, and members are exempt from 6.2% Social Security.'
@@ -2501,6 +2635,7 @@
           rate: 0.1050,
           hasSs: true,
           baseOnly: true,
+          hasPepraCap: true,
           label: '10.50% on base pay only + Social Security (6.2%)',
           badge: 'Social Security + Pension',
           notice: 'OCERS Plan U General members (County general employees & attorneys) contribute 10.50% on base pay only. Overtime is non-pensionable. Plan U is coordinated with Social Security (6.2% up to $184,500).'
@@ -2511,6 +2646,7 @@
           rate: 0.1536,
           hasSs: false,
           baseOnly: true,
+          hasPepraCap: true,
           label: '15.36% on base pay only',
           badge: 'Section 218 SS Exempt',
           notice: 'LACERA Safety Plan C (LA County Sheriff & Fire) member contribution is a flat 15.36% on base salary only. Overtime is 100% exempt from pension withholding, and safety members are exempt from 6.2% Social Security.'
@@ -2521,6 +2657,7 @@
           rate: 0.0922,
           hasSs: true,
           baseOnly: true,
+          hasPepraCap: true,
           label: '9.22% on base pay only + Social Security (6.2%)',
           badge: 'Social Security + Pension',
           notice: 'LACERA General Plan G members contribute 9.22% on base salary only. Overtime is exempt from pension deductions. Members are coordinated with Social Security (6.2% up to $184,500).'
@@ -3002,6 +3139,32 @@
       chevronPmSchedule: document.getElementById('chevronPmSchedule'),
       pmScheduleTableContainer: document.getElementById('pmScheduleTableContainer'),
       pmScheduleTableBody: document.getElementById('pmScheduleTableBody'),
+      pmHeaderCycleBadge: document.getElementById('pmHeaderCycleBadge'),
+      pmCheckChpCycle: document.getElementById('pmCheckChpCycle'),
+      pmFilingStatus: document.getElementById('pmFilingStatus'),
+      pmPensionSystemSelect: document.getElementById('pmPensionSystemSelect'),
+      pmPepraCapIndicator: document.getElementById('pmPepraCapIndicator'),
+      pmPepraSearchContainer: document.getElementById('pmPepraSearchContainer'),
+      pmInputPepraAgencySearch: document.getElementById('pmInputPepraAgencySearch'),
+      pmPepraSearchResults: document.getElementById('pmPepraSearchResults'),
+      pmInputPepraCustomRate: document.getElementById('pmInputPepraCustomRate'),
+      pmPepraAgencySelectionBadge: document.getElementById('pmPepraAgencySelectionBadge'),
+      pmCustomPensionContainer: document.getElementById('pmCustomPensionContainer'),
+      pmCustomPensionRate: document.getElementById('pmCustomPensionRate'),
+      pmCustomPensionBaseOnly: document.getElementById('pmCustomPensionBaseOnly'),
+      pmCustomPensionSocialSecurity: document.getElementById('pmCustomPensionSocialSecurity'),
+      pmTotalPeriodsBadge: document.getElementById('pmTotalPeriodsBadge'),
+      pmScheduleTableTitle: document.getElementById('pmScheduleTableTitle'),
+      pmEstimatedAnnualNet: document.getElementById('pmEstimatedAnnualNet'),
+      pmEstimatedAvgCheckNet: document.getElementById('pmEstimatedAvgCheckNet'),
+      pmNetPensionNote: document.getElementById('pmNetPensionNote'),
+      pmPepraCapStatusNote: document.getElementById('pmPepraCapStatusNote'),
+      pmNetFedTax: document.getElementById('pmNetFedTax'),
+      pmNetCaTax: document.getElementById('pmNetCaTax'),
+      pmNetPensionTotal: document.getElementById('pmNetPensionTotal'),
+      pmNet457Total: document.getElementById('pmNet457Total'),
+      pmNetMedicare: document.getElementById('pmNetMedicare'),
+      pmNetSocialSecurity: document.getElementById('pmNetSocialSecurity'),
       biweeklySection: document.getElementById('biweeklySection'),
       btnToggleBiweekly: document.getElementById('btnToggleBiweekly'),
       biweeklyContent: document.getElementById('biweeklyContent'),
@@ -3264,7 +3427,7 @@
         <svg class="w-4 h-4 mr-1 text-amber-700 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         ${primaryPlan.name}
       `;
-      elements.labelPrimaryPensionRate.innerHTML = `${(primaryPlan.rate * 100).toFixed(2)}% on <span class="underline decoration-amber-500 font-semibold">${primaryPlan.baseOnly ? 'base pay only' : 'total pay'}</span>`;
+      elements.labelPrimaryPensionRate.innerHTML = `${(primaryPlan.rate * 100).toFixed(2)}% on <span class="underline decoration-amber-500 font-semibold">${primaryPlan.baseOnly ? 'base pay only' : 'total pay'}</span>` + (primaryPepraCapApplied ? ` <span class="ml-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">(PEPRA Cap: $${primaryPepraCap.toLocaleString()}/yr)</span>` : '');
       elements.pensionBadge.textContent = primaryPlan.badge;
       elements.pensionNotice.innerHTML = `<p><strong class="text-slate-900 dark:text-white">${primaryPlan.name}:</strong> ${primaryPlan.notice}</p>`;
 
@@ -3323,13 +3486,22 @@
 
       // Primary Pension or Social Security (Base-only plans exclude Overtime and Additional/Non-Pensionable Income)
       const primaryPensionablePay = primaryPlan.baseOnly ? primaryBasePay : primaryGrossBiweekly;
+      const primaryAnnualPensionable = primaryPensionablePay * primaryPeriods;
+      const primaryPepraCap = primaryPlan.hasPepraCap ? (primaryPlan.hasSs ? TAX_2026.PEPRA_COMP_LIMIT_SS : TAX_2026.PEPRA_COMP_LIMIT_NON_SS) : Infinity;
+      const primaryCappedAnnualPensionable = Math.min(primaryAnnualPensionable, primaryPepraCap);
+      const primaryPepraCapApplied = primaryPlan.hasPepraCap && primaryAnnualPensionable > primaryPepraCap;
+
       const rawOverrideVal = elements.inputPrimaryPensionOverride ? elements.inputPrimaryPensionOverride.value.trim() : '';
       const hasPensionOverride = (rawOverrideVal !== '' && !isNaN(parseFloat(rawOverrideVal)) && parseFloat(rawOverrideVal) >= 0);
-      let primaryBiweeklyCalpers = hasPensionOverride ? parseFloat(rawOverrideVal) : (primaryPensionablePay * primaryPlan.rate);
+      let primaryAnnualCalpers = hasPensionOverride
+        ? (parseFloat(rawOverrideVal) * primaryPeriods)
+        : (primaryCappedAnnualPensionable * primaryPlan.rate);
+      let primaryBiweeklyCalpers = hasPensionOverride
+        ? parseFloat(rawOverrideVal)
+        : (primaryAnnualCalpers / primaryPeriods);
       if (elements.inputPrimaryPensionOverride && document.activeElement !== elements.inputPrimaryPensionOverride && !hasPensionOverride) {
-        elements.inputPrimaryPensionOverride.placeholder = `Auto (${fmt(primaryPensionablePay * primaryPlan.rate)})`;
+        elements.inputPrimaryPensionOverride.placeholder = `Auto (${fmt(primaryBiweeklyCalpers)})`;
       }
-      let primaryAnnualCalpers = primaryBiweeklyCalpers * primaryPeriods;
 
       let primaryBiweeklySs = 0;
       let primaryAnnualSs = 0;
@@ -3471,10 +3643,13 @@
         elements.spouseCalcOtPay.textContent = fmt(spouseOtPay);
         elements.spouseCalcTotalGross.textContent = fmt(spouseGrossBiweekly);
 
-        // Spouse Pension / SS calculation
+        // Spouse Pension / SS calculation (with PEPRA Cap)
         const spousePensionablePay = spousePlan.baseOnly ? spouseBasePay : spouseGrossBiweekly;
-        spouseBiweeklyCalpers = spousePensionablePay * spousePlan.rate;
-        spouseAnnualCalpers = spouseBiweeklyCalpers * TAX_2026.PAY_PERIODS_PER_YEAR;
+        const spouseAnnualPensionable = spousePensionablePay * TAX_2026.PAY_PERIODS_PER_YEAR;
+        const spousePepraCap = spousePlan.hasPepraCap ? (spousePlan.hasSs ? TAX_2026.PEPRA_COMP_LIMIT_SS : TAX_2026.PEPRA_COMP_LIMIT_NON_SS) : Infinity;
+        const spouseCappedAnnualPensionable = Math.min(spouseAnnualPensionable, spousePepraCap);
+        spouseAnnualCalpers = spouseCappedAnnualPensionable * spousePlan.rate;
+        spouseBiweeklyCalpers = spouseAnnualCalpers / TAX_2026.PAY_PERIODS_PER_YEAR;
 
         if (spousePlan.hasSs) {
           const spouseSsTaxable = Math.min(spouseGrossBiweekly, TAX_2026.SS_WAGE_BASE / TAX_2026.PAY_PERIODS_PER_YEAR);
@@ -4035,16 +4210,64 @@
       { month: 12, name: 'December', short: 'Dec', startPeriod: 25 }
     ];
 
+    const PM_MONTH_CONFIG_13 = [
+      { month: 1, name: 'January', short: 'Jan', startPeriod: 1 },
+      { month: 2, name: 'February', short: 'Feb', startPeriod: 2 },
+      { month: 3, name: 'March', short: 'Mar', startPeriod: 3 },
+      { month: 4, name: 'April', short: 'Apr', startPeriod: 4 },
+      { month: 5, name: 'May', short: 'May', startPeriod: 5 },
+      { month: 6, name: 'June', short: 'Jun', startPeriod: 6 },
+      { month: 7, name: 'July', short: 'Jul', startPeriod: 7 },
+      { month: 8, name: 'August', short: 'Aug', startPeriod: 9 },
+      { month: 9, name: 'September', short: 'Sep', startPeriod: 10 },
+      { month: 10, name: 'October', short: 'Oct', startPeriod: 11 },
+      { month: 11, name: 'November', short: 'Nov', startPeriod: 12 },
+      { month: 12, name: 'December', short: 'Dec', startPeriod: 13 }
+    ];
+
+    function getPmMonthConfig() {
+      const isChp = elements.pmCheckChpCycle && elements.pmCheckChpCycle.checked;
+      return isChp ? PM_MONTH_CONFIG_13 : PM_MONTH_CONFIG;
+    }
+
     function getMonthForPayPeriod(periodNum) {
-      let current = PM_MONTH_CONFIG[0];
-      for (let i = 0; i < PM_MONTH_CONFIG.length; i++) {
-        if (periodNum >= PM_MONTH_CONFIG[i].startPeriod) {
-          current = PM_MONTH_CONFIG[i];
+      const cfg = getPmMonthConfig();
+      let current = cfg[0];
+      for (let i = 0; i < cfg.length; i++) {
+        if (periodNum >= cfg[i].startPeriod) {
+          current = cfg[i];
         } else {
           break;
         }
       }
       return current;
+    }
+
+    function getPmActivePensionPlan() {
+      const key = elements.pmPensionSystemSelect ? elements.pmPensionSystemSelect.value : 'calpers_pepra_safety';
+      let plan;
+      if (key === 'other') {
+        const customRate = Math.max(0, parseFloat(elements.pmCustomPensionRate ? elements.pmCustomPensionRate.value : 12) || 0) / 100;
+        const baseOnly = elements.pmCustomPensionBaseOnly ? elements.pmCustomPensionBaseOnly.checked : true;
+        const hasSs = elements.pmCustomPensionSocialSecurity ? elements.pmCustomPensionSocialSecurity.checked : false;
+        plan = {
+          name: 'Custom Public Pension',
+          shortName: 'Custom Pension',
+          rate: customRate,
+          hasSs,
+          baseOnly,
+          isPepra: false,
+          hasPepraCap: false
+        };
+      } else {
+        const basePlan = TAX_2026.PENSION_SYSTEMS[key] || TAX_2026.PENSION_SYSTEMS.calpers_pepra_safety;
+        plan = { ...basePlan };
+        if (plan.isPepra) {
+          const customPepraRate = Math.max(0, parseFloat(elements.pmInputPepraCustomRate ? elements.pmInputPepraCustomRate.value : 0) || 0) / 100;
+          plan.rate = customPepraRate;
+        }
+      }
+      return plan;
     }
 
     function renderPmRaisesList() {
@@ -4070,9 +4293,11 @@
           runningRate = runningRate + val;
         }
         const deltaHr = runningRate - prevRate;
-        const mInfo = PM_MONTH_CONFIG.find(m => m.month === r.month) || PM_MONTH_CONFIG[6];
+        const pmCfg = getPmMonthConfig();
+        const pmTotalPeriods = (elements.pmCheckChpCycle && elements.pmCheckChpCycle.checked) ? 13 : 26;
+        const mInfo = pmCfg.find(m => m.month === r.month) || pmCfg[6];
 
-        const monthOptions = PM_MONTH_CONFIG.map(m => `
+        const monthOptions = pmCfg.map(m => `
           <option value="${m.month}" ${m.month === r.month ? 'selected' : ''}>
             ${m.name} (Starts Pay Period #${m.startPeriod})
           </option>
@@ -4086,7 +4311,7 @@
                   Raise #${idx + 1}
                 </span>
                 <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                  Effective Pay Period #${mInfo.startPeriod}–#26 (${27 - mInfo.startPeriod} checks)
+                  Effective Pay Period #${mInfo.startPeriod}–#${pmTotalPeriods} (${(pmTotalPeriods + 1) - mInfo.startPeriod} checks)
                 </span>
               </div>
               <div class="flex items-center space-x-2">
@@ -4113,6 +4338,7 @@
                 <label class="block text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 mb-0.5">Raise Description</label>
                 <select class="pm-raise-label w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-900 dark:text-white cursor-pointer" data-id="${r.id}">
                   <option value="Longevity / Step Raise" ${r.label === 'Longevity / Step Raise' ? 'selected' : ''}>Longevity / Step Raise</option>
+                  <option value="Promotion" ${r.label === 'Promotion' ? 'selected' : ''}>Promotion</option>
                   <option value="COLA / Other" ${r.label === 'COLA / Other' ? 'selected' : ''}>COLA / Other</option>
                 </select>
               </div>
@@ -4200,6 +4426,34 @@
     function calculatePayModeling() {
       if (!elements.pmJanRateInput) return;
 
+      const isChp = elements.pmCheckChpCycle && elements.pmCheckChpCycle.checked;
+      const totalPeriods = isChp ? 13 : 26;
+      const pmCfg = getPmMonthConfig();
+      const pmPlan = getPmActivePensionPlan();
+
+      // Toggle PEPRA search & Custom pension containers in Pay Modeling
+      if (elements.pmPepraSearchContainer) {
+        if (pmPlan.isPepra) elements.pmPepraSearchContainer.classList.remove('hidden');
+        else elements.pmPepraSearchContainer.classList.add('hidden');
+      }
+      if (elements.pmCustomPensionContainer) {
+        const key = elements.pmPensionSystemSelect ? elements.pmPensionSystemSelect.value : '';
+        if (key === 'other') elements.pmCustomPensionContainer.classList.remove('hidden');
+        else elements.pmCustomPensionContainer.classList.add('hidden');
+      }
+
+      if (elements.pmHeaderCycleBadge) {
+        elements.pmHeaderCycleBadge.textContent = isChp
+          ? '13 Pay Periods (CHP 28-Day Cycle) • First Pay Period of Month Rule'
+          : '26 Biweekly Pay Periods • First Pay Period of Month Rule';
+      }
+      if (elements.pmTotalPeriodsBadge) {
+        elements.pmTotalPeriodsBadge.textContent = `${totalPeriods} Pay Periods Total`;
+      }
+      if (elements.pmScheduleTableTitle) {
+        elements.pmScheduleTableTitle.textContent = `View Full ${totalPeriods}-Pay-Period Breakdown Table (Paychecks #1 – #${totalPeriods})`;
+      }
+
       const janRate = Math.max(0, parseFloat(elements.pmJanRateInput.value) || 0);
       const baseHours = Math.max(0, parseFloat(elements.pmBaseHoursInput.value) || 0);
       const otHours = Math.max(0, parseFloat(elements.pmOtHoursInput.value) || 0);
@@ -4224,8 +4478,8 @@
       // Baseline January Snapshot
       const janBiweeklyBase = janRate * baseHours;
       const janBiweeklyOt = (janRate * 1.5) * otHours;
-      const unadjustedAnnualBase = janBiweeklyBase * 26;
-      const unadjustedAnnualGross = (janBiweeklyBase + janBiweeklyOt) * 26;
+      const unadjustedAnnualBase = janBiweeklyBase * totalPeriods;
+      const unadjustedAnnualGross = (janBiweeklyBase + janBiweeklyOt) * totalPeriods;
 
       if (elements.pmJanBiweeklyBase) elements.pmJanBiweeklyBase.textContent = fmt(janBiweeklyBase);
       if (elements.pmJanBiweeklyOtRow && elements.pmJanBiweeklyOt) {
@@ -4270,7 +4524,7 @@
 
       let currentRate = janRate;
       sortedRaises.forEach((r) => {
-        const mConfig = PM_MONTH_CONFIG.find(m => m.month === r.month) || PM_MONTH_CONFIG[6];
+        const mConfig = pmCfg.find(m => m.month === r.month) || pmCfg[6];
         const val = parseFloat(r.value) || 0;
         const prevRate = currentRate;
         currentRate = (r.mode === 'percent') ? (currentRate * (1 + val / 100)) : (currentRate + val);
@@ -4298,7 +4552,7 @@
 
       // Calculate end period and check count for each phase
       for (let i = 0; i < phases.length; i++) {
-        const nextStart = (i + 1 < phases.length) ? phases[i + 1].startPeriod : 27;
+        const nextStart = (i + 1 < phases.length) ? phases[i + 1].startPeriod : (totalPeriods + 1);
         phases[i].endPeriod = nextStart - 1;
         phases[i].checkCount = Math.max(0, nextStart - phases[i].startPeriod);
         phases[i].totalBaseEarned = 0;
@@ -4306,15 +4560,21 @@
         phases[i].total457Contributed = 0;
       }
 
-      // Simulate all 26 pay periods
+      // Simulate all pay periods (26 biweekly or 13 CHP 28-day)
       let ytdBase = 0;
       let ytdOt = 0;
       let ytd457 = 0;
+      let ytdPensionable = 0;
+      let ytdPension = 0;
       let maxOutPeriod = null;
       let maxOutMonthName = '';
+      let pepraCapPeriod = null;
+      const pepraCapLimit = pmPlan.hasPepraCap
+        ? (pmPlan.hasSs ? TAX_2026.PEPRA_COMP_LIMIT_SS : TAX_2026.PEPRA_COMP_LIMIT_NON_SS)
+        : Infinity;
       const scheduleRows = [];
 
-      for (let p = 1; p <= 26; p++) {
+      for (let p = 1; p <= totalPeriods; p++) {
         // Find active phase for pay period p
         let activePhase = phases[0];
         for (let i = 0; i < phases.length; i++) {
@@ -4330,6 +4590,20 @@
         const checkOt = otHr * otHours;
         const checkGross = checkBase + checkOt;
 
+        // Pension with PEPRA Compensation Cap
+        const checkPensionableRaw = pmPlan.baseOnly ? checkBase : checkGross;
+        let checkPensionable = checkPensionableRaw;
+        let isPepraCapRow = false;
+        if (pmPlan.hasPepraCap) {
+          const remPepraRoom = Math.max(0, pepraCapLimit - ytdPensionable);
+          checkPensionable = Math.min(checkPensionableRaw, remPepraRoom);
+          if (checkPensionableRaw > 0 && remPepraRoom > 0 && checkPensionable >= remPepraRoom && pepraCapPeriod === null) {
+            pepraCapPeriod = p;
+            isPepraCapRow = true;
+          }
+        }
+        const checkPension = checkPensionable * pmPlan.rate;
+
         const eligible457Pay = state.pm457BaseOnly ? checkBase : checkGross;
         const desired457 = eligible457Pay * rate457Pct;
         const remaining457Room = Math.max(0, cap457 - ytd457);
@@ -4343,6 +4617,8 @@
         ytdBase += checkBase;
         ytdOt += checkOt;
         ytd457 += actual457;
+        ytdPensionable += checkPensionableRaw;
+        ytdPension += checkPension;
 
         activePhase.totalBaseEarned += checkBase;
         activePhase.totalOtEarned += checkOt;
@@ -4353,7 +4629,8 @@
           monthName: pMonth.name,
           phaseLabel: activePhase.label,
           isMilestoneStart: (p === activePhase.startPeriod && p > 1),
-           isCapCheck: (maxOutPeriod === p),
+          isCapCheck: (maxOutPeriod === p),
+          isPepraCapRow,
           hourlyRate: hr,
           checkBase,
           checkOt,
@@ -4366,11 +4643,67 @@
 
       const finalPhase = phases[phases.length - 1];
       const finalHourlyRate = finalPhase.hourlyRate;
-      const totalHoursYear = baseHours * 26;
+      const totalHoursYear = baseHours * totalPeriods;
       const blendedHourlyRate = totalHoursYear > 0 ? (ytdBase / totalHoursYear) : janRate;
-      const exitRunRateAnnual = finalHourlyRate * baseHours * 26;
+      const exitRunRateAnnual = finalHourlyRate * baseHours * totalPeriods;
       const annualRaiseGain = ytdBase - unadjustedAnnualBase;
       const totalEffectiveGross = ytdBase + ytdOt;
+
+      // Simple Net Take-Home & Tax Calculation (Federal, CA State, Medicare, Social Security)
+      const pmFiling = elements.pmFilingStatus ? elements.pmFilingStatus.value : 'single';
+      const pmPretaxAnnual = ytdPension + ytd457;
+      // 2026 OBBB FLSA Overtime Exemption (1/3 of OT pay up to $12,500 Single/HoH, $25,000 MFJ, $0 MFS)
+      let pmObbbOtExempt = 0;
+      if (ytdOt > 0 && pmFiling !== 'mfs') {
+        const obbbCap = (pmFiling === 'mfj') ? 25000 : 12500;
+        pmObbbOtExempt = Math.min(obbbCap, ytdOt / 3);
+      }
+      const pmFedStdDed = TAX_2026.FED_STD_DEDUCTION[pmFiling] || TAX_2026.FED_STD_DEDUCTION.single;
+      const pmCaStdDed = TAX_2026.CA_STD_DEDUCTION[pmFiling] || TAX_2026.CA_STD_DEDUCTION.single;
+      const pmFedTaxable = Math.max(0, totalEffectiveGross - pmPretaxAnnual - pmObbbOtExempt - pmFedStdDed);
+      const pmCaTaxable = Math.max(0, totalEffectiveGross - pmPretaxAnnual - pmCaStdDed);
+
+      const pmFedTax = calculateGraduatedTax(pmFedTaxable, TAX_2026.FED_BRACKETS[pmFiling] || TAX_2026.FED_BRACKETS.single);
+      const pmCaTaxPreCredit = calculateGraduatedTax(pmCaTaxable, TAX_2026.CA_BRACKETS[pmFiling] || TAX_2026.CA_BRACKETS.single);
+      const pmCaPersonalCredit = TAX_2026.CA_EXEMPTION_CREDITS['personal_' + pmFiling] || TAX_2026.CA_EXEMPTION_CREDITS.personal_single;
+      const pmCaTax = Math.max(0, pmCaTaxPreCredit - pmCaPersonalCredit);
+
+      const pmAddlMedThresh = (pmFiling === 'mfj') ? TAX_2026.ADDITIONAL_MEDICARE_THRESHOLD_MFJ : TAX_2026.ADDITIONAL_MEDICARE_THRESHOLD_SINGLE;
+      let pmMedicare = totalEffectiveGross * TAX_2026.MEDICARE_RATE;
+      if (totalEffectiveGross > pmAddlMedThresh) {
+        pmMedicare += (totalEffectiveGross - pmAddlMedThresh) * TAX_2026.ADDITIONAL_MEDICARE_RATE;
+      }
+      const pmSocialSecurity = pmPlan.hasSs ? (Math.min(totalEffectiveGross, TAX_2026.SS_WAGE_BASE) * TAX_2026.SS_RATE) : 0;
+      const pmTotalTaxes = pmFedTax + pmCaTax + pmMedicare + pmSocialSecurity;
+      const pmAnnualNet = Math.max(0, totalEffectiveGross - pmPretaxAnnual - pmTotalTaxes);
+      const pmAvgCheckNet = pmAnnualNet / totalPeriods;
+
+      if (elements.pmEstimatedAnnualNet) elements.pmEstimatedAnnualNet.textContent = fmt(pmAnnualNet);
+      if (elements.pmEstimatedAvgCheckNet) elements.pmEstimatedAvgCheckNet.textContent = `(${fmt(pmAvgCheckNet)} / avg check)`;
+      if (elements.pmNetPensionNote) {
+        elements.pmNetPensionNote.textContent = `${pmPlan.shortName || pmPlan.name} • ${(pmPlan.rate * 100).toFixed(2)}%`;
+      }
+      if (elements.pmPepraCapIndicator) {
+        if (pmPlan.hasPepraCap) elements.pmPepraCapIndicator.classList.remove('hidden');
+        else elements.pmPepraCapIndicator.classList.add('hidden');
+      }
+      if (elements.pmPepraCapStatusNote) {
+        if (pmPlan.hasPepraCap && ytdPensionable > pepraCapLimit) {
+          elements.pmPepraCapStatusNote.classList.remove('hidden');
+          elements.pmPepraCapStatusNote.textContent = `PEPRA Cap Hit at $${pepraCapLimit.toLocaleString()}/yr (Check #${pepraCapPeriod})`;
+        } else if (pmPlan.hasPepraCap) {
+          elements.pmPepraCapStatusNote.classList.remove('hidden');
+          elements.pmPepraCapStatusNote.textContent = `PEPRA Cap: $${pepraCapLimit.toLocaleString()}/yr (Not Exceeded)`;
+        } else {
+          elements.pmPepraCapStatusNote.classList.add('hidden');
+        }
+      }
+      if (elements.pmNetFedTax) elements.pmNetFedTax.textContent = fmtNoCents(pmFedTax);
+      if (elements.pmNetCaTax) elements.pmNetCaTax.textContent = fmtNoCents(pmCaTax);
+      if (elements.pmNetPensionTotal) elements.pmNetPensionTotal.textContent = fmtNoCents(ytdPension);
+      if (elements.pmNet457Total) elements.pmNet457Total.textContent = fmtNoCents(ytd457);
+      if (elements.pmNetMedicare) elements.pmNetMedicare.textContent = fmtNoCents(pmMedicare);
+      if (elements.pmNetSocialSecurity) elements.pmNetSocialSecurity.textContent = fmtNoCents(pmSocialSecurity);
 
       // Baseline 457 without raises for comparison
       const unadjusted457Base = state.pm457BaseOnly ? unadjustedAnnualBase : unadjustedAnnualGross;
@@ -4409,16 +4742,16 @@
       }
 
       if (elements.pm457MaxOutText) {
-        if (maxOutPeriod !== null && maxOutPeriod < 26) {
-          const checksAfterCap = 26 - maxOutPeriod;
+        if (maxOutPeriod !== null && maxOutPeriod < totalPeriods) {
+          const checksAfterCap = totalPeriods - maxOutPeriod;
           elements.pm457MaxOutText.innerHTML = `✓ <strong>Max-Out Milestone Reached:</strong> At <strong>${(rate457Pct * 100).toFixed(1)}%</strong>, you hit the <strong>$${cap457.toLocaleString()}</strong> cap on <strong>Paycheck #${maxOutPeriod} (${maxOutMonthName})</strong>! For the remaining <strong>${checksAfterCap} paychecks</strong> of the year, <strong>+${fmt(finalCheckUnclipped457)}/check</strong> stays in your paycheck.`;
           elements.pm457MaxOutBanner.className = "p-3 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-emerald-950 dark:text-emerald-200";
-        } else if (maxOutPeriod === 26) {
-          elements.pm457MaxOutText.innerHTML = `✓ <strong>Exact Year-End Max-Out:</strong> At <strong>${(rate457Pct * 100).toFixed(1)}%</strong>, you reach the exact <strong>$${cap457.toLocaleString()}</strong> cap on <strong>Paycheck #26 (December)</strong>!`;
+        } else if (maxOutPeriod === totalPeriods) {
+          elements.pm457MaxOutText.innerHTML = `✓ <strong>Exact Year-End Max-Out:</strong> At <strong>${(rate457Pct * 100).toFixed(1)}%</strong>, you reach the exact <strong>$${cap457.toLocaleString()}</strong> cap on <strong>Paycheck #${totalPeriods} (December)</strong>!`;
           elements.pm457MaxOutBanner.className = "p-3 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-emerald-950 dark:text-emerald-200";
         } else {
           const roomLeft = Math.max(0, cap457 - ytd457);
-          elements.pm457MaxOutText.innerHTML = `At <strong>${(rate457Pct * 100).toFixed(1)}%</strong>, you contribute across all 26 paychecks without hitting the $${cap457.toLocaleString()} cap (<strong>${fmt(roomLeft)}</strong> remaining room).`;
+          elements.pm457MaxOutText.innerHTML = `At <strong>${(rate457Pct * 100).toFixed(1)}%</strong>, you contribute across all ${totalPeriods} paychecks without hitting the $${cap457.toLocaleString()} cap (<strong>${fmt(roomLeft)}</strong> remaining room).`;
           elements.pm457MaxOutBanner.className = "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2";
         }
       }
@@ -4514,6 +4847,7 @@
                 <span class="text-slate-700 dark:text-slate-300">${r.phaseLabel}</span>
                 ${r.isMilestoneStart ? '<span class="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200">Raise Starts</span>' : ''}
                 ${r.isCapCheck ? '<span class="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">457 Cap Hit</span>' : ''}
+                ${r.isPepraCapRow ? '<span class="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">PEPRA Cap Hit</span>' : ''}
               </td>
               <td class="py-2 px-3 text-right font-bold text-sky-700 dark:text-sky-400">$${r.hourlyRate.toFixed(2)}</td>
               <td class="py-2 px-3 text-right text-slate-900 dark:text-white">${fmt(r.checkBase)}</td>
@@ -5042,10 +5376,107 @@
           elements.pmJanRateInput.value = elements.hourlyRateInput.value || '62.50';
           elements.pmBaseHoursInput.value = elements.baseHoursInput.value || '80';
           elements.pmOtHoursInput.value = elements.otHoursInput.value || '0';
+          if (elements.pmCheckChpCycle && elements.checkChpCycle) {
+            elements.pmCheckChpCycle.checked = elements.checkChpCycle.checked;
+          }
+          if (elements.pmFilingStatus && elements.filingStatusSelect) {
+            elements.pmFilingStatus.value = elements.filingStatusSelect.value;
+          }
+          if (elements.pmPensionSystemSelect && elements.pensionSystemSelect) {
+            elements.pmPensionSystemSelect.value = elements.pensionSystemSelect.value;
+          }
+          if (elements.pmInputPepraAgencySearch && elements.inputPepraAgencySearch) {
+            elements.pmInputPepraAgencySearch.value = elements.inputPepraAgencySearch.value;
+          }
+          if (elements.pmInputPepraCustomRate && elements.inputPepraCustomRate) {
+            elements.pmInputPepraCustomRate.value = elements.inputPepraCustomRate.value;
+          }
+          if (elements.pmCustomPensionRate && elements.primaryCustomPensionRate) {
+            elements.pmCustomPensionRate.value = elements.primaryCustomPensionRate.value;
+          }
+          if (elements.pmCustomPensionBaseOnly && elements.primaryCustomPensionBaseOnly) {
+            elements.pmCustomPensionBaseOnly.checked = elements.primaryCustomPensionBaseOnly.checked;
+          }
+          if (elements.pmCustomPensionSocialSecurity && elements.primaryCustomPensionSocialSecurity) {
+            elements.pmCustomPensionSocialSecurity.checked = elements.primaryCustomPensionSocialSecurity.checked;
+          }
           renderPmRaisesList();
           calculatePayModeling();
         });
       }
+
+      // Pay Modeling CHP Toggle, Filing Status, & Pension Listeners
+      if (elements.pmCheckChpCycle) {
+        elements.pmCheckChpCycle.addEventListener('change', (e) => {
+          const isChp = e.target.checked;
+          if (isChp) {
+            if (elements.pmBaseHoursInput && elements.pmBaseHoursInput.value === '80') {
+              elements.pmBaseHoursInput.value = '160';
+            }
+            if (elements.pmPensionSystemSelect) {
+              elements.pmPensionSystemSelect.value = 'calpers_pepra_safety';
+            }
+            if (elements.pmInputPepraAgencySearch) {
+              elements.pmInputPepraAgencySearch.value = 'California Highway Patrol (CHP - Unit 5)';
+            }
+            if (elements.pmInputPepraCustomRate) {
+              elements.pmInputPepraCustomRate.value = '13.50';
+            }
+            if (elements.pmPepraAgencySelectionBadge) {
+              elements.pmPepraAgencySelectionBadge.innerHTML = '✓ <strong>California Highway Patrol (CHP - Unit 5)</strong> • Rate: <strong>13.50%</strong> on base pay';
+            }
+          } else {
+            if (elements.pmBaseHoursInput && elements.pmBaseHoursInput.value === '160') {
+              elements.pmBaseHoursInput.value = '80';
+            }
+            if (elements.pmInputPepraAgencySearch && elements.pmInputPepraAgencySearch.value === 'California Highway Patrol (CHP - Unit 5)') {
+              elements.pmInputPepraAgencySearch.value = '';
+              if (elements.pmInputPepraCustomRate) elements.pmInputPepraCustomRate.value = '0.00';
+              if (elements.pmPepraAgencySelectionBadge) {
+                elements.pmPepraAgencySelectionBadge.innerHTML = '* Type your agency above or enter your PEPRA % rate.';
+              }
+            }
+          }
+          renderPmRaisesList();
+          calculatePayModeling();
+        });
+      }
+      if (elements.pmFilingStatus) {
+        elements.pmFilingStatus.addEventListener('change', calculatePayModeling);
+      }
+      if (elements.pmPensionSystemSelect) {
+        elements.pmPensionSystemSelect.addEventListener('change', calculatePayModeling);
+      }
+      if (elements.pmInputPepraCustomRate) {
+        elements.pmInputPepraCustomRate.addEventListener('input', calculatePayModeling);
+      }
+      if (elements.pmCustomPensionRate) {
+        elements.pmCustomPensionRate.addEventListener('input', calculatePayModeling);
+      }
+      if (elements.pmCustomPensionBaseOnly) {
+        elements.pmCustomPensionBaseOnly.addEventListener('change', calculatePayModeling);
+      }
+      if (elements.pmCustomPensionSocialSecurity) {
+        elements.pmCustomPensionSocialSecurity.addEventListener('change', calculatePayModeling);
+      }
+      if (elements.pmInputPepraAgencySearch) {
+        elements.pmInputPepraAgencySearch.addEventListener('input', (e) => {
+          const plan = getPmActivePensionPlan();
+          performAgencySearch(e.target.value, plan.pepraType || 'safety', elements.pmInputPepraAgencySearch, elements.pmPepraSearchResults, elements.pmInputPepraCustomRate, elements.pmPepraAgencySelectionBadge);
+          calculatePayModeling();
+        });
+        elements.pmInputPepraAgencySearch.addEventListener('focus', (e) => {
+          const plan = getPmActivePensionPlan();
+          if (e.target.value.trim().length > 0) {
+            performAgencySearch(e.target.value, plan.pepraType || 'safety', elements.pmInputPepraAgencySearch, elements.pmPepraSearchResults, elements.pmInputPepraCustomRate, elements.pmPepraAgencySelectionBadge);
+          }
+        });
+      }
+      document.addEventListener('click', (e) => {
+        if (elements.pmPepraSearchResults && !e.target.closest('#pmInputPepraAgencySearch') && !e.target.closest('#pmPepraSearchResults')) {
+          elements.pmPepraSearchResults.classList.add('hidden');
+        }
+      });
       if (elements.btnPmLoadSample) {
         elements.btnPmLoadSample.addEventListener('click', () => {
           elements.pmJanRateInput.value = '62.50';
@@ -5103,12 +5534,6 @@
       if (elements.pmBaseHoursInput) {
         elements.pmBaseHoursInput.addEventListener('input', calculatePayModeling);
       }
-      document.querySelectorAll('.pm-hours-preset').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          elements.pmBaseHoursInput.value = e.currentTarget.dataset.hours;
-          calculatePayModeling();
-        });
-      });
       if (elements.pmOtHoursInput) {
         elements.pmOtHoursInput.addEventListener('input', calculatePayModeling);
       }
