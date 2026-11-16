@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en" class="light">
 <head>
   <meta charset="UTF-8">
@@ -3427,7 +3426,6 @@
         <svg class="w-4 h-4 mr-1 text-amber-700 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         ${primaryPlan.name}
       `;
-      elements.labelPrimaryPensionRate.innerHTML = `${(primaryPlan.rate * 100).toFixed(2)}% on <span class="underline decoration-amber-500 font-semibold">${primaryPlan.baseOnly ? 'base pay only' : 'total pay'}</span>` + (primaryPepraCapApplied ? ` <span class="ml-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">(PEPRA Cap: $${primaryPepraCap.toLocaleString()}/yr)</span>` : '');
       elements.pensionBadge.textContent = primaryPlan.badge;
       elements.pensionNotice.innerHTML = `<p><strong class="text-slate-900 dark:text-white">${primaryPlan.name}:</strong> ${primaryPlan.notice}</p>`;
 
@@ -3490,6 +3488,7 @@
       const primaryPepraCap = primaryPlan.hasPepraCap ? (primaryPlan.hasSs ? TAX_2026.PEPRA_COMP_LIMIT_SS : TAX_2026.PEPRA_COMP_LIMIT_NON_SS) : Infinity;
       const primaryCappedAnnualPensionable = Math.min(primaryAnnualPensionable, primaryPepraCap);
       const primaryPepraCapApplied = primaryPlan.hasPepraCap && primaryAnnualPensionable > primaryPepraCap;
+      elements.labelPrimaryPensionRate.innerHTML = `${(primaryPlan.rate * 100).toFixed(2)}% on <span class="underline decoration-amber-500 font-semibold">${primaryPlan.baseOnly ? 'base pay only' : 'total pay'}</span>` + (primaryPepraCapApplied ? ` <span class="ml-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">(PEPRA Cap: $${primaryPepraCap.toLocaleString()}/yr)</span>` : '');
 
       const rawOverrideVal = elements.inputPrimaryPensionOverride ? elements.inputPrimaryPensionOverride.value.trim() : '';
       const hasPensionOverride = (rawOverrideVal !== '' && !isNaN(parseFloat(rawOverrideVal)) && parseFloat(rawOverrideVal) >= 0);
@@ -3981,7 +3980,7 @@
       elements.heroCompositeTaxesBiweekly.textContent = fmt(biweeklyCompositeTaxes);
       elements.heroEffectiveRate.textContent = `${biweeklyEffectiveRate.toFixed(1)}% of Gross`;
       elements.heroPensionBiweekly.textContent = fmt(householdCalpersBiweekly);
-      elements.heroPensionRateLabel.textContent = (primaryPlan.rate > 0) ? `${(primaryPlan.rate * 100).toFixed(1)}% ${primaryPlan.baseOnly ? 'Base' : 'Total'}` : 'Exempts OT';
+      elements.heroPensionRateLabel.textContent = (primaryPlan.rate > 0) ? `${(primaryPlan.rate * 100).toFixed(1)}% ${primaryPlan.baseOnly ? 'Base' : 'Total'}` : 'OT Exempt';
       elements.hero457Biweekly.textContent = fmt(household457Biweekly);
       elements.heroOtherDeductionsBiweekly.textContent = fmt(householdAdditionalPretaxBiweekly + householdPostTaxBiweekly);
       elements.labelGrossDistribution.textContent = `100% of ${fmt(householdGrossBiweekly)}`;
@@ -5256,10 +5255,12 @@
         }
 
         const primaryPensionable = basePrimaryPlan.baseOnly ? primaryBasePay : primaryGrossBiweekly;
+        const primaryPepraCapW2 = basePrimaryPlan.hasPepraCap ? (basePrimaryPlan.hasSs ? TAX_2026.PEPRA_COMP_LIMIT_SS : TAX_2026.PEPRA_COMP_LIMIT_NON_SS) : Infinity;
+        const primaryCappedAnnualW2 = Math.min(primaryPensionable * pPeriods, primaryPepraCapW2);
         const rawOverrideVal = elements.inputPrimaryPensionOverride ? elements.inputPrimaryPensionOverride.value.trim() : '';
         const hasOverride = (rawOverrideVal !== '' && !isNaN(parseFloat(rawOverrideVal)) && parseFloat(rawOverrideVal) >= 0);
-        const biweeklyPension = hasOverride ? parseFloat(rawOverrideVal) : (primaryPensionable * basePrimaryPlan.rate);
-        const primaryAnnualPension = biweeklyPension * pPeriods;
+        const primaryAnnualPension = hasOverride ? (parseFloat(rawOverrideVal) * pPeriods) : (primaryCappedAnnualW2 * basePrimaryPlan.rate);
+        const biweeklyPension = primaryAnnualPension / pPeriods;
 
         const primaryMax457 = (elements.checkAge50CatchUp && elements.checkAge50CatchUp.checked) ? TAX_2026.LIMIT_457_CATCHUP : TAX_2026.LIMIT_457_STANDARD;
         const raw457 = Math.max(0, parseFloat(elements.input457Value.value) || 0);
@@ -5379,8 +5380,8 @@
           if (elements.pmCheckChpCycle && elements.checkChpCycle) {
             elements.pmCheckChpCycle.checked = elements.checkChpCycle.checked;
           }
-          if (elements.pmFilingStatus && elements.filingStatusSelect) {
-            elements.pmFilingStatus.value = elements.filingStatusSelect.value;
+          if (elements.pmFilingStatus && elements.selectFilingStatus) {
+            elements.pmFilingStatus.value = elements.selectFilingStatus.value;
           }
           if (elements.pmPensionSystemSelect && elements.pensionSystemSelect) {
             elements.pmPensionSystemSelect.value = elements.pensionSystemSelect.value;
